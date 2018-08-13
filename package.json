@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "node /server/www.js",
+    "start": "node ./server/www.js",
     "postinstall": "ng build --aot --prod",
     "server": "node local.js",
     "build": "ng build",
