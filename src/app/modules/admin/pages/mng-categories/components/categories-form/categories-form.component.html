@@ -1,0 +1,52 @@
+<mat-progress-bar *ngIf="uploading" mode="determinate" [value]="uploadProgress | async" color="warn">
+</mat-progress-bar>
+<form [formGroup]="categoryForm" (ngSubmit)="handleSubmit()" #form="ngForm">
+    <div fxLayout="column" class="components-container-gt-xs" [ngClass.xs]="'components-container-xs'" fxLayoutGap="20px">
+        <div fxFlex class="mat-elevation-z4">
+            <mat-toolbar class="table-header">
+                <h1 class="mat-headline center-align">Category</h1>
+            </mat-toolbar>
+            <mat-card>
+                <mat-card-content>
+                    <div fxLayout="row" fxLayoutGap="10px" fxLayout.lt-md="column">
+                        <input type="file" (change)="fileChangeEvent($event)" #imgFile style="display: none">
+                        <div fxFlex fxLayout="column" fxFlex.lt-md="0 1 auto">
+                            <mat-form-field>
+                                <mat-label>Category Name</mat-label>
+                                <input matInput placeholder="Category" formControlName="category" [errorStateMatcher]="matcher" required>
+                                <ng-container *ngFor="let validation of validationMessages.category">
+                                    <mat-error class="error-message" *ngIf="categoryForm.get('category').hasError(validation.type) && (categoryForm.get('category').dirty && categoryForm.get('category').touched)">{{validation.message}}</mat-error>
+                                </ng-container>
+                            </mat-form-field>
+                            <div fxLayout="row" fxLayoutGap="10px">
+                                <div class="img-cont" fxFlex="1 1 5em">
+                                    <mat-icon fontSet="fa" fontIcon="fa-camera" (click)="imgFile.click()"></mat-icon>
+                                    <div class="img-desc" fxLayoutAlign="center center">Upload Icon</div>
+                                    <img [src]="croppedImage" *ngIf="croppedImage">
+                                </div>
+                                <mat-form-field fxFlex>
+                                    <mat-select placeholder="Icons" formControlName="icon">
+                                        <mat-option *ngFor="let icon of icons" [value]="icon">
+                                            <span><mat-icon>{{ icon }}</mat-icon> {{ icon }}</span>
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </div>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </div>
+    </div>
+    <div fxLayout="column" class="components-container-gt-xs" [ngClass.xs]="'components-container-xs'" fxLayoutGap="20px">
+        <mat-card>
+            <mat-card-content fxLayoutAlign="end" fxLayoutGap="5px">
+                <button type='submit' mat-stroked-button color="accent" [disabled]='!categoryForm.valid || !this.form.dirty || submitting'>
+                    <ng-container *ngIf="uploading">Saving...</ng-container>
+                    <ng-container *ngIf="!uploading">Submit</ng-container>
+                </button>
+                <button type='button' mat-stroked-button color="accent" (click)='resetForm()'>Reset</button>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</form>

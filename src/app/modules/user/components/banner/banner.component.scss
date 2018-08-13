@@ -1,0 +1,45 @@
+.summary-wrapper {
+    padding: 2em 0;
+    background-color: #fff;
+    box-shadow: 0px 3px 8px 0px #f3f3f3;
+}
+.avatar-container {
+    border: 2px solid #c7c7c7;
+    padding: 2px;
+    border-radius: 4px;
+    width: 100px;
+    height: 100px;
+}
+.user-summary-info {
+    .username {
+        font-size: 25px;
+        text-transform: capitalize;
+    }
+}
+.user-summary-stats {
+    &>div {
+        width: 100px;
+        text-align: center;
+    }
+    &>div:not(:last-child) {
+        border-right: 1px solid #c2c2c2;
+    }
+    span, a {
+        display: block;
+    }
+    .user-reviews a,
+    .user-score span:last-child
+    {
+        text-decoration: none;
+        color: #8f8f8f;
+        font-weight: bold;
+    }
+    .user-score .total-score,
+    .user-reviews .total-reviews
+    {
+        font-size: 25px;
+        font-weight: bold;
+        color: #868686;
+    }
+
+}

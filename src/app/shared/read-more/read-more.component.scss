@@ -1,0 +1,16 @@
+a {
+    cursor: pointer;
+    text-decoration: underline;
+    &:hover {
+        color: #149cf6
+    }
+    &.hidden {
+        display: none;
+    }
+}
+a.text {
+    text-decoration: none;
+    color: #000;
+    word-spacing: 3px;
+    line-height: 24px;
+}

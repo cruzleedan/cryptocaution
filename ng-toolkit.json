@@ -1,0 +1,12 @@
+{
+  "serverless": {
+    "provider": "aws",
+    "skipInstall": false,
+    "directory": ".",
+    "project": "cryptocaution",
+    "serverless": {
+      "aws": {},
+      "gcloud": {}
+    }
+  }
+}

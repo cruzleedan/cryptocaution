@@ -1,0 +1,54 @@
+<mat-sidenav-container [ngClass]="{'sidenav-container': !isSignUpLogin, 'sidenav-container sign-in-container': isSignUpLogin}">
+        <!-- If on small screen, menu resides in drawer -->
+        <mat-sidenav #drawer class="sidenav" [ngClass]="{hidden: !(isHandset$ | async)}" fixedInViewport="false" [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
+            [mode]="(isHandset$ | async) ? 'over' : 'side'" [opened]="!(isHandset$ | async)">
+            <mat-toolbar color="primary" fxLayout="row-reverse">
+                <button mat-icon-button (click)="drawer.close()">
+                    <mat-icon aria-label="close" fontSet="fa" fontIcon="fa-close"></mat-icon>
+                </button>
+            </mat-toolbar>
+            <mat-nav-list>
+                <a mat-list-item [routerLink]="['/create']">create</a>
+                <a mat-list-item [routerLink]="['/edit/1']">Edit 1</a>
+                <a mat-list-item [routerLink]="['/list']">List</a>
+                <a mat-list-item [routerLink]="['/login']">login</a>
+
+            </mat-nav-list>
+        </mat-sidenav>
+        <mat-sidenav-content #sidenavcont>
+            <header #header class="header" *ngIf="showHeader">
+                <mat-toolbar class="mat-elevation-z4" color="primary">
+                    <ng-container *ngIf="(isHandset$ | async)">
+                        <button mat-icon-button (click)="drawer.toggle();">
+                            <i class="material-icons app-toolbar-menu">menu </i>
+                        </button>
+                    </ng-container>
+                    <!-- Header partial -->
+                    <app-layout-header></app-layout-header>
+
+                </mat-toolbar>
+                <!-- <mat-toolbar color="primary">
+                    <div *ngIf="(isHandset$ | async)">
+                        <button type="button" aria-label="Toggle sidenav" mat-icon-button (click)="drawer.toggle()">
+                            <mat-icon aria-label="Side nav toggle icon">menu</mat-icon>
+                        </button>
+                    </div>
+
+                    <app-layout-header></app-layout-header>
+
+                </mat-toolbar> -->
+            </header>
+            <div fxLayout="column">
+                <div fxFlex [ngClass]="{'main-container': !isHome}">
+
+                    <!-- Body Partial -->
+                    <!-- <ng-content></ng-content> -->
+                    <router-outlet></router-outlet>
+
+                    <!-- Footer Partial -->
+                    <app-layout-footer *ngIf="showFooter"></app-layout-footer>
+
+                </div>
+            </div>
+        </mat-sidenav-content>
+    </mat-sidenav-container>

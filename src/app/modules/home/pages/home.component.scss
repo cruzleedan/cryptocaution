@@ -1,0 +1,150 @@
+:host {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+.mat-card-avatar {
+    overflow: hidden;
+    background: #f3f3f3;
+}
+mat-card-title a {
+    text-decoration: none;
+    color: #000;
+}
+app-read-more {
+    font-size: 14px;
+}
+.vertical-entity-card {
+    margin-bottom: 5px;
+}
+.banner-container {
+    min-height: 570px;
+    background-image: url('../../../../assets/images/banner4.jpg');
+    background-repeat: no-repeat;
+    background-position: center top;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+    /*padding: 40px; (If don't want to set min-height or some image content is there) */
+}
+
+.banner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.banner-container .desc {
+    color: #ffffff;
+    font-weight: 100;
+    padding: 13px;
+    font-size: -webkit-xxx-large; // background-color: rgb(0, 99, 127);
+}
+
+.search-bar-container {
+    padding: 4em 0;
+    width: 100%;
+    &>div {
+        background-color: #fff;
+    }
+}
+
+$fontSize: 20px;
+$lineHeight: 21px;
+$searchBg:#135c75;
+$searchBgLight: #217a98;
+section {
+    padding-bottom: 5%;
+}
+
+section.body {
+    width: 90%;
+    margin: 0 auto;
+    .col-title {
+        text-align: center;
+        text-align: center;
+        font-size: 20px;
+        margin: 20px;
+    }
+    .rating {
+        justify-content: flex-start;
+    }
+    .star-cont {
+        display: flex;
+    }
+    .reviewer-name {
+        font-weight: bold;
+        font-size: 14px;
+    }
+    .review {
+        font-size: 14px;
+        color: #000;
+        word-spacing: 3px;
+        letter-spacing: 0.2px;
+    }
+}
+
+// Services start
+.service-section {
+    background-color: #f3f3f3;
+}
+.service-header {
+    height: 350px;
+    width: 100%;
+    padding: 30px 0 0 0;
+    color: white;
+    .content {
+        background-color: white;
+    }
+    h3 {
+        margin: 0;
+        margin-bottom: 10px;
+        text-align: center;
+    }
+    p {
+        margin: 0;
+        text-align: center;
+    }
+    mat-divider {
+        border-top-color: white;
+    }
+}
+
+.service-card-content {
+    .service-card-container {
+        padding: 20px;
+        img {
+            width: 100%;
+            object-fit: cover;
+        }
+        a.service-card {
+            text-decoration: none;
+            cursor: pointer;
+            color: #000;
+        }
+        .service-card {
+            transition: all 0.6s cubic-bezier(0.165, 0.84, 0.44, 1);
+            cursor: default;
+            background-color: white;
+            padding: 20px;
+            img {
+                height: 200px;
+            }
+            h3 {
+                margin: 0;
+            }
+            p {
+                margin: 0;
+                text-align: center;
+            }
+            &:hover {
+                transform: translate(0, -8px);
+                box-shadow: 0 20px 20px rgba(0, 0, 0, .16)
+            }
+        }
+    }
+}
+
+// Services end

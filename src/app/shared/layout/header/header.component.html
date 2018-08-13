@@ -1,0 +1,22 @@
+<span *ngIf="!(isHandset$ | async)" routerLink="/">
+    <div>CryptoCaution</div>
+</span>
+<span class="header-spacer"></span>
+<span [ngClass]="{'full-width': (isHandset$ | async), 'search-bar-cont': !(isHandset$ | async)}">
+    <app-search-bar class="toolbar" spinnerCls="white"></app-search-bar>
+</span>
+<ng-container *ngIf="!(isHandset$ | async)">
+    <a class="full-height" [routerLinkActive]="['mat-accent','active']" [routerLinkActiveOptions]="{ exact: true }" mat-button [routerLink]="['/']">Home</a>
+    <a class="full-height" [routerLinkActive]="['mat-accent','active']" mat-button [routerLink]="['/category']">Category</a>
+    <!-- hide this if user is logged in -->
+    <ng-container *appShowAuthed="false">
+        <a class="full-height" routerLinkActive="mat-accent active" mat-button [routerLink]="['/login']">Login</a>
+        <a class="full-height" routerLinkActive="mat-accent active" mat-button [routerLink]="['/register']">Sign up</a>
+    </ng-container>
+
+    <!-- Show this for logged in users -->
+    <ng-container *appShowAuthed="true">
+        <a class="full-height" routerLinkActive="mat-accent active" mat-button [routerLink]="['/entity/new']">Add Entity</a>
+        <app-user-menu [currentUser]="toolbar?.currentUser"></app-user-menu>
+    </ng-container>
+</ng-container>

@@ -1,0 +1,74 @@
+<div class="main-contianer">
+    <div class="max-width-740">
+        <h1 class="evaluatepage-heading" *ngIf="!review && !isEdit">
+            Voice your opinion! Review
+            <a [routerLink]="['/entity/'+entityId]">{{entityName}}</a> now.
+        </h1>
+        <h3 *ngIf="review && review.id && !isEdit" class="warn">
+            You already wrote a review for {{ entityName }}.
+            Submiting this form would update it instead.
+        </h3>
+        <h3 *ngIf="isEdit">
+            Update your Review
+        </h3>
+        <div fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
+            <div fxFlex fxFlex.xs="0 1 auto" class="review-form-container">
+                <form fxLayout="column" [formGroup]="reviewForm" (ngSubmit)="submitReview()">
+                    <label class="label">Rating</label>
+                    <div fxLayout="row">
+                        <star-rating-control formControlName="rating" size="large" [hoverEnabled]="true" (hoverRatingChange)="onHoverRatingChange($event)"></star-rating-control>
+                        <aside class="rating-label">
+                            {{ ratingLabel }}
+                        </aside>
+                    </div>
+                    <mat-error *ngIf="reviewForm.get('rating').dirty && reviewForm.get('rating').hasError('required')">
+                        Rating is
+                        <strong>required</strong>
+                    </mat-error>
+                    <mat-error *ngIf="reviewForm.get('rating').hasError('min')">
+                        Rating should at least 1
+                    </mat-error>
+                    <label class="label">Your review</label>
+                    <mat-form-field appearance="fill">
+                        <textarea [errorStateMatcher]="matcher" matInput placeholder="Share your honest experience, and help others make better choices."
+                            formControlName="review" matTextareaAutosize matAutosizeMinRows=10></textarea>
+                        <mat-error *ngIf="reviewForm.get('review').hasError('required')">
+                            Review is
+                            <strong>required</strong>
+                        </mat-error>
+                    </mat-form-field>
+                    <label class="label">Title of your review</label>
+                    <mat-form-field appearance="fill">
+                        <input matInput formControlName="title">
+                    </mat-form-field>
+                </form>
+
+                <label *ngIf="!isAuthenticated" class="label">Post and verify yourself with</label>
+                <div *ngIf="!hasUserAcceptedTerms">
+                    <mat-error *ngIf="termsError">{{termsError}}</mat-error>
+                    <mat-checkbox [(ngModel)]="acceptedTerms" (ngModelChange)="onAcceptTerms($event)">I accept the
+                        <a href="#">Terms & Conditions</a> and
+                        <a href="#">Privacy Policy</a>.</mat-checkbox>
+                </div>
+                <br>
+                <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="end" *ngIf="isAuthenticated">
+                    <button type='button' mat-stroked-button color="accent" [disabled]='!reviewForm.valid' (click)="submitReview()">Submit</button>
+                    <button type='button' mat-stroked-button color="accent" (click)='resetForm()'>Reset</button>
+                </div>
+                <div *ngIf="!isAuthenticated" fxLayoutGap="10px">
+                    <button mat-raised-button type="button" color="accent" alt="Login with Facebook" (click)="fbLogin()">
+                        <mat-icon fontSet="fa" fontIcon="fa-facebook" style="font-size:20px;"></mat-icon>
+                        Login with Facebook
+                    </button>
+                    <button type="button" mat-raised-button color="accent" (click)="logIn()">
+                        Login
+                    </button>
+                </div>
+            </div>
+            <div>
+                <h2>What is Cryptocaution?</h2>
+                <p>Cryptocaution is a review community.</p>
+            </div>
+        </div>
+    </div>
+</div>

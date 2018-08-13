@@ -1,0 +1,216 @@
+<div class="entity-header-cont" fxLayout="row" fxLayout.xs="column" fxLayoutGap="20px">
+    <div fxFlex="2 2 calc(10em +10px)" fxFlex.xs="0 1 auto" fxLayout="row" fxLayout.xs="column" fxLayoutAlign.xs="stretch center"
+        fxLayoutGap="20px">
+        <div class="entity-icon">
+            <img [src]="baseUrl+'/entity/'+entity.id+'/'+entity.image" [alt]="entity.image" onerror="this.onerror=null;this.src='/assets/images/image-not-found.png';">
+        </div>
+        <div fxFlex fxFlex.xs="0 1 auto" fxLayout="column" fxLayoutAlign.xs="stretch center">
+            <div class="name">{{ entity.name }}</div>
+            <div class="published-by" fxLayoutAlign="start center" *ngIf="entity.User.username">
+                By {{ entity.User.username }} |
+                <mat-icon fontSet="fa" fontIcon="fa-calendar"></mat-icon>{{ entity.createdAt | date: 'fullDate' }}
+            </div>
+
+            <div fxLayout="row" *ngIf="rated" class="entity-rating-cont">
+                <div class="total-rating">
+                    {{ (+entity.rating).toFixed(1) }}
+                </div>
+                <div fxLayoutAlign="center start" fxLayout="column">
+                    <star-rating *ngIf="rated" size="medium" [rating]="entity.rating" [step]="0.5" [readOnly]="true"></star-rating>
+                    <div class="sm-bold-grey">out of 5 - {{ entityRating }}</div>
+                </div>
+            </div>
+
+            <div *ngIf="!rated">Not rated</div>
+
+            <div *ngIf="entityTotalReviews"><span class="review-cnt-txt">{{ entityTotalReviews }} Review{{ entityTotalReviews > 1 ? 's': '' }}</span></div>
+            <div *ngIf="!entityTotalReviews"> No Review</div>
+        </div>
+    </div>
+    <div fxFlex fxFlex.xs="0 1 auto" fxLayout="column" class="details-container">
+        <div fxLayout="row" fxLayoutAlign="center center">
+            <span fxFlex="1 1 5em">Excellent</span>
+            <div fxFlex="2 2 calc(10em + 10px)">
+                <div class="progress-excellent" [style.width.%]="entity.excellentRating | pct: entityTotalReviews"></div>
+            </div>
+            <span>{{ entity.excellentRating }}</span>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center">
+            <span fxFlex="1 1 5em">Great</span>
+            <div fxFlex="2 2 calc(10em + 10px)">
+                <div class="progress-great" [style.width.%]="entity.greatRating | pct: entityTotalReviews"></div>
+            </div>
+            <span>{{ entity.greatRating }}</span>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center">
+            <span fxFlex="1 1 5em">Average</span>
+            <div fxFlex="2 2 calc(10em + 10px)">
+                <div class="progress-average" [style.width.%]="entity.averageRating | pct: entityTotalReviews"></div>
+            </div>
+            <span>{{ entity.averageRating }}</span>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center">
+            <span fxFlex="1 1 5em">Poor</span>
+            <div fxFlex="2 2 calc(10em + 10px)">
+                <div class="progress-poor" [style.width.%]="entity.poorRating | pct: entityTotalReviews"></div>
+            </div>
+            <span>{{ entity.poorRating }}</span>
+        </div>
+        <div fxLayout="row" fxLayoutAlign="center center">
+            <span fxFlex="1 1 5em">Bad</span>
+            <div fxFlex="2 2 calc(10em + 10px)">
+                <div class="progress-bad" [style.width.%]="entity.badRating | pct: entityTotalReviews"></div>
+            </div>
+            <span>{{ entity.badRating }}</span>
+        </div>
+    </div>
+</div>
+<div class="entity-body" fxLayout="row" fxLayout.sm="column-reverse" fxLayout.xs="column-reverse" fxLayoutGap="20px">
+    <div fxFlex="2 2 calc(10em +10px)" fxFlex.sm="0 1 auto" fxFlex.xs="0 1 auto">
+        <mat-card>
+            <mat-card-title>{{entity.name}}</mat-card-title>
+            <!-- <mat-card-subtitle></mat-card-subtitle> -->
+            <mat-card-content><div [innerHtml]="entityDesc"></div></mat-card-content>
+            <!-- <mat-card-actions></mat-card-actions>
+        <mat-card-footer></mat-card-footer> -->
+        </mat-card>
+        <!-- comments section START -->
+        <section class="comments">
+            <mat-card>
+                <mat-card-content>
+                    <div fxLayout="row">
+                        <aside class="reviewer-container">
+                            <div class="avatar-container">
+                                <img src="/assets/images/avatars/avatar.png" alt="user">
+                            </div>
+                        </aside>
+                        <section fxFlex>
+                            <span class="bg-rev-txt">Review {{entity.name}} now</span>
+                            <div fxLayout="row" fxLayout.xs="column">
+                                <star-rating size="large" [hoverEnabled]="true" (hoverRatingChange)="onHoverRatingChange($event)" (starClickChange)="onClick($event)"></star-rating>
+                                <a mat-raised-button color="accent" [routerLink]="['/entity/'+entity.id+'/review/new']">Write a review</a>
+                            </div>
+                        </section>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <!-- comments starts here -->
+
+            <br>
+            <app-search-bar #input [inputRef]="myInput" style="display:none;"></app-search-bar>
+            <div fxLayout="row" fxLayoutAlign="end" fxLayoutGap="5px">
+                <button mat-stroked-button color="accent" [matMenuTriggerFor]="menu">
+                    <mat-icon>filter_list</mat-icon>
+                    Filter
+                </button>
+                <mat-menu #menu="matMenu">
+                    <button mat-menu-item fxLayoutAlign="center center">All Stars</button>
+                    <button mat-menu-item fxLayout="row" fxLayoutAlign="center center">5 <mat-icon>star</mat-icon></button>
+                    <button mat-menu-item fxLayout="row" fxLayoutAlign="center center">4 <mat-icon>star</mat-icon></button>
+                    <button mat-menu-item fxLayout="row" fxLayoutAlign="center center">3 <mat-icon>star</mat-icon></button>
+                    <button mat-menu-item fxLayout="row" fxLayoutAlign="center center">2 <mat-icon>star</mat-icon></button>
+                    <button mat-menu-item fxLayout="row" fxLayoutAlign="center center">1 <mat-icon>star</mat-icon></button>
+                </mat-menu>
+                <button mat-stroked-button color="accent" [matMenuTriggerFor]="sortMenu">
+                        <mat-icon>sort</mat-icon>
+                    Sort
+                </button>
+                <mat-menu #sortMenu="matMenu">
+                    <button mat-menu-item>Relevance</button>
+                    <button mat-menu-item>Recent</button>
+                    <button mat-menu-item>Rating: High to Low</button>
+                    <button mat-menu-item>Rating: Low to High</button>
+                </mat-menu>
+            </div>
+
+            <!-- TRY NOT TO USE MAT-TABLE -->
+            <section>
+                <mat-card *ngFor="let review of entityReviews || []">
+                    <mat-card-content>
+                        <div fxLayoutAlign="end" *ngIf="currentUser && review.userId === currentUser.id">
+                            <a mat-icon-button color="accent" [routerLink]="['/entity/'+review.entityId+'/review/edit']">
+                                <mat-icon aria-label="Edit">edit</mat-icon>
+                            </a>
+                            <button mat-icon-button color="accent" (click)="onDelete(review.entityId)">
+                                <mat-icon aria-label="Delete">delete</mat-icon>
+                            </button>
+                        </div>
+                        <div fxLayout="row" fxLayout.xs="column">
+                            <aside class="reviewer-container" fxLayout="column" fxLayout.xs="row">
+                                <div class="avatar-container">
+                                    <img [src]="baseUrl+'/avatar/'+review.avatar" onerror="this.onerror=null;this.src='/assets/images/avatars/avatar.png'"
+                                        alt="user">
+                                </div>
+                                <div>
+                                    <div class="r-name">{{ review.User.username || review.User.email }}</div>
+                                    <div class="r-reviews">{{ review.User.reviewCount }} Reviews</div>
+                                </div>
+                            </aside>
+                            <section fxFlex fxFlex.xs="0 1 auto" fxLayout="column">
+                                <div fxLayout="row" fxLayout.xs="column">
+                                    <star-rating size="medium" fxFlexAlign.xs="start" [rating]="review.rating || 0" [step]="0.5" [readOnly]="true"></star-rating>
+                                    <span fxFlex fxFlex.xs="0 1 auto"></span>
+                                    <span fxFlexAlign="flex-end" fxFlexAlign.xs="start">Published {{ review.createdAt | date: 'fullDate' }}</span>
+                                </div>
+                                <div class="review-title">{{ review.title }}</div>
+                                <app-read-more [text]="review.review" [maxLength]="200" [href]="['/entity/'+entity.id+'/review/'+review.userId]">
+                                </app-read-more>
+                            </section>
+                        </div>
+                        <div fxLayoutAlign="end" fxLayoutGap="10px">
+                            <button mat-icon-button (click)="voteReview(review.id, true)">
+                                <mat-icon [matBadge]="review.upvoteTally" matBadgePosition="above after" matBadgeOverlap="false" matBadgeColor="accent" [matBadgeHidden]="!review.upvoteTally"  aria-label="Upvote" color="primary">thumb_up</mat-icon>
+                            </button>
+                            <button mat-icon-button (click)="voteReview(review.id, false)">
+                                <mat-icon [matBadge]="review.downvoteTally" matBadgePosition="above after" matBadgeOverlap="false" matBadgeColor="accent" [matBadgeHidden]="!review.downvoteTally"  aria-label="Downvote" color="warn">thumb_down</mat-icon>
+                            </button>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+            </section>
+            <mat-paginator [length]="entityTotalReviews" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageChange($event)">
+            </mat-paginator>
+            <!-- TRY NOT TO USE MAT-TABLE -->
+        </section>
+        <!-- comments section END-->
+    </div>
+    <div class="entity-details" fxFlex fxFlex.sm="0 1 auto" fxFlex.xs="0 1 auto">
+        <mat-card>
+            <mat-card-content>
+                <div>
+                    <div *ngFor="let link of entity.links || []">
+                        <a mat-stroked-button color="accent" [href]="link.link" target="_blank">{{ link.name }}</a>
+                    </div>
+                </div>
+                <br>
+                <mat-divider></mat-divider>
+                <br>
+                <div>
+                    <div class="e-title">Category</div>
+                    <div class="e-body">{{ entity.category | capitalize}}</div>
+                </div>
+                <div *ngIf="entity.address || entity.email || entity.phone">
+                    <div class="e-title">Contact Information</div>
+                    <div class="e-body">
+                        <ul>
+                            <li fxLayout="row" *ngIf="entity.address">
+                                <span fxFlexAlign.xs="start">Main Office</span>
+                                <span fxFlex>{{ entity.address }}</span>
+                            </li>
+                            <li fxLayout="row" *ngIf="entity.phone">
+                                <span>Tel</span>
+                                <span fxFlex>{{ entity.phone }}</span>
+                            </li>
+                            <li fxLayout="row" *ngIf="entity.email">
+                                <span>Email Address</span>
+                                <span fxFlex>{{ entity.email }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </mat-card-content>
+            <!-- <mat-card-actions>actions</mat-card-actions>
+        <mat-card-footer>footer</mat-card-footer> -->
+        </mat-card>
+    </div>
+</div>

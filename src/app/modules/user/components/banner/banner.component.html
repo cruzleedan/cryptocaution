@@ -1,0 +1,26 @@
+<div class="summary-wrapper">
+    <div class="max-width-1024" *ngIf="user">
+        <div fxLayout="row" fxLayout.lt-md="column">
+            <div class="user-info" fxLayoutAlign.lt-md="center center" fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column" fxFlex
+                fxFlex.lt-md="0 1 auto">
+                <div class="avatar-container">
+                    <img [src]="baseUrl+'/avatar/'+user.id+'/'+user.avatar" alt="Avatar" onerror="this.onerror=null;this.src='/assets/images/avatars/avatar.png'">
+                </div>
+                <div class="user-summary-info">
+                    <div class="username">{{ user.username }}</div>
+                    <div class="location">{{ user.email }}</div>
+                </div>
+            </div>
+            <div class="user-summary-stats" fxLayout="row" fxLayoutAlign="center center" fxLayout="row">
+                <div class="user-reviews">
+                    <span class="total-reviews">{{ user.reviewsCount || 0 }}</span>
+                    <a href="#" [routerLink]="['/user/reviews']">Review{{user.reviewsCount > 1 ? 's' : ''}}</a>
+                </div>
+                <div class="user-score">
+                    <span class="total-score">{{ user.score || 0 }}</span>
+                    <span>Point{{user.score > 1 ? 's' : ''}}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

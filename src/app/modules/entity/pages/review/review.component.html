@@ -1,0 +1,42 @@
+<div class="main-container light">
+    <div class="max-width-740">
+        <div fxLayout="column">
+            <div fxLayout="row" fxLayoutGap="10px">
+                <div class="avatar-container">
+                    <img [src]="'/assets/images/avatars/'+review.avatar" onerror="this.onerror=null;this.src='/assets/images/avatars/avatar.png'"
+                        alt="user">
+                </div>
+                <div>
+                    <div class="r-name">{{ user.username }}</div>
+                    <div class="r-reviews"> Reviews</div>
+                    <div> Published {{ review.createdAt | date: 'fullDate' }}</div>
+                </div>
+            </div>
+            <a class="entity-container" [routerLink]="['/entity/'+entity.id]">
+                <div fxLayout="row">
+                    <app-read-more fxFlex [text]="entity.name" [maxLength]="200">
+                    </app-read-more>
+                    <div fxLayout="row">
+                        <star-rating fxFlexAlign="start" size="medium" [readOnly]="true" [rating]="entity.rating"></star-rating>
+                        <mat-icon [matBadge]="entity.reviewCount" matBadgePosition="above after">comment</mat-icon>
+                    </div>
+                </div>
+                <div>{{ entity.desc }}</div>
+            </a>
+            <div>
+                <div class="review-title">{{ review.title }}</div>
+                <div>review.review</div>
+            </div>
+        </div>
+        <div fxLayoutAlign="end" fxLayoutGap="10px">
+            <button mat-icon-button>
+                <mat-icon [matBadge]="review.upvoteTally" matBadgePosition="above after" matBadgeOverlap="false" matBadgeColor="accent" [matBadgeHidden]="!review.upvoteTally"
+                    aria-label="Upvote" color="primary">thumb_up</mat-icon>
+            </button>
+            <button mat-icon-button>
+                <mat-icon [matBadge]="review.downvoteTally" matBadgePosition="above after" matBadgeOverlap="false" matBadgeColor="accent"
+                    [matBadgeHidden]="!review.downvoteTally" aria-label="Downvote" color="warn">thumb_down</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>

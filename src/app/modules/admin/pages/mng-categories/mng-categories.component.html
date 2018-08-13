@@ -1,0 +1,6 @@
+<div fxLayout="row" fxLayout="row wrap" *ngIf="!isEdit">
+    <app-categories-tbl fxFlex></app-categories-tbl>
+</div>
+<div fxLayout="row" fxLayout="row wrap" *ngIf="isEdit">
+    <app-categories-form fxFlex [category]="category"></app-categories-form>
+</div>

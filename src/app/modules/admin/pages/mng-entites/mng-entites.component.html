@@ -1,0 +1,128 @@
+<mat-progress-bar *ngIf="uploading" mode="determinate" [value]="uploadProgress | async" color="warn">
+</mat-progress-bar>
+<div class="main-container">
+    <div class="max-width-740">
+        <form [formGroup]="entityForm" (ngSubmit)="handleSubmit()" #form="ngForm">
+            <mat-card>
+                <mat-card-content>
+                    <div fxLayout="row" fxLayoutGap="10px" fxLayout.lt-md="column">
+                        <input type="file" (change)="fileChangeEvent($event)" #entityImgFile style="display: none">
+                        <div class="img-cont">
+                            <mat-icon fontSet="fa" fontIcon="fa-camera" (click)="entityImgFile.click()"></mat-icon>
+                            <img [src]="croppedImage" *ngIf="croppedImage">
+                        </div>
+                        <div fxFlex fxLayout="column" fxFlex.lt-md="0 1 auto">
+                            <mat-form-field>
+                                <mat-label>Name</mat-label>
+                                <input matInput placeholder="Entity Name" required formControlName="name">
+                            </mat-form-field>
+                            <mat-form-field>
+                                <mat-label>Category</mat-label>
+                                <mat-icon matPrefix>search</mat-icon>
+                                <input type="text" placeholder="keyword" aria-label="Find" appEnforcedInputs [matAutocomplete]="auto" matInput [formControl]="searchFormControl"
+                                    [matAutocomplete]="auto" (keyup)="searchKeyword$.next($event.target.value)">
+                                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="search($event)" [displayWith]="searchDisplayFn">
+                                    <mat-option *ngFor="let option of filteredOptions " [value]="option">
+                                        {{option.category}}
+                                    </mat-option>
+                                </mat-autocomplete>
+                                <button mat-button *ngIf="entityForm.get('categoryId').value" matSuffix mat-icon-button aria-label="Clear" (click)="entityForm.get('categoryId').setValue('')">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+                            </mat-form-field>
+                            <div fxLayout="row" fxLayoutGap="10px" fxLayout.lt-md="column">
+                                <mat-form-field>
+                                    <mat-label>Email</mat-label>
+                                    <input matInput placeholder="example@example.com" formControlName="email" [errorStateMatcher]="matcher">
+                                    <mat-hint></mat-hint>
+                                    <mat-error *ngIf="entityForm.get('email').hasError('email') && !entityForm.get('email').hasError('required')">
+                                        Please enter a valid email address
+                                    </mat-error>
+                                    <mat-error *ngIf="entityForm.get('email').hasError('required')">
+                                        Email is
+                                        <strong>required</strong>
+                                    </mat-error>
+                                </mat-form-field>
+                                <mat-form-field>
+                                    <span matPrefix>+1 &nbsp;</span>
+                                    <input type="tel" matInput placeholder="Telephone" formControlName="phone">
+                                    <mat-icon matSuffix>mode_edit</mat-icon>
+                                </mat-form-field>
+                            </div>
+                            <mat-form-field>
+                                <mat-label>Address</mat-label>
+                                <input matInput placeholder="Address" formControlName="address">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <br>
+            <mat-card>
+                <mat-card-title>Links</mat-card-title>
+                <mat-card-content>
+                    <form formArrayName="links" *ngFor="let link of getControls(entityForm, 'links'); let i=index">
+                        <div [formGroupName]="i" fxLayout="row" fxLayoutGap="10px" fxLayout.lt-md="column">
+                            <mat-form-field fxFlex fxFlex.lt-md="0 1 auto">
+                                <input matInput placeholder="name" formControlName="name">
+                            </mat-form-field>
+                            <mat-form-field fxFlex fxFlex.lt-md="0 1 auto">
+                                <input matInput placeholder="link" formControlName="link">
+                            </mat-form-field>
+                            <div fxLayoutAlign="end">
+                                <button mat-mini-fab color="warn" (click)="removeLink(i)">
+                                    <mat-icon aria-label="Remove">remove</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                    <div fxLayoutAlign="end">
+                        <button type="button" mat-mini-fab (click)="addLink()" color="primary">
+                            <mat-icon>add</mat-icon>
+                        </button>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+            <br>
+            <mat-card>
+                <mat-card-content>
+                    <div fxLayout="column">
+                        <!-- <mat-form-field>
+                                <mat-label>Description</mat-label>
+                                <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="5" cdkAutosizeMaxRows="50" placeholder="Entity Description"
+                                    required formControlName="desc">
+                                </textarea>
+                            </mat-form-field> -->
+                        <quill-editor [style]="{height: '200px'}" formControlName="desc">
+                            <div quill-editor-toolbar>
+                                <span class="ql-formats">
+                                    <button class="ql-bold" [title]="'Bold'"></button>
+                                </span>
+                                <span class="ql-formats">
+                                    <select class="ql-align" [title]="'Aligment'">
+                                        <option selected></option>
+                                        <option value="center"></option>
+                                        <option value="right"></option>
+                                        <option value="justify"></option>
+                                    </select>
+                                </span>
+                                <span class="ql-formats">
+                                    <button class="ql-link" [title]="'Link'"></button>
+                                    <button class="ql-image" [title]="'Image'"></button>
+                                    <button class="ql-video" [title]="'Embed Video'"></button>
+                                </span>
+                            </div>
+                        </quill-editor>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <mat-card>
+                <mat-card-content fxLayoutAlign="end" fxLayoutGap="5px">
+                    <button type='submit' mat-stroked-button color="accent" [disabled]='!entityForm.valid'>Submit</button>
+                    <button type='button' mat-stroked-button color="accent" (click)='resetForm()'>Reset</button>
+                </mat-card-content>
+            </mat-card>
+        </form>
+    </div>
+</div>

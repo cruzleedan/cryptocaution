@@ -1,0 +1,6 @@
+<div fxLayout="row" fxLayout="row wrap" *ngIf="!isEdit">
+    <app-users-tbl fxFlex></app-users-tbl>
+</div>
+<div fxLayout="row" fxLayout="row wrap" *ngIf="isEdit">
+    <app-user-form fxFlex [user]="user"></app-user-form>
+</div>

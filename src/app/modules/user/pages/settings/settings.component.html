@@ -1,0 +1,26 @@
+<app-banner></app-banner>
+
+<div class="max-width-1024">
+    <mat-tab-group mat-stretch-tabs>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <mat-icon>person</mat-icon>
+                Profile
+            </ng-template>
+            <br>
+            <div class="max-width-740">
+                <app-profile></app-profile>
+            </div>
+        </mat-tab>
+        <mat-tab>
+            <ng-template mat-tab-label>
+                <mat-icon>lock_open</mat-icon>
+                Password Reset
+            </ng-template>
+            <br>
+            <div class="max-width-740">
+                <app-password></app-password>
+            </div>
+        </mat-tab>
+    </mat-tab-group>
+</div>

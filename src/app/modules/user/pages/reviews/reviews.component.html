@@ -1,0 +1,62 @@
+<app-banner></app-banner>
+<div class="max-width-740">
+    <app-loading-spinner fxLayout="row" fxLayoutAlign="center center" *ngIf="loading"></app-loading-spinner>
+    <h1 class="txt-center" *ngIf="!loading && (!userReviews || !userReviews.length)">You don't have any reviews</h1>
+    <ng-container *ngIf="userReviews && userReviews.length">
+        <section>
+            <mat-form-field>
+                <input type="text" matInput [formControl]="searchControl">
+            </mat-form-field>
+            <mat-card *ngFor="let review of userReviews">
+                <mat-card-subtitle>
+                    <div fxFlex fxFlex.xs="0 1 auto">
+                        Review of {{ review.Entity?.name }}
+                    </div>
+                    <div fxLayoutAlign="end">
+                        <a mat-icon-button color="accent" [routerLink]="['/entity/'+review.entityId+'/review/edit']">
+                            <mat-icon aria-label="Edit">edit</mat-icon>
+                        </a>
+                        <button mat-icon-button color="accent" (click)="onDelete(review.entityId)">
+                            <mat-icon aria-label="Delete">delete</mat-icon>
+                        </button>
+                    </div>
+                </mat-card-subtitle>
+                <mat-card-content>
+                    <div fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
+                        <aside class="reviewer-container" fxLayout="column" fxLayout.xs="row">
+                            <div class="avatar-container">
+                                <img [src]="baseUrl+'/avatar/'+user.id+'/'+user.avatar" onerror="this.onerror=null;this.src='/assets/images/avatars/avatar.png'" alt="user">
+                            </div>
+                            <div class="txt-center">
+                                <div class="r-name">{{ user.username }}</div>
+                                <div class="r-reviews">{{ user.reviewsCount }} Reviews</div>
+                            </div>
+                        </aside>
+                        <section fxFlex fxFlex.xs="0 1 auto" fxLayout="column">
+                            <div fxLayout="row" fxLayout.xs="column">
+                                <star-rating size="medium" fxFlexAlign.xs="start" [rating]="review.rating" [step]="0.5" [readOnly]="true"></star-rating>
+                                <span fxFlex fxFlex.xs="0 1 auto"></span>
+                                <span fxFlexAlign="flex-end" fxFlexAlign.xs="start">Published {{ review.createdAt | dateTimeMomentFormat:'YYYY-MM-DD HH:mm:ss' }}</span>
+                            </div>
+                            <div class="review-title">{{ review.title }}</div>
+                            <app-read-more [text]="review.review" [maxLength]="200">
+                            </app-read-more>
+                        </section>
+                    </div>
+                    <div fxLayoutGap="10px" fxLayoutAlign="end">
+                        <button mat-icon-button>
+                            <mat-icon [matBadge]="review.upvoteTally" matBadgePosition="above after" matBadgeOverlap="false" matBadgeColor="accent" [matBadgeHidden]="!review.upvoteTally"
+                                aria-label="Upvote" color="primary">thumb_up</mat-icon>
+                        </button>
+                        <button mat-icon-button>
+                            <mat-icon [matBadge]="review.downvoteTally" matBadgePosition="above after" matBadgeOverlap="false" matBadgeColor="accent"
+                                [matBadgeHidden]="!review.downvoteTally" aria-label="Downvote" color="warn">thumb_down</mat-icon>
+                        </button>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </section>
+        <mat-paginator [length]="user.reviewsCount" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageChange($event)">
+        </mat-paginator>
+    </ng-container>
+</div>

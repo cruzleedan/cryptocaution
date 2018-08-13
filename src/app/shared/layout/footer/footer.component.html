@@ -1,0 +1,44 @@
+<footer>
+  <section>
+    <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="20%" fxLayoutAlign="center stretch">
+      <div fxFlexOrder="1">
+        <div class="col-title">COMPANY</div>
+        <mat-nav-list>
+          <mat-list-item role="listitem" [routerLink]="['/about']">About</mat-list-item>
+          <mat-list-item role="listitem" [routerLink]="['/services']">Services</mat-list-item>
+          <mat-list-item role="listitem" [routerLink]="['/culture']">Our Culture</mat-list-item>
+          <mat-list-item role="listitem" [routerLink]="['/team']">Team</mat-list-item>
+        </mat-nav-list>
+      </div>
+      <div fxFlexOrder="2">
+        <div class="col-title">MORE LINKS</div>
+        <mat-nav-list>
+          <mat-list-item role="listitem" [routerLink]="['/terms']">Terms & Conditions</mat-list-item>
+          <mat-list-item role="listitem" [routerLink]="['/careers']">Our Careers</mat-list-item>
+          <mat-list-item role="listitem" [routerLink]="['/faq']">Support & FAQ's</mat-list-item>
+          <mat-list-item role="listitem" [routerLink]="['/login']">Login</mat-list-item>
+        </mat-nav-list>
+      </div>
+      <div fxFlexOrder="3">
+        <div class="col-title">GET IN TOUCH</div>
+        <mat-nav-list>
+          <a href="https://www.facebook.com/groups/cryptoforbeginners/" target="_blank">
+            <mat-icon fontSet="fa" fontIcon="fa-facebook"></mat-icon>
+          </a>
+          <a href="https://twitter.com/btcforbeginners/" target="_blank">
+            <mat-icon fontSet="fa" fontIcon="fa-twitter"></mat-icon>
+          </a>
+          <a href="https://www.instagram.com/btcforbeginners/" target="_blank">
+            <mat-icon fontSet="fa" fontIcon="fa-instagram"></mat-icon>
+          </a>
+          <a href="https://www.youtube.com/c/bitcoinforbeginners" target="_blank">
+            <mat-icon fontSet="fa" fontIcon="fa-youtube"></mat-icon>
+          </a>
+        </mat-nav-list>
+      </div>
+    </div>
+  </section>
+  <div style="text-align:center">
+    CryptoCaution &copy; 2018.
+  </div>
+</footer>

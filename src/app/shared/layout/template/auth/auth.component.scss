@@ -1,0 +1,72 @@
+.hidden {
+    display: none;
+}
+
+/* start of searchbox */
+
+.search-box {
+    width: 100%;
+    padding: 0 0 0 5%;
+    height: 100%;
+    mat-form-field.mat-form-field {
+        font-size: 14px;
+    }
+    .half-width {
+        width: 50%;
+    }
+    .full-width {
+        width: 100%;
+    }
+}
+
+/* end of searchbox */
+
+.sidenav-container {
+    height: 100%;
+}
+.sign-in-container {
+    background: url('../../../../../assets/login11.jpg');
+    background-size: cover;
+}
+.sidenav {
+    width: 200px;
+    box-shadow: 3px 0 6px rgba(0, 0, 0, .24);
+}
+
+mat-toolbar a,
+mat-toolbar mat-list-item {
+    display: inline-block;
+    margin: 0 10px;
+    color: white;
+    text-decoration: none;
+}
+
+mat-toolbar mat-list-item {
+    float: left;
+}
+mat-toolbar {
+    transition: all 200ms ease-in-out;
+}
+.bg-transparent {
+    background: transparent;
+    background-color: transparent;
+    color: #fff;
+}
+.header {
+    position: fixed;
+    display: flex;
+    flex: 1;
+    z-index: 1000;
+    width: 100%;
+    transition: transform 0.25s ease-in-out;
+}
+
+.header-unpin {
+    /* display: none; */
+    transform: translateY(-65px);
+}
+
+.header-pin {
+    /* display: block; */
+    transform: translateY(0);
+}

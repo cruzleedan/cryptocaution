@@ -1,0 +1,64 @@
+:host {
+    display: flex;
+    width: 98%;
+    height: 100%;
+    margin: 0 auto;
+    align-items: center;
+    &:first-child {
+        div {
+            cursor: pointer;
+        }
+    }
+}
+app-search-bar {
+    font-size: 14px;
+}
+
+.search-bar-cont {
+    flex: 2;
+}
+
+.header-spacer {
+    flex: 1 1 auto;
+}
+
+.full-width {
+    flex: none;
+    width: 100%;
+}
+.full-height {
+    height: 100%;
+    place-content: center;
+    align-items: center;
+    flex-direction: row;
+    box-sizing: border-box;
+    display: flex;
+}
+.full-height.active {
+    border-bottom: 2px solid #fff;
+    border-radius: 0;
+}
+.avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 25px;
+    background-color: #fff;
+}
+
+.menu-avatar-container {
+    padding: 0 16px;
+}
+
+.menu-avatar-container .avatar {
+    border-radius: 4px;
+}
+
+.search-box {
+    width: 100%;
+}
+
+mat-form-field.search-bar-field {
+    font-size: 15px;
+    width: 100%;
+}
+
