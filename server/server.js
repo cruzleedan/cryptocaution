@@ -11,7 +11,6 @@ const v1 = require('./routes/v1');
 const app = express();
 
 app.use(cors());
-app.use(express.static(__dirname + '../dist/cryptocaution'));
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({
