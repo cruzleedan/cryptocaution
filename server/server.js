@@ -37,6 +37,13 @@ models.sequelize.authenticate().then(() => {
 if(CONFIG.app === 'dev') {
     // app.use(function(req,res,next){setTimeout(next,3000)});
 }
+
+app.use(express.static(path.join(__dirname, '/../dist/cryptocaution')))
+app.get('/*', function(req, res){
+    console.log('let angular handle routes')
+    res.sendFile(path.join(__dirname, '/../dist/cryptocaution/index.html'));
+});
+
 app.use('/static/avatar',express.static(path.join(__dirname, 'public/images/avatars')));
 app.use('/static/entity',express.static(path.join(__dirname, 'public/images/entities')));
 app.use(
@@ -62,10 +69,6 @@ app.use(
     }
 );
 app.use('/api/v1', v1);
-
-app.get('/*', function(req, res){
-    res.send(path.join(__dirname + '../dist/cryptocaution/index.html'));
-});
 
 app.use('/', function (req, res) {
     res.statusCode = 200; //send the appropriate status code
