@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
-    "start": "./node_modules/.bin/ng serve -o --proxy-config ./proxy.json --ssl --ssl-key ./ssl/localhost.cryptocaution.com.key --ssl-cert ./ssl/localhost.cryptocaution.com.cert",
+    "start": "node /server/www.js",
+    "postinstall": "ng build --aot -prod",
     "server": "node local.js",
     "build": "ng build",
     "test": "ng test",
