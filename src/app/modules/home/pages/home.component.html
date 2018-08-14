@@ -27,7 +27,7 @@
                     <app-read-more [text]="entity.desc" [maxLength]="100" [href]="'/entity/'+entity.id"></app-read-more>
                 </div>
                 <div>
-                    <a mat-stroked-button [routerLink]="'/entity/'+entity.id+'/new'">Write a review</a>
+                    <a mat-stroked-button [routerLink]="'/entity/'+entity.id+'/review/new'">Write a review</a>
                 </div>
                 <div *ngIf="entity.Reviews && entity.Reviews.length">
                     <div *ngFor="let review of entity.Reviews" fxLayout="column">
@@ -64,7 +64,7 @@
                     <app-read-more [text]="entity.desc" [maxLength]="100" [href]="'/entity/'+entity.id"></app-read-more>
                 </div>
                 <div>
-                    <a mat-stroked-button [routerLink]="'/entity/'+entity.id+'/new'">Write a review</a>
+                    <a mat-stroked-button [routerLink]="'/entity/'+entity.id+'/review/new'">Write a review</a>
                 </div>
                 <div *ngIf="entity.Reviews && entity.Reviews.length">
                     <div *ngFor="let review of entity.Reviews" fxLayout="row" fxLayout.xs="column">
@@ -97,7 +97,7 @@
                     <app-read-more [text]="entity.desc" [maxLength]="100" [href]="'/entity/'+entity.id"></app-read-more>
                 </div>
                 <div>
-                    <a mat-stroked-button [routerLink]="'/entity/'+entity.id+'/new'">Write a review</a>
+                    <a mat-stroked-button [routerLink]="'/entity/'+entity.id+'/review/new'">Write a review</a>
                 </div>
                 <div *ngIf="entity.Reviews && entity.Reviews.length">
                     <div *ngFor="let review of entity.Reviews" fxLayout="row" fxLayout.xs="column">

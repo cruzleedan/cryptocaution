@@ -3,7 +3,7 @@ import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { MatMenuTrigger } from '@angular/material';
-import { Router, NavigationEnd } from '@angular/router';
+import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { UserService } from '../../../../core';
 
 @Component({
@@ -15,7 +15,7 @@ export class AuthComponent implements OnInit, AfterViewInit, AfterViewChecked, O
     isHome: boolean;
     isAdmin: boolean;
     isSignUpLogin: boolean;
-    showHeader: boolean;
+    showHeader = true;
     showFooter: boolean;
     lastKnownScrollY: number;
     currentScrollY: number;
@@ -41,11 +41,29 @@ export class AuthComponent implements OnInit, AfterViewInit, AfterViewChecked, O
     constructor(
         private breakpointObserver: BreakpointObserver,
         private router: Router,
-        private userService: UserService
+        private userService: UserService,
+        private route: ActivatedRoute
     ) {
+        this.isHome = route.url['value'] && route.url['value'] instanceof Array ? !!(route.url['value'][0]['path'] === '') : false;
+        console.log('Activated Route', route);
+
         this.userService.isAdmin.subscribe(isAdmin => {
             this.isAdmin = isAdmin;
+            if (!this.isAdmin && this.showHeader) {
+                document.addEventListener('scroll', this.scrollEvent, false);
+                this.navBar();
+            } else {
+                document.removeEventListener('scroll', this.scrollEvent);
+            }
         });
+    }
+
+    ngOnInit() {
+    }
+    scrollEvent = () => {
+        return this.onScroll(this);
+    }
+    ngAfterViewInit() {
         this.navigationSubscription = this.router.events.subscribe((val) => {
             console.log('router event ', val);
 
@@ -62,19 +80,9 @@ export class AuthComponent implements OnInit, AfterViewInit, AfterViewChecked, O
                 console.log('show header', this.showHeader);
                 if (!this.isAdmin && this.showHeader) {
                     this.navBar();
-                    document.addEventListener('scroll', () => {
-                        return this.onScroll(this);
-                    }, false);
                 }
             }
         });
-    }
-
-    ngOnInit() {
-    }
-
-    ngAfterViewInit() {
-
     }
     ngAfterViewChecked() {
         this.eleHeader = this.header ? this.header.nativeElement : undefined;

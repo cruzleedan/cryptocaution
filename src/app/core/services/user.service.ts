@@ -20,10 +20,10 @@ export class UserService {
     private currentUserSubject = new BehaviorSubject<User>({} as User);
     public currentUser = this.currentUserSubject.asObservable().pipe(distinctUntilChanged());
 
-    private isAuthenticatedSubject = new BehaviorSubject<boolean>(true);
+    private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
     public isAuthenticated = this.isAuthenticatedSubject.asObservable();
 
-    private isAdminSubject = new BehaviorSubject<boolean>(true);
+    private isAdminSubject = new BehaviorSubject<boolean>(false);
     public isAdmin = this.isAdminSubject.asObservable();
 
     private loadingSubject = new BehaviorSubject<boolean>(false);

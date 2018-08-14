@@ -4,9 +4,9 @@
 
 export const environment = {
     production: false,
-    baseUrl: 'https://cryptocautionapi.herokuapp.com',
-    baseApiUrl: 'https://cryptocautionapi.herokuapp.com/api/v1',
-    domain: 'https://cryptocautionapi.herokuapp.com',
+    baseUrl: 'http://localhost:3000',
+    baseApiUrl: 'http://localhost:3000/api/v1',
+    domain: 'localhost',
     api: {
         login: 'api/auth/login',
         validateToken: 'api/auth/validatetoken'

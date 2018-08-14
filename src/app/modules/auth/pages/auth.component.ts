@@ -66,14 +66,16 @@ export class AuthComponent implements OnInit {
             .subscribe(
                 resp => {
                     console.log('resp', resp);
-                    if (resp['success']) {
+                    if (resp && resp['success']) {
                         this.router.navigateByUrl('/');
-                    } else if (resp['error'] && resp['error']['error']) {
+                    } else if (resp && resp['error'] && resp['error']['error']) {
                         this.authError = resp['error']['error'] || 'Something went wrong while logging you in';
-                    } else if (resp['error'] && resp['error']['errors']) {
+                    } else if (resp && resp['error'] && resp['error']['errors']) {
                         resp['error']['errors'].forEach(error => {
                             this.authForm.get(error.param).setErrors({server: error.msg});
                         });
+                    } else {
+                        this.authError = 'Something went wrong while logging you in';
                     }
                 }
             );

@@ -12,7 +12,8 @@ export class TemplateComponent implements OnInit {
     constructor(
         private router: Router,
         private userService: UserService
-    ) {}
+    ) {
+    }
     ngOnInit() {
 
     }

@@ -1,27 +1,32 @@
-.review-form-container .label {
-    font-size: 18px;
-    font-weight: 700;
-    padding: 0 0 5px;
-    display: block;
-    clear: both;
-    margin: 0;
-    text-align: left;
-    color: #7e7e7e;
-    white-space: normal;
-}
-.rating-label {
-    max-height: 100%;
-    color: #7e7e7e;
-    font-size: 14px;
-    font-style: italic;
-    line-height: 1.42857;
-}
-h1 {
-    color: #878787;
-}
-.warn {
-    background-color: #ffc080;
-    color: #675353;
-    padding: 5px;
-    border-radius: 2px;
+:host {
+    .main-container {
+        padding-bottom: 65px;
+    }
+    .review-form-container .label {
+        font-size: 18px;
+        font-weight: 700;
+        padding: 0 0 5px;
+        display: block;
+        clear: both;
+        margin: 0;
+        text-align: left;
+        color: #7e7e7e;
+        white-space: normal;
+    }
+    .rating-label {
+        max-height: 100%;
+        color: #7e7e7e;
+        font-size: 14px;
+        font-style: italic;
+        line-height: 1.42857;
+    }
+    h1 {
+        color: #878787;
+    }
+    .warn {
+        background-color: #ffc080;
+        color: #675353;
+        padding: 5px;
+        border-radius: 2px;
+    }
 }

@@ -1,6 +1,6 @@
 import { Directive, TemplateRef, ViewContainerRef, OnInit, Input } from '@angular/core';
 import { UserService } from '../../core';
-import { take, debounceTime } from 'rxjs/operators';
+import { take, debounceTime, last, map, distinctUntilChanged } from 'rxjs/operators';
 
 @Directive({
     selector: '[appShowAuthed]'
@@ -17,7 +17,8 @@ export class ShowAuthedDirective implements OnInit {
 
     ngOnInit() {
         this.userService.isAuthenticated.pipe(
-            // take(1)
+            distinctUntilChanged(),
+            debounceTime(50)
         )
             .subscribe(isAuthenticated => {
                 console.log('ShowAuthedDirective isAuthenticated', isAuthenticated);
