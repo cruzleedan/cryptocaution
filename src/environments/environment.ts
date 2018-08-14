@@ -4,9 +4,9 @@
 
 export const environment = {
     production: false,
-    baseUrl: 'http://cryptoapi.us-west-2.elasticbeanstalk.com',
-    baseApiUrl: 'http://cryptoapi.us-west-2.elasticbeanstalk.com/api/v1',
-    domain: 'http://cryptoapi.us-west-2.elasticbeanstalk.com',
+    baseUrl: 'https://cryptocautionapi.herokuapp.com',
+    baseApiUrl: 'https://cryptocautionapi.herokuapp.com/api/v1',
+    domain: 'https://cryptocautionapi.herokuapp.com',
     api: {
         login: 'api/auth/login',
         validateToken: 'api/auth/validatetoken'
