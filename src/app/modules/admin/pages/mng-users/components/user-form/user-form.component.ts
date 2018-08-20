@@ -8,6 +8,7 @@ import { AlertifyService, UserService, User } from '../../../../../../core';
 import { ValidationMessage } from '../../../../../../core/validators/validation.message';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { CustomBlob } from '../../../../../../shared/helpers/custom-blob';
+import { PasswordValidator } from '../../../../../../core/validators/password.validator';
 
 @Component({
     selector: 'app-user-form',
@@ -28,6 +29,10 @@ export class UserFormComponent implements OnInit {
     submitting: boolean;
     userForm: FormGroup;
     matcher;
+    showCurrPass: boolean;
+    showNewPass: boolean;
+    showConfPass: boolean;
+    matchingPass: FormGroup;
     @ViewChild('autosize') autosize: CdkTextareaAutosize;
     @ViewChild('form')
     form: NgForm;
@@ -52,8 +57,21 @@ export class UserFormComponent implements OnInit {
         private alertifyService: AlertifyService
     ) {
         this.matcher = new ShowOnDirtyErrorStateMatcher;
+        this.matchingPass = new FormGroup({
+            new: new FormControl('',
+                Validators.compose([
+                    Validators.minLength(5),
+                    Validators.required,
+                    // this is for the letters (both uppercase and lowercase) and numbers validation
+                    Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]+$')
+                ])
+            ),
+            confirm: new FormControl('', [Validators.required])
+        }, {validators: PasswordValidator.areEqual});
         this.userForm = this.fb.group({
             'username': new FormControl('', [Validators.required, Validators.minLength(3)]),
+            'email': new FormControl('', [Validators.required, Validators.email]),
+            matchedPassword: this.matchingPass,
             'firstname': new FormControl(''),
             'lastname': new FormControl(''),
             'gender': new FormControl(''),
@@ -77,7 +95,7 @@ export class UserFormComponent implements OnInit {
             map(username => {
                 username = username.trim();
                 if (this.isNew) {
-                    return true;
+                    return username;
                 } else if (this.isEdit) {
                     const isChanged = username && username !== this.user.username;
                     console.log('current ', username, ' username ', this.user.username, ' ', isChanged);

@@ -143,6 +143,7 @@ export class AuthFormComponent implements OnInit {
         if (this.authForm.contains('email')) {
             this.authForm.removeControl('email');
         }
+        this.authType = 'login';
     }
     signUp() {
         this.isLogin = false;
@@ -155,5 +156,6 @@ export class AuthFormComponent implements OnInit {
                 Validators.email,
             ]));
         }
+        this.authType = 'register';
     }
 }

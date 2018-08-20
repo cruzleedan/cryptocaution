@@ -113,7 +113,7 @@ export class UserService {
     }
 
     attemptAuth(type, credentials): Observable<Object> {
-        console.log('attemptAuth called');
+        console.log('attemptAuth called', type);
 
         const route = (type === 'login') ? '/login' : '';
         return this.apiService.post('/users' + route, credentials, null, true)
