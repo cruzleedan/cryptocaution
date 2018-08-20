@@ -2,7 +2,7 @@
     <div fxFlex="2 2 calc(10em +10px)" fxFlex.xs="0 1 auto" fxLayout="row" fxLayout.xs="column" fxLayoutAlign.xs="stretch center"
         fxLayoutGap="20px">
         <div class="entity-icon">
-            <img [src]="baseUrl+'/entity/'+entity.id+'/'+entity.image" [alt]="entity.image" onerror="this.onerror=null;this.src='/assets/images/image-not-found.png';">
+            <img [src]="baseUrl+'/entity/'+entity.id+'/'+entity.image"  onerror="this.onerror=null;this.src='/assets/images/image-not-found.png';">
         </div>
         <div fxFlex fxFlex.xs="0 1 auto" fxLayout="column" fxLayoutAlign.xs="stretch center">
             <div class="name">{{ entity.name }}</div>
@@ -23,8 +23,16 @@
 
             <div *ngIf="!rated">Not rated</div>
 
-            <div *ngIf="entityTotalReviews"><span class="review-cnt-txt">{{ entityTotalReviews }} Review{{ entityTotalReviews > 1 ? 's': '' }}</span></div>
+            <div *ngIf="entityTotalReviews">
+                <span class="review-cnt-txt">{{ entityTotalReviews }} Review{{ entityTotalReviews > 1 ? 's': '' }}</span>
+            </div>
             <div *ngIf="!entityTotalReviews"> No Review</div>
+            <div *ngIf="(currentUser && entity.userId === currentUser.id) || isAdmin">
+                <a mat-icon-button color="accent" [routerLink]="['/entity/'+entity.id+'/edit']">
+                    <mat-icon aria-label="Edit">edit</mat-icon>
+                </a>
+                <app-entity-delete [entity]="entity" (afterDelete)="afterEntityDelete($event)"></app-entity-delete>
+            </div>
         </div>
     </div>
     <div fxFlex fxFlex.xs="0 1 auto" fxLayout="column" class="details-container">
@@ -70,7 +78,9 @@
         <mat-card>
             <mat-card-title>{{entity.name}}</mat-card-title>
             <!-- <mat-card-subtitle></mat-card-subtitle> -->
-            <mat-card-content><div [innerHtml]="entityDesc"></div></mat-card-content>
+            <mat-card-content>
+                <div [innerHtml]="entityDesc"></div>
+            </mat-card-content>
             <!-- <mat-card-actions></mat-card-actions>
         <mat-card-footer></mat-card-footer> -->
         </mat-card>
@@ -99,47 +109,67 @@
             <br>
             <app-search-bar #input [inputRef]="myInput" style="display:none;"></app-search-bar>
             <div fxLayout="row" fxLayoutAlign="end" fxLayoutGap="5px">
-                <button mat-stroked-button color="accent" [matMenuTriggerFor]="menu">
+                <button mat-icon-button *ngIf="filter" (click)="clearFilters()" matTooltip="Clear Filters">
+                    <mat-icon>clear</mat-icon>
+                </button>
+                <button mat-icon-button color="accent" [matMenuTriggerFor]="menu" matTooltip="Filter">
                     <mat-icon>filter_list</mat-icon>
-                    Filter
                 </button>
                 <mat-menu #menu="matMenu">
                     <button mat-menu-item fxLayoutAlign="center center">All Stars</button>
-                    <button mat-menu-item fxLayout="row" fxLayoutAlign="center center">5 <mat-icon>star</mat-icon></button>
-                    <button mat-menu-item fxLayout="row" fxLayoutAlign="center center">4 <mat-icon>star</mat-icon></button>
-                    <button mat-menu-item fxLayout="row" fxLayoutAlign="center center">3 <mat-icon>star</mat-icon></button>
-                    <button mat-menu-item fxLayout="row" fxLayoutAlign="center center">2 <mat-icon>star</mat-icon></button>
-                    <button mat-menu-item fxLayout="row" fxLayoutAlign="center center">1 <mat-icon>star</mat-icon></button>
+                    <button mat-menu-item fxLayout="row" fxLayoutAlign="center center" (click)="filterStars(5)">5
+                        <mat-icon>star</mat-icon>
+                    </button>
+                    <button mat-menu-item fxLayout="row" fxLayoutAlign="center center" (click)="filterStars(4)">4
+                        <mat-icon>star</mat-icon>
+                    </button>
+                    <button mat-menu-item fxLayout="row" fxLayoutAlign="center center" (click)="filterStars(3)">3
+                        <mat-icon>star</mat-icon>
+                    </button>
+                    <button mat-menu-item fxLayout="row" fxLayoutAlign="center center" (click)="filterStars(2)">2
+                        <mat-icon>star</mat-icon>
+                    </button>
+                    <button mat-menu-item fxLayout="row" fxLayoutAlign="center center" (click)="filterStars(1)">1
+                        <mat-icon>star</mat-icon>
+                    </button>
                 </mat-menu>
-                <button mat-stroked-button color="accent" [matMenuTriggerFor]="sortMenu">
-                        <mat-icon>sort</mat-icon>
-                    Sort
+
+                <mat-form-field>
+                    <mat-select [(value)]="sortField" placeholder="Sort by" (selectionChange)="sortReviews($event)">
+                        <mat-option>None</mat-option>
+                        <mat-option value="upvoteTally">Relevance</mat-option>
+                        <mat-option value="createdAt">Date</mat-option>
+                        <mat-option value="rating">Rating</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <button type="button" mat-icon-button aria-label="Sort Direction" (click)="sortDirection()">
+                    <ng-container *ngIf="sortDirect == 'asc'; then sortAsc else sortDesc"></ng-container>
+                    <ng-template #sortAsc>
+                        <mat-icon fontSet="fa" fontIcon="fa-sort-alpha-asc"></mat-icon>
+                    </ng-template>
+                    <ng-template #sortDesc>
+                        <mat-icon fontSet="fa" fontIcon="fa-sort-alpha-desc"></mat-icon>
+                    </ng-template>
                 </button>
-                <mat-menu #sortMenu="matMenu">
-                    <button mat-menu-item>Relevance</button>
-                    <button mat-menu-item>Recent</button>
-                    <button mat-menu-item>Rating: High to Low</button>
-                    <button mat-menu-item>Rating: Low to High</button>
-                </mat-menu>
             </div>
 
             <!-- TRY NOT TO USE MAT-TABLE -->
-            <section>
+            <section class="cont-relative">
+                <div fxLayoutAlign="center center" class="cont-spinner" *ngIf="loading">
+                    <mat-spinner ></mat-spinner>
+                </div>
                 <mat-card *ngFor="let review of entityReviews || []">
                     <mat-card-content>
-                        <div fxLayoutAlign="end" *ngIf="currentUser && review.userId === currentUser.id">
+                        <div fxLayoutAlign="end" *ngIf="(currentUser && review.userId === currentUser.id) || isAdmin">
                             <a mat-icon-button color="accent" [routerLink]="['/entity/'+review.entityId+'/review/edit']">
                                 <mat-icon aria-label="Edit">edit</mat-icon>
                             </a>
-                            <button mat-icon-button color="accent" (click)="onDelete(review.entityId)">
-                                <mat-icon aria-label="Delete">delete</mat-icon>
-                            </button>
+                            <app-review-delete [review]="review" (afterDelete)="loadReviews()"></app-review-delete>
                         </div>
                         <div fxLayout="row" fxLayout.xs="column">
                             <aside class="reviewer-container" fxLayout="column" fxLayout.xs="row">
                                 <div class="avatar-container">
-                                    <img [src]="baseUrl+'/avatar/'+review.avatar" onerror="this.onerror=null;this.src='/assets/images/avatars/avatar.png'"
-                                        alt="user">
+                                    <img [src]="baseUrl+'/avatar/'+review.avatar" onerror="this.onerror=null;this.src='/assets/images/avatars/avatar.png'" alt="user">
                                 </div>
                                 <div>
                                     <div class="r-name">{{ review.User.username || review.User.email }}</div>
@@ -159,10 +189,12 @@
                         </div>
                         <div fxLayoutAlign="end" fxLayoutGap="10px">
                             <button mat-icon-button (click)="voteReview(review.id, true)">
-                                <mat-icon [matBadge]="review.upvoteTally" matBadgePosition="above after" matBadgeOverlap="false" matBadgeColor="accent" [matBadgeHidden]="!review.upvoteTally"  aria-label="Upvote" color="primary">thumb_up</mat-icon>
+                                <mat-icon [matBadge]="review.upvoteTally" matBadgePosition="above after" matBadgeOverlap="false" matBadgeColor="accent" [matBadgeHidden]="!review.upvoteTally"
+                                    aria-label="Upvote" color="primary">thumb_up</mat-icon>
                             </button>
                             <button mat-icon-button (click)="voteReview(review.id, false)">
-                                <mat-icon [matBadge]="review.downvoteTally" matBadgePosition="above after" matBadgeOverlap="false" matBadgeColor="accent" [matBadgeHidden]="!review.downvoteTally"  aria-label="Downvote" color="warn">thumb_down</mat-icon>
+                                <mat-icon [matBadge]="review.downvoteTally" matBadgePosition="above after" matBadgeOverlap="false" matBadgeColor="accent"
+                                    [matBadgeHidden]="!review.downvoteTally" aria-label="Downvote" color="warn">thumb_down</mat-icon>
                             </button>
                         </div>
                     </mat-card-content>

@@ -5,7 +5,7 @@ import { MatAutocompleteSelectedEvent } from '@angular/material';
 import { EntityService, CategoryService, CategoryMenu } from '../../core';
 import { Router } from '@angular/router';
 import { Entity } from '../../core/models/entity.model';
-import { take } from '../../../../node_modules/rxjs/operators';
+import { take } from 'rxjs/operators';
 
 @Component({
     selector: 'app-nav-search-bar',

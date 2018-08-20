@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpRequest, HttpEventType, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpRequest, HttpEventType, HttpResponse, HttpEvent, HttpErrorResponse } from '@angular/common/http';
 import { JwtService } from './jwt.service';
 import { throwError, Observable, Subject, of } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { catchError } from 'rxjs/operators';
+import { catchError, map, tap, last } from 'rxjs/operators';
 import { Entity } from '../models/entity.model';
 import { AlertifyService } from './alertify.service';
 
@@ -12,7 +12,6 @@ import { AlertifyService } from './alertify.service';
     providedIn: 'root'
 })
 export class ApiService {
-
     constructor(
         private http: HttpClient,
         private jwtService: JwtService,
@@ -61,33 +60,40 @@ export class ApiService {
             return req.pipe(catchError(this.formatErrors));
         }
     }
-
     putWithProg(path: string, body) {
-        const status = {};
+        const progress = new Subject<number>();
+        const data = new Subject<Object>();
         const req = new HttpRequest('PUT', `${environment.baseApiUrl}${path}`, body, {
             reportProgress: true
         });
-        const progress = new Subject<number>();
-        const data = new Subject<Object>();
-        this.http.request(req).subscribe(event => {
-            console.log('event', event);
-            if (event.type === HttpEventType.UploadProgress) {
 
-                // calculate the progress percentage
-                const percentDone = Math.round(100 * event.loaded / event.total);
+        this.http.request(req)
+            .subscribe(event => {
+                switch (event.type) {
+                    case HttpEventType.Sent:
+                        console.log('Upload started');
+                        break;
 
-                // pass the percentage into the progress-stream
-                progress.next(percentDone);
-            } else if (event instanceof HttpResponse) {
+                    case HttpEventType.UploadProgress:
+                        // Compute and show the % done:
+                        const percentDone = Math.round(100 * event.loaded / event.total);
+                        progress.next(percentDone);
+                        break;
 
-                // Close the progress-stream if we get an answer form the API
-                // The upload is complete
-                progress.complete();
-                const resp = event && event.ok && event.body ? event.body : {};
-                data.next(resp);
-                data.complete();
+                    case HttpEventType.Response:
+                        // Close the progress-stream if we get an answer form the API
+                        // The upload is complete
+                        progress.complete();
+                        const resp = event && event.ok && event.body ? event.body : {};
+                        data.next(resp);
+                        data.complete();
+                        break;
+
+                    default:
+
+                }
             }
-        });
+        );
 
         return {
             data: data.asObservable(),

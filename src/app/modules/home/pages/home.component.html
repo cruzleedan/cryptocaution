@@ -14,6 +14,7 @@
     <div fxLayout="row" fxLayout.xs="column" fxLayoutGap="20px" fxLayoutAlign="center stretch">
         <div fxFlex="1 1 30%">
             <div class="col-title">TOP</div>
+            <app-loading-spinner *ngIf="loadingTop"></app-loading-spinner>
             <mat-card *ngFor="let entity of topEntities || []" class="vertical-entity-card">
                 <div>
                     <mat-card-title>
@@ -51,6 +52,7 @@
         </div>
         <div fxFlex="1 1 30%">
             <div class="col-title">TRENDING</div>
+            <app-loading-spinner *ngIf="loadingTrending"></app-loading-spinner>
             <mat-card *ngFor="let entity of trendingEntities || []" class="vertical-entity-card">
                 <div>
                     <mat-card-title>
@@ -84,6 +86,7 @@
         </div>
         <div fxFlex="1 1 30%">
             <div class="col-title">RECENT</div>
+            <app-loading-spinner *ngIf="loadingRecent"></app-loading-spinner>
             <mat-card *ngFor="let entity of recentEntities || []" class="vertical-entity-card">
                 <div>
                     <mat-card-title>
@@ -116,44 +119,4 @@
             </mat-card>
         </div>
     </div>
-</section>
-
-<section class="service-section">
-    <div fxLayout="column">
-
-        <div class="service-header" fxLayout="column" fxLayoutAlign="center stretch">
-
-            <div fxFlex class="content" fxLayout.lt-sm="column" style="padding: 20px;" fxLayout="row" fxLayoutAlign="center stretch">
-
-                <div fxFlex="35" fxFlex.lt-sm="100" fxLayout="row" style="background-color: #45aae3; padding: 20px;" fxLayoutAlign="center stretch">
-                    <div>
-                        <h3 class="mat-display-1">Services</h3>
-                        <mat-divider></mat-divider>
-                        <p class="mat-body-2">
-                            Cryptocurrency and blockchain-related technology will disrupt many different industries around the world in the coming years. Our mission is to help everyone who is interested in this space get the resources they need to get started. We are a global team that strives to build a trusted platform that will one day be a household name.
-                        </p>
-                    </div>
-
-                </div>
-                <div fxFlex="65" fxHide.lt-sm fxLayout="row" fxLayoutAlign="center center">
-                    <img style="width: 400px;" src="./assets/images/bg/cdk.png">
-                </div>
-
-            </div>
-        </div>
-
-        <div fxLayout="column" fxLayoutAlign="center center" class="service-card-content">
-            <div fxLayout="row" fxLayoutAlign="center center" class="service-card-container" fxLayout.lt-md="column" fxLayoutGap="20px">
-
-                <a *ngFor="let service of services" fxFlex.lt-md="100" fxLayout="column" fxLayoutAlign="center center" fxLayoutGap="20px" fxFlex.gt-sm="32" class="mat-elevation-z4 service-card" [href]="service.link" target="_blank">
-                    <img [src]="service.img" fxFlex>
-                    <h3 class="mat-title" fxFlex>{{ service.title }}</h3>
-                    <p class="mat-body-2" fxFlex>{{ service.desc }}</p>
-                </a>
-
-            </div>
-        </div>
-    </div>
-
-
 </section>

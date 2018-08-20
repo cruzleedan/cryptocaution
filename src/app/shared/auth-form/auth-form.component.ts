@@ -4,7 +4,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { UserService, Errors } from '../../core';
 import { ShowOnDirtyErrorStateMatcher, MatDialog } from '@angular/material';
 import { MsgDialogComponent } from '../dialog/msg-dialog.component';
-import { catchError } from 'rxjs/operators';
+import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
 
 @Component({
@@ -15,6 +15,7 @@ import { of } from 'rxjs';
 export class AuthFormComponent implements OnInit {
     @Input() authType: String;
     @Output() attemptAuth = new EventEmitter();
+    loading: boolean;
     isLogin: Boolean;
     isRegister: Boolean;
     title: String = '';
@@ -31,10 +32,6 @@ export class AuthFormComponent implements OnInit {
     ) {
         // use FormBuilder to create a form group
         this.authForm = new FormGroup({
-            'email': new FormControl('', [
-                Validators.required,
-                Validators.email,
-            ]),
             'username': new FormControl('', [
                 Validators.required
             ]),
@@ -45,13 +42,11 @@ export class AuthFormComponent implements OnInit {
     }
 
     ngOnInit() {
-        this.isLogin = this.authType === 'login';
-        this.isRegister = this.authType === 'register';
-        // Set a title for the page accordingly
-        this.title = (this.authType === 'login') ? 'Sign in' : 'Sign up';
-        // add form control for username if this is the register page
+        // add form control for email if this is the register page
         if (this.authType === 'register') {
-            this.authForm.addControl('username', new FormControl());
+            this.signUp();
+        } else if (this.authType === 'login') {
+            this.signIn();
         }
     }
 
@@ -60,9 +55,13 @@ export class AuthFormComponent implements OnInit {
         this.errors = { error: '' };
 
         const credentials = this.authForm.value;
+        this.loading = true;
         this.userService
             .attemptAuth(this.authType, credentials)
             .pipe(
+                finalize(() => {
+                    this.loading = false;
+                }),
                 catchError(err => {
 
                     console.log('attempt auth error', err);
@@ -102,7 +101,11 @@ export class AuthFormComponent implements OnInit {
             )
             .subscribe(
                 data => {
-                    this.attemptAuth.emit(true);
+                    if (data['success']) {
+                        this.attemptAuth.emit({ data });
+                    } else {
+                        this.attemptAuth.emit(false);
+                    }
                 }
             );
     }
@@ -136,10 +139,21 @@ export class AuthFormComponent implements OnInit {
         this.isLogin = true;
         this.isRegister = false;
         this.title = 'Login';
+
+        if (this.authForm.contains('email')) {
+            this.authForm.removeControl('email');
+        }
     }
     signUp() {
         this.isLogin = false;
         this.isRegister = true;
         this.title = 'Register';
+
+        if (!this.authForm.contains('email')) {
+            this.authForm.addControl('email', new FormControl('', [
+                Validators.required,
+                Validators.email,
+            ]));
+        }
     }
 }

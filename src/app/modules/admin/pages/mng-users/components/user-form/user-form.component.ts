@@ -1,4 +1,4 @@
-import { Component, OnInit, NgZone, HostListener, ViewChild, Input } from '@angular/core';
+import { Component, OnInit, NgZone, HostListener, ViewChild, Input, ElementRef } from '@angular/core';
 import { ImageCropperDialogComponent } from '../../../../../../shared/cropper/image-cropper-dialog.component';
 import { Observable, of } from 'rxjs';
 import { take, map, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
@@ -15,9 +15,11 @@ import { CustomBlob } from '../../../../../../shared/helpers/custom-blob';
     styleUrls: ['./user-form.component.scss']
 })
 export class UserFormComponent implements OnInit {
-
+    @Input() operation: string;
     @Input() user: User;
     roles = ['admin'];
+    isEdit: boolean;
+    isNew: boolean;
     imageChangedEvent: any = '';
     croppedImage: any = '';
     uploadProgress;
@@ -29,6 +31,7 @@ export class UserFormComponent implements OnInit {
     @ViewChild('autosize') autosize: CdkTextareaAutosize;
     @ViewChild('form')
     form: NgForm;
+    @ViewChild('avatarImgFile') avatarImgFile: ElementRef;
     validationMessages = ValidationMessage.msg;
 
 
@@ -48,7 +51,6 @@ export class UserFormComponent implements OnInit {
         private userService: UserService,
         private alertifyService: AlertifyService
     ) {
-
         this.matcher = new ShowOnDirtyErrorStateMatcher;
         this.userForm = this.fb.group({
             'username': new FormControl('', [Validators.required, Validators.minLength(3)]),
@@ -59,10 +61,13 @@ export class UserFormComponent implements OnInit {
             'roles': new FormControl('')
         });
 
-
     }
     ngOnInit() {
-        if (this.user) {
+
+        this.isEdit = !!(this.operation === 'edit');
+        this.isNew = !!(this.operation === 'new');
+
+        if (this.user && this.isEdit) {
             console.log('patch user form', this.user);
             this.userForm.patchValue(this.user);
         }
@@ -71,9 +76,13 @@ export class UserFormComponent implements OnInit {
             debounceTime(500), // replaces your setTimeout
             map(username => {
                 username = username.trim();
-                const isChanged = username && username !== this.user.username;
-                console.log('current ', username, ' username ', this.user.username, ' ', isChanged);
-                return isChanged ? username : false;
+                if (this.isNew) {
+                    return true;
+                } else if (this.isEdit) {
+                    const isChanged = username && username !== this.user.username;
+                    console.log('current ', username, ' username ', this.user.username, ' ', isChanged);
+                    return isChanged ? username : false;
+                }
             }),
             distinctUntilChanged(), // wait until it's different than what we last checked
             switchMap(desiredUsername => this.userService.checkUsernameNotTaken(desiredUsername)),
@@ -131,7 +140,10 @@ export class UserFormComponent implements OnInit {
             'roles': ''
         });
         this.croppedImage = '';
-        this.userForm.patchValue(this.user);
+        if (this.user && this.isEdit) {
+            this.userForm.patchValue(this.user);
+        }
+        this.avatarImgFile.nativeElement.value = '';
     }
     handleSubmit() {
         this.submitting = true;
@@ -143,11 +155,20 @@ export class UserFormComponent implements OnInit {
             const blob = this.customBlob.dataURLToBlob(this.croppedImage);
             imageFile = this.customBlob.blobToFile(blob, `avatar-${Date.now()}.png`);
         }
-        const req = this.userService.updateProfile(
-            this.croppedImage ? imageFile : null,
-            formValues,
-            this.user.id
-        );
+        let req;
+        if (this.isEdit) {
+            req = this.userService.updateProfile(
+                this.croppedImage ? imageFile : null,
+                formValues,
+                this.user.id
+            );
+        } else if (this.isNew) {
+            req = this.userService.create(
+                this.croppedImage ? imageFile : null,
+                formValues
+            );
+        }
+
         this.uploading = true;
         if (req && req.progress) {
             this.uploadProgress = req.progress;
@@ -159,10 +180,14 @@ export class UserFormComponent implements OnInit {
         if (req && req.data) {
             req.data.subscribe((resp) => {
                 console.log('resp', resp);
-                console.log('user updated info', resp['user']);
-                this.resetForm();
-                this.userForm.patchValue(resp['user']);
-                this.alertifyService.success('Successfully saved!');
+                if (resp.success) {
+                    console.log('user updated info', resp['user']);
+                    this.resetForm();
+                    this.userForm.patchValue(resp['user']);
+                    this.alertifyService.success('Successfully saved!');
+                } else {
+                    this.alertifyService.error('Something went wrong while creating new user.');
+                }
                 this.submitting = false;
             });
         }

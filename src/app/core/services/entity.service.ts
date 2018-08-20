@@ -1,10 +1,9 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
-import { HttpParams, HttpErrorResponse } from '@angular/common/http';
-import { Observable, of, throwError, BehaviorSubject } from 'rxjs';
+import { HttpParams } from '@angular/common/http';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { map, catchError, debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 import { Entity } from '../models/entity.model';
-import { Review } from '../models/review.model';
 import { AlertifyService } from './alertify.service';
 import { Util } from '../errors/helpers/util';
 
@@ -126,7 +125,7 @@ export class EntityService {
 
     findReviews(
         entityId: string,
-        filter = '',
+        filter: string | object = '',
         sortDirection = 'desc',
         sortField = 'rating',
         pageNumber: number = 1,
@@ -135,7 +134,7 @@ export class EntityService {
         return this.apiService.get(
             `/entities/${entityId}/reviews`,
             new HttpParams()
-                .set('filter', filter)
+                .set('filter', typeof filter === 'string' ? filter : JSON.stringify(filter))
                 .set('sortDirection', sortDirection)
                 .set('sortField', sortField)
                 .set('pageNumber', pageNumber.toString())

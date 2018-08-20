@@ -1,6 +1,6 @@
-<div fxLayout="row" fxLayout="row wrap" *ngIf="!isEdit">
+<div fxLayout="row" fxLayout="row wrap" *ngIf="!isEdit && !isNew">
     <app-users-tbl fxFlex></app-users-tbl>
 </div>
-<div fxLayout="row" fxLayout="row wrap" *ngIf="isEdit">
-    <app-user-form fxFlex [user]="user"></app-user-form>
+<div fxLayout="row" fxLayout="row wrap" *ngIf="isEdit || isNew">
+    <app-user-form fxFlex [user]="user" [operation]="operation"></app-user-form>
 </div>

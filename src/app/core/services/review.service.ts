@@ -18,26 +18,23 @@ export class ReviewService {
         private errorUtil: Util
     ) { }
     hasUserReviewedEntity(entityId: string): Observable<Review> {
-        if (!this.userService.getCurrentUser() || !Object.keys(this.userService.getCurrentUser()).length) {
-            return of(null);
-        }
         return this.apiService.get(`/user/review/${ entityId }`)
             .pipe(
                 map(res => {
                     if (!res['success']) {
-                        this.alertifyService.error(this.errorUtil.getError(res) || 'Failed to check if user reviewed Entity');
+                        // this.alertifyService.error(this.errorUtil.getError(res) || 'Failed to check if user reviewed Entity');
                         return of(null);
                     }
                     return res['data'];
                 }),
                 catchError(err => {
-                    this.alertifyService.error(this.errorUtil.getError(err) || 'Failed to check if user reviewed Entity');
+                    // this.alertifyService.error(this.errorUtil.getError(err) || 'Failed to check if user reviewed Entity');
                     return of(null);
                 })
             );
     }
     addReview(
-        entityId: number,
+        entityId: string,
         newEntity: Object = {}
     ) {
         return this.apiService.put(`/entities/${ entityId }/reviews/new`, newEntity )
@@ -63,13 +60,16 @@ export class ReviewService {
             .pipe(
                 map(res => {
                     if (!res['success']) {
-                        this.alertifyService.error(this.errorUtil.getError(res) || 'Something went wrong while saving your vote.');
+                        const err = this.errorUtil.getError(res) || 'Something went wrong while saving your vote.';
+                        this.alertifyService.error(err);
+                        return of({error: err});
                     }
                     return res['data'];
                 }),
                 catchError(err => {
-                    this.alertifyService.error(this.errorUtil.getError(err) || 'Something went wrong while saving your vote.');
-                    return of(null);
+                    err = this.errorUtil.getError(err) || 'Something went wrong while saving your vote.';
+                    this.alertifyService.error(err);
+                    return of({error: err});
                 })
             );
     }

@@ -13,6 +13,7 @@ import { ImageCropperDialogComponent } from '../../../../shared/cropper/image-cr
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Entity } from '../../../../core/models/entity.model';
 import { environment } from '../../../../../environments/environment';
+import { HttpEventType } from '@angular/common/http';
 
 @Component({
     selector: 'app-new',
@@ -38,7 +39,7 @@ export class NewComponent implements OnInit, ComponentCanDeactivate {
     form: NgForm;
     isEdit: boolean;
     entity: Entity;
-
+    imgFormControl = new FormControl();
     // @HostListener allows us to also guard against browser refresh, close, etc.
     @HostListener('window:beforeunload', ['$event'])
     canDeactivate(): Observable<boolean> | boolean {
@@ -67,8 +68,10 @@ export class NewComponent implements OnInit, ComponentCanDeactivate {
             'links': this.fb.array([this.createLink()]),
             'address': new FormControl(''),
             'phone': new FormControl(''),
-            'email': new FormControl('', [Validators.email])
+            'email': new FormControl('', [Validators.email]),
+            'Category': new FormControl('')
         });
+
         this.route.params
             .subscribe(
                 (params: Params) => {
@@ -199,6 +202,7 @@ export class NewComponent implements OnInit, ComponentCanDeactivate {
         };
         this.entityForm.reset(this.isEdit ? this.entity : fieldsVal);
         this.searchFormControl.setValue('');
+        this.imgFormControl.setValue('');
         this.croppedImage = '';
     }
     handleSubmit() {

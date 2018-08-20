@@ -34,7 +34,7 @@ export class MsgDialogComponent implements OnInit {
     attemptAuth(event) {
         this.userService.isAuthenticated.subscribe(auth => {
             if (auth) {
-                this.dialogRef.close({authenticated: event});
+                this.dialogRef.close(event);
             }
         });
     }

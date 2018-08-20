@@ -5,8 +5,7 @@
             <a [routerLink]="['/entity/'+entityId]">{{entityName}}</a> now.
         </h1>
         <h3 *ngIf="review && review.id && !isEdit" class="warn">
-            You already wrote a review for {{ entityName }}.
-            Submiting this form would update it instead.
+            You already wrote a review for {{ entityName }}. Submiting this form would update it instead.
         </h3>
         <h3 *ngIf="isEdit">
             Update your Review
@@ -52,8 +51,16 @@
                 </div>
                 <br>
                 <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="end" *ngIf="isAuthenticated">
-                    <button type='button' mat-stroked-button color="accent" [disabled]='!reviewForm.valid' (click)="submitReview()">Submit</button>
-                    <button type='button' mat-stroked-button color="accent" (click)='resetForm()'>Reset</button>
+                    <button type='button' mat-stroked-button color="accent" [disabled]='!reviewForm.valid || loading' (click)="submitReview()">
+                        <ng-container *ngIf="!isEdit && !loading">
+                            Submit
+                        </ng-container>
+                        <ng-container *ngIf="isEdit && !loading">
+                            Save
+                        </ng-container>
+                        <ng-container *ngIf="loading">Saving...</ng-container>
+                    </button>
+                    <button type='button' mat-stroked-button color="accent" [disabled]="loading" (click)='resetForm()'>Reset</button>
                 </div>
                 <div *ngIf="!isAuthenticated" fxLayoutGap="10px">
                     <button mat-raised-button type="button" color="accent" alt="Login with Facebook" (click)="fbLogin()">

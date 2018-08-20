@@ -167,6 +167,15 @@ section.comments {
     mat-card {
         margin-top: 20px;
     }
+    section.cont-relative {
+        position: relative;
+        .cont-spinner {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            z-index: 10;
+        }
+    }
     .reviewer-container {
         margin-right: 3em;
         .avatar-container {

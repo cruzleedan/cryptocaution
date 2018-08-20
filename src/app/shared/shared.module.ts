@@ -47,7 +47,8 @@ import {
     MatChipsModule,
     MatProgressBarModule,
     MatTabsModule,
-    MatSlideToggleModule
+    MatSlideToggleModule,
+    MatTooltipModule
 } from '@angular/material';
 
 import { ImageCropperModule } from 'ngx-image-cropper';
@@ -87,6 +88,8 @@ import { AuthComponent } from './layout/template/auth/auth.component';
 import { CategoryMenuItemComponent } from './category-menu-item/category-menu-item.component';
 import { BreadcrumbsComponent } from './breadcrumb/breadcrumbs.component';
 import { RatingLabelPipe } from './pipes/rating-label.pipe';
+import { EntityDeleteComponent } from './entity-delete/entity-delete.component';
+import { ReviewDeleteComponent } from './review-delete/review-delete.component';
 @NgModule({
     imports: [
         CommonModule,
@@ -122,6 +125,7 @@ import { RatingLabelPipe } from './pipes/rating-label.pipe';
         MatProgressBarModule,
         MatTabsModule,
         MatSlideToggleModule,
+        MatTooltipModule,
         // End material components
         PerfectScrollbarModule,
         Ng2OdometerModule,
@@ -166,6 +170,8 @@ import { RatingLabelPipe } from './pipes/rating-label.pipe';
         AuthComponent,
         CategoryMenuItemComponent,
         BreadcrumbsComponent,
+        EntityDeleteComponent,
+        ReviewDeleteComponent,
 
     ],
     exports: [
@@ -202,6 +208,7 @@ import { RatingLabelPipe } from './pipes/rating-label.pipe';
         MatProgressBarModule,
         MatTabsModule,
         MatSlideToggleModule,
+        MatTooltipModule,
         // End material components
         // Start Pipes
         StrToJSONPipe,
@@ -243,6 +250,8 @@ import { RatingLabelPipe } from './pipes/rating-label.pipe';
         AdminComponent,
         AuthComponent,
         BreadcrumbsComponent,
+        EntityDeleteComponent,
+        ReviewDeleteComponent,
     ],
     providers: [
         { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },

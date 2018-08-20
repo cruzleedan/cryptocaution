@@ -20,6 +20,14 @@ const routes: Routes = [{
         ]
     }
 }, {
+    path: 'users/new',
+    component: MngUsersComponent,
+    data: {
+        breadcrumbs: [
+            new Breadcrumb('Users', '/admin/users')
+        ]
+    }
+}, {
     path: 'users/:id/edit',
     component: MngUsersComponent,
     resolve: {

@@ -8,12 +8,13 @@ import { BannerComponent } from './components/banner/banner.component';
 import { AuthGuard } from '../../core';
 import { PasswordComponent } from './pages/settings/components/password/password.component';
 import { ProfileComponent } from './pages/settings/components/profile/profile.component';
+import { EntitiesComponent } from './pages/entities/entities.component';
 
 @NgModule({
     imports: [
         SharedModule,
         UserRoutingModule
     ],
-    declarations: [ReviewsComponent, SettingsComponent, BannerComponent, PasswordComponent, ProfileComponent]
+    declarations: [ReviewsComponent, SettingsComponent, BannerComponent, PasswordComponent, ProfileComponent, EntitiesComponent]
 })
 export class UserModule { }

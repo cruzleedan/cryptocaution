@@ -6,10 +6,10 @@
             <mat-card>
                 <mat-card-content>
                     <div fxLayout="row" fxLayoutGap="10px" fxLayout.lt-md="column">
-                        <input type="file" (change)="fileChangeEvent($event)" #entityImgFile style="display: none">
+                        <input type="file" (change)="fileChangeEvent($event)" #entityImgFile style="display: none" [formControl]="imgFormControl">
                         <div class="img-cont">
                             <mat-icon fontSet="fa" fontIcon="fa-camera" (click)="entityImgFile.click()"></mat-icon>
-                            <img [src]="croppedImage" *ngIf="croppedImage">
+                            <img [src]="croppedImage" *ngIf="croppedImage" onerror="this.onerror=null;this.src='/assets/images/image-not-found.png';">
                             <mat-progress-bar *ngIf="uploading" mode="determinate" [value]="(uploadProgress | async)" color="warn"></mat-progress-bar>
                         </div>
                         <div fxFlex fxLayout="column" fxFlex.lt-md="0 1 auto">
@@ -22,7 +22,8 @@
                                 <mat-icon matPrefix>search</mat-icon>
                                 <input type="text" placeholder="keyword" aria-label="Find" appEnforcedInputs [matAutocomplete]="auto" matInput [formControl]="searchFormControl"
                                     [matAutocomplete]="auto"
-                                    (keyup)="searchKeyword$.next($event.target.value)">
+                                    (keyup)="searchKeyword$.next($event.target.value)"
+                                    formControlName="Category">
                                 <mat-autocomplete #auto="matAutocomplete" (optionSelected)="search($event)" [displayWith]="searchDisplayFn">
                                     <mat-option *ngFor="let option of filteredOptions " [value]="option">
                                         {{option.category}}
@@ -118,25 +119,25 @@
                     </div>
                 </mat-card-content>
             </mat-card>
-
             <mat-card>
                 <mat-card-content fxLayout="row">
                     <div fxFlex>
-                        <button type='button' mat-stroked-button color="accent" (click)='delete()'>
+                        <button *appShowAdmin="true" type='button' mat-stroked-button color="accent" (click)='delete()'>
                             <mat-icon>delete</mat-icon>
                             Delete
                         </button>
                     </div>
                     <div fxLayoutAlign="end" fxLayoutGap="5px">
-                        <button type='submit' mat-stroked-button color="accent" [disabled]='!entityForm.valid'>
-                            <ng-container *ngIf="!isEdit">
+                        <button type='submit' mat-stroked-button color="accent" [disabled]='loading || !entityForm.valid || (!(isEdit && imgFormControl.value) && !entityForm.valid)'>
+                            <ng-container *ngIf="!isEdit && !loading">
                                 Submit
                             </ng-container>
-                            <ng-container *ngIf="isEdit">
+                            <ng-container *ngIf="isEdit && !loading">
                                 Save
                             </ng-container>
+                            <ng-container *ngIf="loading">Saving...</ng-container>
                         </button>
-                        <button type='button' mat-stroked-button color="accent" (click)='resetForm()'>Reset</button>
+                        <button type='button' mat-stroked-button color="accent" [disabled]="loading" (click)='resetForm()'>Reset</button>
                     </div>
                 </mat-card-content>
             </mat-card>

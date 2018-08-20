@@ -3,6 +3,7 @@ import { Routes, RouterModule } from '@angular/router';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { ReviewsComponent } from './pages/reviews/reviews.component';
 import { CanDeactivateGuard } from '../../core/guards/can-deactivate/can-deactivate.guard';
+import { EntitiesComponent } from './pages/entities/entities.component';
 
 const routes: Routes = [
     {
@@ -13,6 +14,10 @@ const routes: Routes = [
     {
         path: 'reviews',
         component: ReviewsComponent
+    },
+    {
+        path: 'entities',
+        component: EntitiesComponent
     }
 ];
 

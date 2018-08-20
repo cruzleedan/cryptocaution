@@ -7,7 +7,7 @@ import { MatDialog, ShowOnDirtyErrorStateMatcher } from '@angular/material';
 import { MsgDialogComponent } from '../../../../shared/dialog/msg-dialog.component';
 import { ReviewService } from '../../../../core/services/review.service';
 import { Review } from '../../../../core/models/review.model';
-
+import { finalize, map } from 'rxjs/operators';
 @Component({
     selector: 'app-new-review',
     templateUrl: './new-review.component.html',
@@ -15,12 +15,13 @@ import { Review } from '../../../../core/models/review.model';
 })
 export class NewReviewComponent implements OnInit {
     isEdit: boolean;
+    loading: boolean;
     hasUserAcceptedTerms: boolean;
     acceptedTerms: boolean;
     reviewForm: FormGroup;
     ratingLabel: string;
     isAuthenticated: boolean;
-    entityId: number;
+    entityId: string;
     entityName: string;
     termsError: string;
     matcher;
@@ -41,6 +42,8 @@ export class NewReviewComponent implements OnInit {
         private dialog: MatDialog
     ) {
         this.isEdit = this.router.url.split('/').pop() === 'edit' ? true : false;
+        this.entityId = this.route.snapshot.params['id'];
+        this.review = this.route.snapshot.data.review || {};
 
         this.matcher = new ShowOnDirtyErrorStateMatcher;
         this.reviewForm = this.fb.group({
@@ -56,18 +59,19 @@ export class NewReviewComponent implements OnInit {
         this.userService.isAuthenticated.subscribe(
             (authenticated) => {
                 this.isAuthenticated = authenticated;
+                this.hasUserAcceptedTerms = this.userService.getCurrentUser().AcceptedTermsFlag;
             }
         );
-        this.hasUserAcceptedTerms = this.userService.getCurrentUser().AcceptedTermsFlag;
     }
 
     ngOnInit() {
-        this.entityId = this.route.snapshot.params['id'];
-        this.review = this.route.snapshot.data.review || {};
-
         this.reviewForm.patchValue(this.review);
+        this.reviewForm.markAsPristine();
         this.entityName = this.review.hasOwnProperty('Entity')
-                            && this.review['Entity'].hasOwnProperty('name') ? this.review['Entity']['name'] : '';
+                && this.review['Entity'].hasOwnProperty('name') ? this.review['Entity']['name'] : '';
+        this.route.params.subscribe(params => {
+            this.entityId = params['id'];
+        });
         this.route.queryParams
             .subscribe(params => {
                 if (params && params.rating) {
@@ -93,26 +97,39 @@ export class NewReviewComponent implements OnInit {
     }
     resetForm() {
         this.reviewForm.reset({ 'rating': 0, 'review': '' });
+        if (Object.keys(this.review)) {
+            this.reviewForm.patchValue(this.review);
+            this.reviewForm.markAsPristine();
+        }
     }
     submitReview() {
         if (this.reviewForm.valid && (this.hasUserAcceptedTerms || this.acceptedTerms)) {
+            const addReview = () => {
+                this.loading = true;
+                this.reviewService
+                .addReview(this.entityId, this.reviewForm.value)
+                .subscribe((resp) => {
+                    this.loading = false;
+                    console.log('New Review', resp);
+                    this.router.navigate([`/entity/${this.entityId}`]);
+                });
+            };
+
             if (!this.hasUserAcceptedTerms && this.acceptedTerms) {
                 console.log('SHOULD CALL USER UPDATE');
 
                 const user = this.userService.getCurrentUser();
                 user.AcceptedTermsFlag = true;
-                console.log(user);
-                this.userService.update(user).subscribe((resp) => {
-                    console.log('resp', resp);
-
+                this.loading = true;
+                this.userService.update(user).subscribe((updatedUser) => {
+                    this.loading = false;
+                    if (updatedUser && updatedUser.AcceptedTermsFlag) {
+                        addReview();
+                    }
                 });
+            } else {
+                addReview();
             }
-            this.reviewService
-                .addReview(this.entityId, this.reviewForm.value)
-                .subscribe((resp) => {
-                    console.log('New Review', resp);
-                    this.router.navigate([`/entity/${this.entityId}`]);
-                });
         } else if (!this.hasUserAcceptedTerms && !this.acceptedTerms) {
             this.termsError = 'Please accept terms and conditions below.';
         } else {
@@ -133,6 +150,20 @@ export class NewReviewComponent implements OnInit {
 
         this.termsError = val ? '' : this.termsError;
     }
+    getUserReview() {
+        this.loading = true;
+            this.reviewService.hasUserReviewedEntity(this.entityId)
+                .pipe(
+                    finalize(() => {
+                        this.loading = false;
+                    })
+                )
+                .subscribe(review => {
+                    if (review) {
+                        this.review = review;
+                    }
+                });
+    }
     logIn() {
         const dialogRef = this.dialog.open(MsgDialogComponent, {
             data: {
@@ -143,9 +174,8 @@ export class NewReviewComponent implements OnInit {
             panelClass: ''
         });
         dialogRef.afterClosed().subscribe(resp => {
-            if (resp && resp.authenticated) {
-                console.log('User has been authenticated');
-                this.submitReview();
+            if (resp && resp.data && resp.data.success) {
+                this.getUserReview();
             }
         });
     }
@@ -155,16 +185,26 @@ export class NewReviewComponent implements OnInit {
                 console.log('fblogin ', cred);
                 this.userService.fbAuth(cred).subscribe((resp) => {
                     if (resp.success) {
-                        this.hasUserAcceptedTerms = this.userService.getCurrentUser().AcceptedTermsFlag;
-                        this.submitReview();
+                        this.getUserReview();
                     } else {
                         console.log('Unsuccessful login');
+                        const dialogRef = this.dialog.open(MsgDialogComponent, {
+                            data: {
+                                msg: 'Login failed. Please try again.',
+                                type: 'error',
+                                title: 'Error',
+                                details: false,
+                            },
+                            width: '300px',
+                            hasBackdrop: true,
+                            panelClass: 'error'
+                        });
                     }
                 });
             }).catch((err) => {
                 const dialogRef = this.dialog.open(MsgDialogComponent, {
                     data: {
-                        msg: 'Something went wrong while communicating to the server',
+                        msg: 'Something went wrong while logging you in',
                         type: 'error',
                         title: 'Error',
                         details: err,

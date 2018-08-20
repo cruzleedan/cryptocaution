@@ -9,6 +9,7 @@ import { AlertifyService } from './alertify.service';
 import { Review } from '../models/review.model';
 import { HttpParams } from '@angular/common/http';
 import { Util } from '../errors/helpers/util';
+import { Entity } from '../models/entity.model';
 
 declare const FB: any;
 
@@ -131,10 +132,10 @@ export class UserService {
                     }
                 ),
                 catchError(err => {
-                    const error = this.errorUtil.getError(err, {getValidationErrors: true});
+                    const error = this.errorUtil.getError(err, { getValidationErrors: true });
                     if (typeof error === 'object') { return of(error); }
                     this.alertifyService.error(error || 'Authentication Failed.');
-                    return of(null);
+                    return of(err);
                 })
             );
     }
@@ -162,14 +163,27 @@ export class UserService {
                     return resp;
                 }),
                 catchError(err => {
-                    const error = this.errorUtil.getError(err, {getValidationErrors: true});
+                    const error = this.errorUtil.getError(err, { getValidationErrors: true });
                     if (typeof error === 'object') { return of(error); }
                     this.alertifyService.error(error || 'Failed to reset password.');
                     return of(null);
                 })
             );
     }
-
+    create(
+        image?: File,
+        body: Object = {}
+    ) {
+        const fd = new FormData();
+        if (image) {
+            fd.append('avatar', image, image.name);
+        }
+        for (const key of Object.keys(body)) {
+            const b = typeof body[key] === 'object' ? JSON.stringify(body[key]) : body[key];
+            fd.append(key, b);
+        }
+        return this.apiService.putWithProg(`/users/new`, fd);
+    }
     // Update the user on the server (email, pass, etc)
     update(user): Observable<User> {
         return this.apiService
@@ -185,7 +199,7 @@ export class UserService {
                     return data.user;
                 }),
                 catchError(err => {
-                    const error = this.errorUtil.getError(err, {getValidationErrors: true});
+                    const error = this.errorUtil.getError(err, { getValidationErrors: true });
                     if (typeof error === 'object') { return of(error); }
                     this.alertifyService.error(error || 'Failed to update user info.');
                     return of(null);
@@ -228,7 +242,7 @@ export class UserService {
                 return data;
             }),
             catchError(err => {
-                const error = this.errorUtil.getError(err, {getValidationErrors: true});
+                const error = this.errorUtil.getError(err, { getValidationErrors: true });
                 if (typeof error === 'object') {
                     return of(error);
                 }
@@ -253,6 +267,62 @@ export class UserService {
         } catch (e) {
             return e;
         }
+    }
+    isAdminOrEntityOwner(id: string): Observable<boolean> {
+        if (this.isAdminSubject.value) {
+            return of(true);
+        }
+        return this.apiService.get(`/user/entity/${id}/owner`)
+            .pipe(
+                map(
+                    resp => {
+                        if (!resp.success) {
+                            return of(false);
+                        } else if (resp.success) {
+                            return resp.data;
+                        }
+                    }
+                ),
+                catchError(err => {
+                    const error = this.errorUtil.getError(err);
+                    this.alertifyService.error(error || 'Failed to check entity ownership.');
+                    return of(false);
+                })
+            );
+    }
+    findUserEntities(
+        filter = '',
+        sortDirection = 'desc',
+        sortField = 'rating',
+        pageNumber: number = 1,
+        pageSize: number = 10
+    ): Observable<Entity[]> {
+        this.loadingSubject.next(true);
+        return this.apiService.get(
+            `/user/entities`,
+            new HttpParams()
+                .set('filter', filter)
+                .set('sortDirection', sortDirection)
+                .set('sortField', sortField)
+                .set('pageNumber', pageNumber.toString())
+                .set('pageSize', pageSize.toString())
+        ).pipe(
+            map((res) => {
+                if (!res.success) {
+                    this.alertifyService.error(this.errorUtil.getError(res) || 'Failed to load user entities.');
+                    return of([]);
+                }
+                this.loadingSubject.next(false);
+                return res['data'];
+            }),
+            catchError(err => {
+                this.loadingSubject.next(false);
+                const error = this.errorUtil.getError(err, { getValidationErrors: true });
+                if (typeof error === 'object') { return of(error); }
+                this.alertifyService.error(error || 'Failed to load user entities.');
+                return of([]);
+            })
+        );
     }
     findUserReviews(
         filter = '',
@@ -281,7 +351,7 @@ export class UserService {
             }),
             catchError(err => {
                 this.loadingSubject.next(false);
-                const error = this.errorUtil.getError(err, {getValidationErrors: true});
+                const error = this.errorUtil.getError(err, { getValidationErrors: true });
                 if (typeof error === 'object') { return of(error); }
                 this.alertifyService.error(error || 'Failed to load user reviews.');
                 return of([]);
@@ -299,9 +369,27 @@ export class UserService {
                     return res.data;
                 }),
                 catchError(err => {
-                    const error = this.errorUtil.getError(err, {getValidationErrors: true});
+                    const error = this.errorUtil.getError(err, { getValidationErrors: true });
                     if (typeof error === 'object') { return of(error); }
                     this.alertifyService.error(error || 'Something went wrong while retrieving user info');
+                    return of(null);
+                })
+            );
+    }
+    deleteEntity(entityId: string): Observable<boolean> {
+        return this.apiService.delete(`/user/entity/${entityId}`, true)
+            .pipe(
+                map(resp => {
+                    if (!resp.success) {
+                        this.alertifyService.error(this.errorUtil.getError(resp) || 'Failed to delete entity.');
+                        return of(null);
+                    }
+                    return resp;
+                }),
+                catchError(err => {
+                    const error = this.errorUtil.getError(err, { getValidationErrors: true });
+                    if (typeof error === 'object') { return of(error); }
+                    this.alertifyService.error(error || 'Failed to delete entity.');
                     return of(null);
                 })
             );
@@ -317,7 +405,7 @@ export class UserService {
                     return resp;
                 }),
                 catchError(err => {
-                    const error = this.errorUtil.getError(err, {getValidationErrors: true});
+                    const error = this.errorUtil.getError(err, { getValidationErrors: true });
                     if (typeof error === 'object') { return of(error); }
                     this.alertifyService.error(error || 'Failed to delete review.');
                     return of(null);
@@ -384,18 +472,18 @@ export class UserService {
     checkUsernameNotTaken(username: string): Observable<boolean> {
         if (!username) { return of(false); }
         return this.apiService.get(`/users/checkusername`, new HttpParams().set('username', username))
-        .pipe(
-            map(res => {
-                if (!res.success) {
-                    this.alertifyService.error(this.errorUtil.getError(res) || 'Failed to check username');
+            .pipe(
+                map(res => {
+                    if (!res.success) {
+                        this.alertifyService.error(this.errorUtil.getError(res) || 'Failed to check username');
+                        return of(null);
+                    }
+                    return res.data;
+                }),
+                catchError(err => {
+                    this.alertifyService.error(this.errorUtil.getError(err) || 'Failed to check username');
                     return of(null);
-                }
-                return res.data;
-            }),
-            catchError(err => {
-                this.alertifyService.error(this.errorUtil.getError(err) || 'Failed to check username');
-                return of(null);
-            })
-        );
+                })
+            );
     }
 }

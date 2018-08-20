@@ -8,6 +8,7 @@ import { CanDeactivateGuard } from '../../core/guards/can-deactivate/can-deactiv
 import { NewReviewComponent } from './pages/new-review/new-review.component';
 import { EntityReviewResolver } from './entity-review-resolver.service';
 import { AdminGuard } from '../../core/guards/admin.guard';
+import { AdminOrEntityOwnerGuard } from '../../core/guards/admin-or-entity-owner.guard';
 
 const routes: Routes = [
     {
@@ -42,7 +43,7 @@ const routes: Routes = [
     {
         path: ':id/edit',
         component: NewComponent,
-        canActivate: [AdminGuard],
+        canActivate: [AdminOrEntityOwnerGuard],
         canDeactivate: [CanDeactivateGuard],
         data: {
             breadcrumbs: [

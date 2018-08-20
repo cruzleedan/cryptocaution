@@ -1,3 +1,16 @@
+:host{
+    overflow: hidden;
+    .container {
+        width: 100vw;
+        height: 100vh;
+        position: relative;
+    }
+}
+::ng-deep{
+    body {
+        overflow: hidden;
+    }
+}
 @mixin admin($theme) {
     $primary: map-get($theme, primary);
     $accent: map-get($theme, accent);

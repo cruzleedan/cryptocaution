@@ -1,0 +1,46 @@
+<app-banner></app-banner>
+<div class="max-width-740">
+    <app-loading-spinner fxLayout="row" fxLayoutAlign="center center" *ngIf="loading"></app-loading-spinner>
+    <h1 class="txt-center" *ngIf="!loading && (!userEntities || !userEntities.length)">You don't have any reviews</h1>
+    <ng-container *ngIf="userEntities && userEntities.length">
+        <section>
+            <mat-form-field>
+                <input type="text" matInput [formControl]="searchControl">
+            </mat-form-field>
+            <mat-card *ngFor="let entity of userEntities">
+                <mat-card-subtitle>
+                    <div fxLayoutAlign="end">
+                        <a mat-icon-button color="accent" [routerLink]="['/entity/'+entity.id+'/edit']">
+                            <mat-icon aria-label="Edit">edit</mat-icon>
+                        </a>
+                        <app-entity-delete [entity]="entity" (afterDelete)="loadUserEntities()"></app-entity-delete>
+                    </div>
+                </mat-card-subtitle>
+                <mat-card-content>
+                    <div fxLayout="row" fxLayoutGap="20px" fxLayout.xs="column">
+                        <aside class="reviewer-container" fxLayout="column" fxLayout.xs="row">
+                            <div class="avatar-container">
+                                    <img [src]="baseUrl+'/entity/'+entity.id+'/'+entity.image" [alt]="entity.image" onerror="this.onerror=null;this.src='/assets/images/image-not-found.png';">
+                            </div>
+                            <div class="txt-center">
+                                <div class="r-reviews">{{ entity.reviewCount }} Reviews</div>
+                            </div>
+                        </aside>
+                        <section fxFlex fxFlex.xs="0 1 auto" fxLayout="column">
+                            <div fxLayout="row" fxLayout.xs="column">
+                                <star-rating size="medium" fxFlexAlign.xs="start" [rating]="entity.rating" [step]="0.5" [readOnly]="true"></star-rating>
+                                <span fxFlex fxFlex.xs="0 1 auto"></span>
+                                <span fxFlexAlign="flex-end" fxFlexAlign.xs="start">Published {{ entity.createdAt | dateTimeMomentFormat:'YYYY-MM-DD HH:mm:ss' }}</span>
+                            </div>
+                            <div class="review-title">{{ entity.name }}</div>
+                            <app-read-more [text]="entity.desc" [maxLength]="200">
+                            </app-read-more>
+                        </section>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </section>
+        <mat-paginator [length]="user.entitiesCount" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageChange($event)">
+        </mat-paginator>
+    </ng-container>
+</div>

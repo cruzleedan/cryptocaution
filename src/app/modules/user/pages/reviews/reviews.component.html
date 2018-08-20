@@ -16,9 +16,7 @@
                         <a mat-icon-button color="accent" [routerLink]="['/entity/'+review.entityId+'/review/edit']">
                             <mat-icon aria-label="Edit">edit</mat-icon>
                         </a>
-                        <button mat-icon-button color="accent" (click)="onDelete(review.entityId)">
-                            <mat-icon aria-label="Delete">delete</mat-icon>
-                        </button>
+                        <app-review-delete [review]="review" (afterDelete)="loadUserReviews()"></app-review-delete>
                     </div>
                 </mat-card-subtitle>
                 <mat-card-content>

@@ -1,3 +1,17 @@
+:host {
+    display: block;
+    height: 100%;
+    overflow: initial;
+}
+::ng-deep {
+    mat-sidenav-container {
+        height: 100%;
+        overflow: initial !important;
+    }
+    mat-sidenav-content {
+        overflow: initial !important;
+    }
+}
 .hidden {
     display: none;
 }

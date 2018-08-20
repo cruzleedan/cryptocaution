@@ -1,9 +1,10 @@
 import { User } from './user.model';
+import { Category } from './category.model';
 
 export interface Entity {
   id: string;
-  categoryId: number;
-  userId: number;
+  categoryId: string;
+  userId: string;
   name: string;
   desc: string;
   rating: number;
@@ -19,6 +20,7 @@ export interface Entity {
   poorRating?: number;
   badRating?: number;
   User?: User;
+  Category?: Category;
   category?: string;
   deletedAt: string;
   createdAt: string;

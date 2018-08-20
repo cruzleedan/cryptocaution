@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { Entity } from '../../../core/models/entity.model';
-import { MatPaginator, MatSort, PageEvent, MatDialog } from '@angular/material';
+import { MatPaginator, MatSort, PageEvent, MatDialog, MatSelectChange } from '@angular/material';
 import { ActivatedRoute, Params, Router } from '@angular/router';
 import { EntityService, ReviewService, AlertifyService, User, UserService } from '../../../core';
 import { ReviewsDataSource } from '../../../core/datasources/reviews.datasource';
@@ -19,6 +19,8 @@ import { MsgDialogComponent } from '../../../shared/dialog/msg-dialog.component'
 })
 export class EntityComponent implements OnInit {
     baseUrl = environment.baseUrl;
+    isAdmin: boolean;
+    loading: boolean;
     image: any;
     rated: boolean;
     entity: Entity;
@@ -28,12 +30,14 @@ export class EntityComponent implements OnInit {
     entityRating: string;
     entityDesc: any;
     currentUser: User;
+    sortField: string;
+    sortDirect = 'desc';
+    filter: string | object = '';
     // reviewsDataSource: ReviewsDataSource;
     columnsToDisplay = ['review_id'];
     private _ratings = ['Bad', 'Poor', 'Average', 'Great', 'Excellent'];
 
     @ViewChild(MatPaginator) paginator: MatPaginator;
-    @ViewChild(MatSort) sort: MatSort;
     @ViewChild('input', {
         read: ElementRef
     }) myInput: ElementRef;
@@ -61,6 +65,9 @@ export class EntityComponent implements OnInit {
                     this.loadReviews();
                 }
             );
+        this.userService.isAdmin.subscribe(isAdmin => {
+            this.isAdmin = isAdmin;
+        });
     }
     formatFields() {
         this.entity = this.route.snapshot.data['entity'];
@@ -81,17 +88,20 @@ export class EntityComponent implements OnInit {
     }
     loadReviews(
         sort: string = 'desc',
-        sortField: string = 'createdAt'
+        sortField: string = 'createdAt',
+        filter?: string | object
     ) {
+        this.loading = true;
         this.entityService.findReviews(
             this.entity['id'], // entityId: number,
-            this.myInput.nativeElement.querySelector('input').value, // filter = '',
+            filter || this.myInput.nativeElement.querySelector('input').value, // filter = '',
             sort, // sortDirection = 'desc',
             sortField, // sortField = 'rating',
             this.paginator.pageIndex, // pageNumber: number = 1,
             this.paginator.pageSize // pageSize: number = 10
         )
             .subscribe(resp => {
+                this.loading = false;
                 this.entityReviews = resp['data'];
                 this.entityTotalReviews = resp['count'];
             });
@@ -106,60 +116,52 @@ export class EntityComponent implements OnInit {
     }
     voteReview(reviewId, type) {
         this.reviewService.voteReview(reviewId, type)
-            .pipe(
-                map(review => review),
-                catchError(err => {
-                    if (err.error === 'Unauthorized') {
-                        const dialogRef = this.dialog.open(MsgDialogComponent, {
-                            data: {
-                                isAuth: true
-                            },
-                            width: '500px',
-                            hasBackdrop: true,
-                            panelClass: ''
-                        });
-                        dialogRef.afterClosed().subscribe(resp => {
-                            if (resp && resp.authenticated) {
-                                console.log('User has been authenticated');
-                                this.voteReview(reviewId, type);
-                            }
-                        });
-                    } else if (typeof err.error === 'object' && typeof err.error.error === 'string') {
-                        this.alertifyService.error(err.error.error);
-                    }
-                    return of([]);
-                })
-            )
             .subscribe(data => {
-                const foundIndex = this.entityReviews.findIndex(rev => rev.id === data.id);
-                if (foundIndex > -1) {
-                    this.entityReviews[foundIndex] = Object.assign(this.entityReviews[foundIndex], data);
+                if (data.error === 'Unauthorized') {
+                    const dialogRef = this.dialog.open(MsgDialogComponent, {
+                        data: {
+                            isAuth: true
+                        },
+                        width: '500px',
+                        hasBackdrop: true,
+                        panelClass: ''
+                    });
+                    dialogRef.afterClosed().subscribe(resp => {
+                        if (resp && resp.data && resp.data.success) {
+                            console.log('User has been authenticated');
+                            this.voteReview(reviewId, type);
+                        }
+                    });
+                } else {
+                    const foundIndex = this.entityReviews.findIndex(rev => rev.id === data.id);
+                    if (foundIndex > -1) {
+                        this.entityReviews[foundIndex] = Object.assign(this.entityReviews[foundIndex], data);
+                    }
                 }
             });
     }
-    onDelete(entityId: string) {
-        const dialogRef = this.dialog.open(MsgDialogComponent, {
-            data: {
-                type: 'confirm',
-                msg: 'Are you sure, you want to delete this review?'
-            },
-            width: '500px',
-            hasBackdrop: true,
-            panelClass: ''
-        });
-        dialogRef.afterClosed().subscribe(resp => {
-            if (resp && resp.proceed) {
-                console.log('Will be deleting entity review', entityId);
+    clearFilters() {
+        this.filter = '';
+        this.loadReviews('desc', 'createdAt', '');
+    }
+    filterStars(star: number) {
+        this.filter = {rating: star};
+        this.loadReviews('desc', 'createdAt', this.filter);
+    }
+    sortReviews(event: MatSelectChange) {
+        const field = event.value;
+        console.log('Sort Reviews', field);
 
-                this.userService.deleteReview(entityId)
-                    .subscribe(del => {
-                        console.log('del', del);
-                        if (del) {
-                            this.alertifyService.success('Successfully deleted review');
-                            this.loadReviews();
-                        }
-                    });
-            }
-        });
+        this.sortField = field;
+        this.loadReviews('desc', field, this.filter);
+    }
+    sortDirection() {
+        this.sortDirect = this.sortDirect === 'desc' ? 'asc' : 'desc';
+        this.loadReviews(this.sortDirect, this.sortField, this.filter);
+    }
+    afterEntityDelete(del) {
+        if (del.success) {
+            this.router.navigate(['/categories']);
+        }
     }
 }

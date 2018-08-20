@@ -44,45 +44,38 @@ export class AuthComponent implements OnInit, AfterViewInit, AfterViewChecked, O
         private userService: UserService,
         private route: ActivatedRoute
     ) {
-        this.isHome = route.url['value'] && route.url['value'] instanceof Array ? !!(route.url['value'][0]['path'] === '') : false;
-        console.log('Activated Route', route);
+        const me = this;
+        let url = this.route.snapshot['_routerState'].url;
+        url = url.split('/').slice(1).shift();
+        this.setFlags(url);
 
         this.userService.isAdmin.subscribe(isAdmin => {
             this.isAdmin = isAdmin;
             if (!this.isAdmin && this.showHeader) {
-                document.addEventListener('scroll', this.scrollEvent, false);
+                console.log('attaching scroll event');
+                document.addEventListener('scroll', () => this.scrollEvent(me), false);
                 this.navBar();
             } else {
-                document.removeEventListener('scroll', this.scrollEvent);
+                console.log('detaching scroll event');
+                document.removeEventListener('scroll', () => this.scrollEvent(me));
+            }
+        });
+        this.navigationSubscription = this.router.events.subscribe((val) => {
+            console.log('router event ', val);
+            if (val instanceof NavigationEnd) {
+                url = val.url.split('/').slice(1).shift();
+                this.setFlags(url);
+                if (!this.isAdmin && this.showHeader) {
+                    this.navBar();
+                }
             }
         });
     }
 
     ngOnInit() {
     }
-    scrollEvent = () => {
-        return this.onScroll(this);
-    }
+
     ngAfterViewInit() {
-        this.navigationSubscription = this.router.events.subscribe((val) => {
-            console.log('router event ', val);
-
-            if (val instanceof NavigationEnd) {
-                console.log('Navigation', val);
-                const url = val.url.split('/').slice(1).shift();
-                this.isHome = url === '';
-
-                this.showHeader = !['login', 'register', 'admin'].includes(url);
-                this.showFooter = !['login', 'register', 'admin'].includes(url);
-                this.isSignUpLogin = ['login', 'register'].includes(url);
-
-                console.log('header', this.header);
-                console.log('show header', this.showHeader);
-                if (!this.isAdmin && this.showHeader) {
-                    this.navBar();
-                }
-            }
-        });
     }
     ngAfterViewChecked() {
         this.eleHeader = this.header ? this.header.nativeElement : undefined;
@@ -95,9 +88,19 @@ export class AuthComponent implements OnInit, AfterViewInit, AfterViewChecked, O
         // don't then we will continue to run our initialiseInvites()
         // method on every navigationEnd event.
         if (this.navigationSubscription) {
-           this.navigationSubscription.unsubscribe();
+            this.navigationSubscription.unsubscribe();
         }
-      }
+    }
+    setFlags(url) {
+        this.isHome = url === '';
+        this.showHeader = !['login', 'register', 'admin'].includes(url);
+        this.showFooter = !['login', 'register', 'admin'].includes(url);
+        this.isSignUpLogin = ['login', 'register'].includes(url);
+
+    }
+    scrollEvent(me) {
+        return me.onScroll(me);
+    }
     navBar() {
         if (!document) {
             return;

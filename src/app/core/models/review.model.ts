@@ -2,8 +2,8 @@ import { Entity } from './entity.model';
 
 export interface Review {
     id: string;
-    entityId: number;
-    userId: number;
+    entityId: string;
+    userId: string;
     username?: string;
     reviewCount?: number;
     avatar?: string;

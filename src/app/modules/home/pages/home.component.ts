@@ -12,22 +12,6 @@ import { environment } from '../../../../environments/environment';
 })
 export class HomeComponent implements OnInit {
     baseUrl = environment.baseUrl;
-    services = [{
-        img: 'https://www.bitcoinforbeginners.io/wp-content/uploads/2018/01/getting_started.jpg?x63937',
-        title: 'Guides & FAQ',
-        desc: 'How-to tutorials and guides to help you get started with cryptocurrency investing. Clear, concise, and written for beginners without a technical background.',
-        link: 'https://www.bitcoinforbeginners.io/cryptocurrency-guides-tutorials/'
-    }, {
-        img: 'https://www.bitcoinforbeginners.io/wp-content/uploads/2018/01/crypto_news.jpg?x63937',
-        title: 'Crypto News',
-        desc: 'Daily digest of the top cryptocurrency news articles with a short summary for each one. Also includes weekly market analysis articles and the most up-to-date information.',
-        link: 'https://www.bitcoinforbeginners.io/cryptocurrency-news-today/'
-    }, {
-        img: 'https://www.bitcoinforbeginners.io/wp-content/uploads/2018/01/coin_ico_review.jpg?x63937',
-        title: 'Coins and ICOs',
-        desc: 'Overview articles of the latest and greatest coins and ICOs. Serves as an introduction and presents only facts – does not include any recommendations to buy/sell.',
-        link: 'https://www.bitcoinforbeginners.io/cryptocurrency-reviews/'
-    }];
     constructor(
         private router: Router,
         private categoriesService: CategoryService,
@@ -45,19 +29,10 @@ export class HomeComponent implements OnInit {
     topEntities: Entity[];
     recentEntities: Entity[];
     trendingEntities: Entity[];
-
+    loadingTop = true;
+    loadingTrending = true;
+    loadingRecent = true;
     ngOnInit() {
-        this.userService.isAuthenticated.subscribe(
-            (authenticated) => {
-                this.isAuthenticated = authenticated;
-                // set the dashboard list accordingly
-                if (authenticated) {
-                    this.setListTo('feed');
-                } else {
-                    this.setListTo('all');
-                }
-            }
-        );
         this.categoriesService.getCategories()
             .subscribe(categories => {
                 this.categories = categories;
@@ -65,26 +40,18 @@ export class HomeComponent implements OnInit {
             });
         this.entityService.getEntities('rating', '0', '5')
             .subscribe(entities => {
+                this.loadingTop = false;
                 this.topEntities = entities;
             });
         this.entityService.getEntities('reviewCount', '0', '5')
             .subscribe(entities => {
+                this.loadingTrending = false;
                 this.trendingEntities = entities;
             });
         this.entityService.getEntities('createdAt', '0', '5')
             .subscribe(entities => {
+                this.loadingRecent = false;
                 this.recentEntities = entities;
             });
-    }
-
-    setListTo(type: string = '', filters: Object = {}) {
-        // If feed is requested but user is not authenticated, redirect to login
-        if (type === 'feed' && !this.isAuthenticated) {
-            this.router.navigateByUrl('/login');
-            return;
-        }
-
-        // Otherwise, set the list object
-        this.listConfig = { type: type, filters: filters };
     }
 }
