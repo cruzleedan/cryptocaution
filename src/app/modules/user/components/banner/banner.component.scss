@@ -28,6 +28,7 @@
         display: block;
     }
     .user-reviews a,
+    .user-entities a,
     .user-score span:last-child
     {
         text-decoration: none;
@@ -35,7 +36,8 @@
         font-weight: bold;
     }
     .user-score .total-score,
-    .user-reviews .total-reviews
+    .user-reviews .total-reviews,
+    .user-entities .total-entities
     {
         font-size: 25px;
         font-weight: bold;
