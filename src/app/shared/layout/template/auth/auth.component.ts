@@ -5,6 +5,7 @@ import { map } from 'rxjs/operators';
 import { MatMenuTrigger } from '@angular/material';
 import { Router, NavigationEnd, ActivatedRoute } from '@angular/router';
 import { UserService } from '../../../../core';
+import { ObservableMedia, MediaChange } from '../../../../../../node_modules/@angular/flex-layout';
 
 @Component({
     selector: 'app-auth-template',
@@ -15,6 +16,12 @@ export class AuthComponent implements OnInit, AfterViewInit, AfterViewChecked, O
     isHome: boolean;
     isAdmin: boolean;
     isSignUpLogin: boolean;
+
+    sideNavOpened = true;
+    matDrawerOpened = false;
+    matDrawerShow = true;
+    sideNavMode = 'side';
+
     showHeader = true;
     showFooter: boolean;
     lastKnownScrollY: number;
@@ -40,6 +47,7 @@ export class AuthComponent implements OnInit, AfterViewInit, AfterViewChecked, O
     }) sidenavcont;
     constructor(
         private breakpointObserver: BreakpointObserver,
+        private media: ObservableMedia,
         private router: Router,
         private userService: UserService,
         private route: ActivatedRoute
@@ -73,6 +81,9 @@ export class AuthComponent implements OnInit, AfterViewInit, AfterViewChecked, O
     }
 
     ngOnInit() {
+        this.media.subscribe((mediaChange: MediaChange) => {
+            this.toggleView();
+        });
     }
 
     ngAfterViewInit() {
@@ -89,6 +100,24 @@ export class AuthComponent implements OnInit, AfterViewInit, AfterViewChecked, O
         // method on every navigationEnd event.
         if (this.navigationSubscription) {
             this.navigationSubscription.unsubscribe();
+        }
+    }
+    toggleView() {
+        if (this.media.isActive('gt-md')) {
+            this.sideNavMode = 'side';
+            this.sideNavOpened = true;
+            this.matDrawerOpened = false;
+            this.matDrawerShow = true;
+        } else if (this.media.isActive('gt-xs')) {
+            this.sideNavMode = 'side';
+            this.sideNavOpened = false;
+            this.matDrawerOpened = true;
+            this.matDrawerShow = true;
+        } else if (this.media.isActive('lt-sm')) {
+            this.sideNavMode = 'over';
+            this.sideNavOpened = false;
+            this.matDrawerOpened = false;
+            this.matDrawerShow = false;
         }
     }
     setFlags(url) {

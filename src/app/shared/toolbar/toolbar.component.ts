@@ -14,19 +14,25 @@ export class ToolbarComponent implements OnInit {
     @Input() sidebar;
     @Input() drawer;
     @Input() matDrawerShow;
+    @Input() searchOpen;
 
-    searchOpen = false;
     toolbarHelpers = ToolbarHelpers;
     user: User;
+    isAuthenticated: boolean;
     constructor(
         private userService: UserService
     ) {
+        userService.isAuthenticated
+            .subscribe(isAuthenticated => {
+                this.isAuthenticated = isAuthenticated;
+            });
         userService.currentUser
-        .subscribe(user => {
-            this.user = user;
-            this.toolbarHelpers.currentUser.currentUserName = this.user.username;
-            this.toolbarHelpers.currentUser.photoURL = this.user.avatar ? `${this.baseUrl}/avatar/${this.user.id}/${this.user.avatar}` : '';
-        });
+            .subscribe(user => {
+                this.user = user;
+                this.toolbarHelpers.currentUser.currentUserName = this.user.username;
+                this.toolbarHelpers.currentUser.photoURL = this.user.avatar ?
+                    `${this.baseUrl}/avatar/${this.user.id}/${this.user.avatar}` : '';
+            });
     }
 
     ngOnInit() {

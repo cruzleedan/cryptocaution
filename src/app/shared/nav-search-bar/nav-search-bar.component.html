@@ -1,5 +1,5 @@
 <mat-form-field class="search" [ngClass]="{'search-open': open == true}" appearance="outline">
-    <input type="text" placeholder="Coins, Platforms ..."
+    <input type="text" placeholder="Find Coins, Platforms ..."
         (focus)="bigMenu = true" (focusout)="bigMenu = false"
         aria-label="Find" matInput [formControl]="searchFormControl"
         [matAutocomplete]="auto"
@@ -18,7 +18,7 @@
         </ng-container>
     </mat-autocomplete>
     <ng-container *ngIf="loading">
-        <app-loading-spinner [class]="spinnerCls"></app-loading-spinner>
+        <app-loading-spinner></app-loading-spinner>
     </ng-container>
     <button matSuffix mat-button *ngIf="searchFormControl.value" mat-icon-button aria-label="Clear" (click)="clearSearch()">
         <mat-icon>close</mat-icon>

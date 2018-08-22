@@ -19,6 +19,7 @@ export class AuthComponent implements OnInit {
     errors = {error: ''};
     isSubmitting = false;
     authForm: FormGroup;
+    returnUrl: string;
     matcher = new ShowOnDirtyErrorStateMatcher();
     constructor(
         private route: ActivatedRoute,
@@ -39,6 +40,9 @@ export class AuthComponent implements OnInit {
     }
 
     ngOnInit() {
+        // get return url from route parameters or default to '/'
+        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
+
         this.route.url.subscribe(data => {
             // Get the last piece of the URL (it's either 'login' or 'register')
             this.authType = data[data.length - 1].path;
@@ -67,7 +71,7 @@ export class AuthComponent implements OnInit {
                 resp => {
                     console.log('resp', resp);
                     if (resp && resp['success']) {
-                        this.router.navigateByUrl('/');
+                        this.router.navigateByUrl(this.returnUrl);
                     } else if (resp && resp['error'] && resp['error']['error']) {
                         this.authError = resp['error']['error'] || 'Something went wrong while logging you in';
                     } else if (resp && resp['error'] && resp['error']['errors']) {

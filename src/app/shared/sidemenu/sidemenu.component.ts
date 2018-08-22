@@ -1,5 +1,4 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { menus } from './menu-elements';
 import { environment } from '../../../environments/environment';
 import { UserService, User } from '../../core';
 @Component({
@@ -10,7 +9,7 @@ import { UserService, User } from '../../core';
 export class SidemenuComponent implements OnInit {
     baseUrl = environment.baseUrl;
     @Input() iconOnly = false;
-    menus = menus;
+    @Input() menus;
     user: User;
     constructor(
         private userService: UserService

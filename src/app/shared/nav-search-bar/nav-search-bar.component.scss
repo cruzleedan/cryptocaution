@@ -1,4 +1,7 @@
 ::ng-deep {
+    mat-form-field.search {
+        margin-bottom: -1.25em;
+    }
     .mat-form-field-infix {
         padding: 0.5em 0 0.5em 0 !important;
     }
@@ -11,7 +14,6 @@ app-loading-spinner {
 }
 mat-form-field {
     font-size: 14px;
-
 }
 .search {
 	width: 0;
@@ -21,7 +23,6 @@ mat-form-field {
 	transition: all .4s cubic-bezier(.35,0,.25,1);
 	margin-top: 7px;
 }
-
 .search.search-open {
 	width: 250px;
 	visibility: visible;

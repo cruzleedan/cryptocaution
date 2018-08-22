@@ -65,11 +65,11 @@
                 </button>
                 <span class="link" fxFlexAlign="end" *ngIf="isLogin">
                     Not a user?
-                    <a [routerLink]="['/register']">sign up</a>
+                    <a [routerLink]="['/auth/register']">sign up</a>
                 </span>
                 <span class="link" fxFlexAlign="end" *ngIf="isRegister">
                     Already have an account.
-                    <a [routerLink]="['/login']">Sign in</a>
+                    <a [routerLink]="['/auth/login']">Sign in</a>
                 </span>
             </div>
         </form>

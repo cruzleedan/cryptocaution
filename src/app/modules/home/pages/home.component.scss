@@ -1,7 +1,29 @@
+::ng-deep {
+    section.body mat-card.mat-card {
+        padding: 10px;
+        mat-card-title {
+            line-height: 1.6rem;
+            font-size: 1.2rem;
+            text-transform: capitalize;
+            margin-bottom: 0;
+        }
+    }
+}
+
 :host {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
+}
+.write-btn-cont {
+    padding: 5px;
+}
+.review-cont {
+    border: 1px solid #c7c7c7;
+    padding: 5px;
+    border-radius: 2px;
+    line-height: 1.2rem;
+    font-size: .8rem;
 }
 .mat-card-avatar {
     overflow: hidden;
@@ -12,13 +34,12 @@ mat-card-title a {
     color: #000;
 }
 app-read-more {
-    font-size: 14px;
 }
 .vertical-entity-card {
-    margin-bottom: 5px;
+    margin-bottom: 15px;
 }
 .banner-container {
-    min-height: 570px;
+    min-height: 350px;
     background-image: url('../../../../assets/images/banner4.jpg');
     background-repeat: no-repeat;
     background-position: center top;
@@ -46,9 +67,6 @@ app-read-more {
 .search-bar-container {
     padding: 4em 0;
     width: 100%;
-    &>div {
-        background-color: #fff;
-    }
 }
 
 $fontSize: 20px;

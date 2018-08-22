@@ -145,6 +145,31 @@ export class UserService {
         return this.currentUserSubject.value;
     }
 
+    forgotPasswordReset(
+        newPassword: string,
+        token: string
+    ): Observable<{ success: true }> {
+        return this.apiService
+            .put('/user/forgot-password-reset', {
+                newPassword,
+                token
+            }, null, true)
+            .pipe(
+                map(resp => {
+                    if (!resp.success) {
+                        this.alertifyService.error(this.errorUtil.getError(resp) || 'Failed to reset password.');
+                        return of(null);
+                    }
+                    return resp;
+                }),
+                catchError(err => {
+                    const error = this.errorUtil.getError(err, { getValidationErrors: true });
+                    if (typeof error === 'object') { return of(error); }
+                    this.alertifyService.error(error || 'Failed to reset password.');
+                    return of(null);
+                })
+            );
+    }
     passwordReset(
         password: string,
         newPassword: string

@@ -1,4 +1,5 @@
 <mat-sidenav-container class="max-width-1024">
+    <!--
     <mat-sidenav opened mode="side" style="min-width:200px">
         <a *appShowAdmin="true" mat-raised-button [routerLink]="['/entity/new']" routerLinkActive="active" color="primary" class="add-entity-btn">
             <mat-icon>add</mat-icon> New Entity
@@ -10,26 +11,21 @@
         </a>
         <app-category-menu></app-category-menu>
     </mat-sidenav>
+    -->
+
     <mat-sidenav-content>
         <!-- START This block of code should be dynamic -->
         <div class="category-container">
-            <div fxLayout="row" fxLayoutGap="10px">
-                <mat-form-field appearance="fill" color="primary" fxFlex fxFlex.xs="0 1 auto">
-                    <mat-label>FIND</mat-label>
-                    <input type="text" matInput #input placeholder="Keyword" [formControl]="searchFormControl">
+            <div fxLayout="row" fxLayoutGap="10px" fxLayoutAlign="stretch center">
+                <mat-form-field appearance="outline" color="primary" fxFlex fxFlex.xs="0 1 auto" class="mt-n-bm">
+                    <input placeholder="Find" type="text" matInput #input placeholder="Keyword" [formControl]="searchFormControl">
                     <button matSuffix mat-button *ngIf="searchFormControl.value" mat-icon-button aria-label="Clear" (click)="searchFormControl.setValue('')">
                         <mat-icon>close</mat-icon>
                     </button>
                 </mat-form-field>
-                <div class="filter-btn" fxFlex="1 1 5em">
-                    <div class="mat-form-field-wrapper" fxFlex>
-                        <button  type="button" #filterBtn fxFlex     [ngClass]="{'active': isFiltered, 'disable': !isFiltered}"
-                            (click)="toggleFilter(filterBtn.color)">
-                            <mat-icon inline="true">filter</mat-icon>
-                            <span>Filter</span>
-                        </button>
-                    </div>
-                </div>
+                <button mat-icon-button #filterBtn [ngClass]="{'active': isFiltered, 'disable': !isFiltered}" (click)="toggleFilter(filterBtn.color)">
+                    <mat-icon>filter_list</mat-icon>
+                </button>
             </div>
             <div fxFlexLayout="row" fxLayoutGap="10px" class="count-container">
                 <div fxFlexAlign="center">
@@ -43,8 +39,8 @@
                         </mat-chip>
                     </mat-chip-list>
                 </div>
-                <div>
-                    <mat-form-field>
+                <div fxLayout="row">
+                    <mat-form-field class="mt-n-bm">
                         <mat-select [(value)]="sortField" placeholder="Sort by" (selectionChange)="sortEntities($event)">
                             <mat-option>None</mat-option>
                             <mat-option value="rating">Rating</mat-option>

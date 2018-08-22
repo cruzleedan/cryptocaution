@@ -122,10 +122,12 @@
             <mat-card>
                 <mat-card-content fxLayout="row">
                     <div fxFlex>
-                        <button *appShowAdmin="true" type='button' mat-stroked-button color="accent" (click)='delete()'>
-                            <mat-icon>delete</mat-icon>
-                            Delete
-                        </button>
+                        <ng-container *ngIf="isEdit">
+                            <button *appShowAdmin="true" type='button' mat-stroked-button color="accent" (click)='delete()'>
+                                <mat-icon>delete</mat-icon>
+                                Delete
+                            </button>
+                        </ng-container>
                     </div>
                     <div fxLayoutAlign="end" fxLayoutGap="5px">
                         <button type='submit' mat-stroked-button color="accent" [disabled]='loading || !entityForm.valid || (!(isEdit && imgFormControl.value) && !entityForm.valid)'>

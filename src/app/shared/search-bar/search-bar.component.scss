@@ -1,3 +1,11 @@
+::ng-deep {
+    mat-form-field {
+        width: 100%;
+    }
+    .mat-form-field-appearance-outline .mat-form-field-wrapper {
+        margin: 0;
+    }
+}
 
 mat-form-field.mat-form-field {
     margin-bottom: -1.35em;
@@ -10,14 +18,11 @@ mat-form-field.mat-form-field input {
     font-size: 12px;
     padding: 0 1em;
     background-color: #149cf6;
-    color: #fff;
     cursor: pointer;
 }
-form.toolbar {
-    .search-btn {
-        background: rgba(0, 106, 137, 0.15);
-        transition: 500ms ease-in;
-    }
+form {
+    background-color: #fff;
+    border-radius: 5px;
 }
 app-loading-spinner {
     position: absolute;

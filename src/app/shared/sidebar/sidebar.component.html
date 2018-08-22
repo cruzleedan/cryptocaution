@@ -15,6 +15,7 @@
 
             <h3 class="mat-subheading-2" style="margin: 10px 14px 0;">Upcoming Events</h3>
             <mat-nav-list>
+                <span class="nothing-to-show" *ngIf="!events.length">None</span>
                 <div *ngFor="let event of events;">
                     <mat-list-item>
                         <div fxLayout="row" fxLayoutAlign="start center" mat-ripple>
@@ -33,6 +34,7 @@
 
             <mat-nav-list>
                 <h3 class="mat-subheading-2" style="margin: 10px 14px 0;">Todo-List</h3>
+                <span class="nothing-to-show" *ngIf="!todolists.length">None</span>
                 <div *ngFor="let todolist of todolists;">
                     <mat-list-item>
                         <div fxLayout="row" fxLayoutAlign="start center" mat-ripple>
@@ -57,6 +59,7 @@
                 <h3 style="margin: 10px 14px 0;">Friends</h3>
 
                 <mat-list>
+                    <span class="nothing-to-show" *ngIf="!messages.length">No messages</span>
                     <mat-list-item *ngFor="let message of messages">
                         <img matListAvatar src="assets/images/avatars/friend1.jpeg" alt="...">
                         <h3 matLine style="margin: 0; font-weight: bold;"> {{message.from}} </h3>
@@ -75,7 +78,7 @@
 
 <mat-divider></mat-divider>
 
-<mat-nav-list>
+<!-- <mat-nav-list>
     <div>
         <h3 class="mat-subheading-2" style="margin: 10px 14px 0;">Server Statistics</h3>
         <div>
@@ -102,4 +105,4 @@
         </div>
 
     </div>
-</mat-nav-list>
+</mat-nav-list> -->

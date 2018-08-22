@@ -1,5 +1,28 @@
 <form fxLayout="row" [class]="class">
-    <mat-form-field class="search-bar-field" appearance="fill" color="accent" fxFlex fxFlex.xs="0 1 auto">
+    <mat-form-field class="search mt-n-bm" appearance="outline">
+        <input type="text" placeholder="Find Coins, Platforms ..." (focus)="bigMenu = true" (focusout)="bigMenu = false" aria-label="Find"
+            matInput [formControl]="searchFormControl" [matAutocomplete]="auto" (keyup)="searchKeyword$.next($event.target.value)">
+        <mat-autocomplete #auto="matAutocomplete" (optionSelected)="search($event)" [displayWith]="searchDisplayFn">
+            <ng-container *ngIf="(!filteredOptions || !filteredOptions.length) && (!searchFormControl.value || !searchFormControl.value.length)">
+                <mat-option type="button" *ngFor="let category of categoryOptions" [routerLink]="['/category/'+category.id]">
+                    <mat-icon *ngIf="category.icon">{{ category.icon }}</mat-icon>
+                    {{ category.name }}
+                </mat-option>
+            </ng-container>
+            <ng-container *ngIf="filteredOptions">
+                <mat-option *ngFor="let entity of filteredOptions" [value]="entity" [routerLink]="['/entity/'+entity.id]">
+                    {{entity.name}}
+                </mat-option>
+            </ng-container>
+        </mat-autocomplete>
+        <ng-container *ngIf="loading">
+            <app-loading-spinner></app-loading-spinner>
+        </ng-container>
+        <button matSuffix mat-button *ngIf="searchFormControl.value" mat-icon-button aria-label="Clear" (click)="clearSearch()">
+            <mat-icon>close</mat-icon>
+        </button>
+    </mat-form-field>
+    <!-- <mat-form-field class="search-bar-field" appearance="fill" color="accent" fxFlex fxFlex.xs="0 1 auto">
         <mat-label>FIND</mat-label>
         <input type="text" placeholder="Coins, Platforms ..." aria-label="Find" matInput [formControl]="searchFormControl" [matAutocomplete]="auto" (keyup)="searchKeyword$.next($event.target.value)" (keydown)="$event.key === 'Enter' ? findKeyword() : ''">
         <mat-autocomplete #auto="matAutocomplete" (optionSelected)="search($event)" [displayWith]="searchDisplayFn">
@@ -24,5 +47,5 @@
     </mat-form-field>
     <div class="search-btn" fxLayoutAlign="center center" (click)="findKeyword()">
         <mat-icon>search</mat-icon>
-    </div>
+    </div> -->
 </form>

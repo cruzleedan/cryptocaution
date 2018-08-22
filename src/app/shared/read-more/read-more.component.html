@@ -2,4 +2,4 @@
 </div>
 <a class="text" *ngIf="href" [routerLink]="href" [innerHTML]="currentText" ></a>
 <!-- <br *ngIf="href"> -->
-<a [class.hidden]="hideToggle" (click)="toggleView()">Read {{isCollapsed? 'more':'less'}}</a>
+<a [class.hidden]="hideToggle" (click)="toggleView()" class="read-more-btn">Read {{isCollapsed? 'more':'less'}}</a>

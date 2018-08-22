@@ -10,7 +10,7 @@
     <a class="full-height" [routerLinkActive]="['mat-accent','active']" mat-button [routerLink]="['/category']">Category</a>
     <!-- hide this if user is logged in -->
     <ng-container *appShowAuthed="false">
-        <a class="full-height" routerLinkActive="mat-accent active" mat-button [routerLink]="['/login']">Login</a>
+        <a class="full-height" routerLinkActive="mat-accent active" mat-button [routerLink]="['/auth/login']">Login</a>
         <a class="full-height" routerLinkActive="mat-accent active" mat-button [routerLink]="['/register']">Sign up</a>
     </ng-container>
 

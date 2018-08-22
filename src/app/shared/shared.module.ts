@@ -90,6 +90,7 @@ import { BreadcrumbsComponent } from './breadcrumb/breadcrumbs.component';
 import { RatingLabelPipe } from './pipes/rating-label.pipe';
 import { EntityDeleteComponent } from './entity-delete/entity-delete.component';
 import { ReviewDeleteComponent } from './review-delete/review-delete.component';
+import { DefaultComponent } from './layout/template/default/default.component';
 @NgModule({
     imports: [
         CommonModule,
@@ -172,6 +173,7 @@ import { ReviewDeleteComponent } from './review-delete/review-delete.component';
         BreadcrumbsComponent,
         EntityDeleteComponent,
         ReviewDeleteComponent,
+        DefaultComponent,
 
     ],
     exports: [
@@ -248,6 +250,7 @@ import { ReviewDeleteComponent } from './review-delete/review-delete.component';
         UserMenuComponent,
         SidebarComponent,
         AdminComponent,
+        DefaultComponent,
         AuthComponent,
         BreadcrumbsComponent,
         EntityDeleteComponent,

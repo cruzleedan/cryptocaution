@@ -1,5 +1,5 @@
 <!-- <stbui-loading *ngIf="showLoading"></stbui-loading> -->
-<mat-toolbar class="mat-elevation-z4">
+<mat-toolbar class="mat-elevation-z4 main-toolbar">
     <button mat-icon-button (click)="sidenav.toggle();drawer.toggle();" *ngIf="matDrawerShow">
         <i class="material-icons app-toolbar-menu">menu </i>
     </button>
@@ -7,21 +7,35 @@
         <i class="material-icons app-toolbar-menu">menu </i>
     </button>
 
-    <span class="spacer"></span>
+    <span class="spacer" fxHide="true" [fxHide.gt-sm]="true" [fxHide.lt-sm]="false"></span>
 
-    <button mat-icon-button (click)="searchOpen = !searchOpen" fxHide="true" [fxHide.gt-xs]="false">
+    <button mat-icon-button (click)="searchOpen = !searchOpen" fxHide="true" [fxHide.gt-sm]="true" [fxHide.lt-sm]="false" matTooltip="click to expand search box">
         <i class="material-icons">search</i>
     </button>
-    <app-nav-search-bar [open]="searchOpen"></app-nav-search-bar>
+    <app-nav-search-bar [open]="searchOpen" [fxFlex.gt-sm] [fxLayoutAlign.gt-sm]="'center center'" ngClass.gt-sm="full-length"></app-nav-search-bar>
 
-    <app-fullscreen></app-fullscreen>
+    <a mat-icon-button matTooltip="Add an Entity" [routerLink]="['/entity/new']">
+        <i class="material-icons">add_box </i>
+    </a>
 
-    <app-toolbar-notification [notifications]="toolbarHelpers?.notifications"></app-toolbar-notification>
+    <a mat-icon-button matTooltip="Add a Review" [routerLink]="['/category']">
+        <i class="material-icons">star </i>
+    </a>
 
-    <app-user-menu [currentUser]="toolbarHelpers?.currentUser"></app-user-menu>
+    <app-fullscreen matTooltip="Fullscreen"></app-fullscreen>
 
-    <button mat-icon-button (click)="sidebar.toggle();">
+    <app-toolbar-notification *ngIf="isAuthenticated" [notifications]="toolbarHelpers?.notifications"></app-toolbar-notification>
+
+    <!-- <a mat-icon-button matTooltip="Categories" [routerLink]="['/category']">
+        <i class="material-icons">view_module </i>
+    </a> -->
+
+    <app-user-menu *ngIf="isAuthenticated" [currentUser]="toolbarHelpers?.currentUser"></app-user-menu>
+
+    <button *ngIf="isAuthenticated" mat-icon-button (click)="sidebar.toggle();">
         <i class="material-icons app-toolbar-menu">menu </i>
     </button>
 
+    <a [routerLink]="['/auth/login']" *ngIf="!isAuthenticated" mat-button>LOGIN</a>
+    <a [routerLink]="['/auth/register']" *ngIf="!isAuthenticated" mat-button>SIGN UP</a>
 </mat-toolbar>
