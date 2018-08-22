@@ -12,6 +12,7 @@ import { Entity } from '../../core/models/entity.model';
     styleUrls: ['./search-bar.component.scss']
 })
 export class SearchBarComponent implements OnInit, AfterViewInit {
+    bigMenu: boolean;
     @Input() inputRef: ElementRef;
     @Input() class: string;
     @Input() spinnerCls: string;
