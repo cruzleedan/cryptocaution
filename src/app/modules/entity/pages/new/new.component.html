@@ -6,7 +6,7 @@
             <mat-card>
                 <mat-card-content>
                     <div fxLayout="row" fxLayoutGap="10px" fxLayout.lt-md="column">
-                        <input type="file" (change)="fileChangeEvent($event)" #entityImgFile style="display: none" [formControl]="imgFormControl">
+                        <input type="file" accept="image/*" (change)="fileChangeEvent($event)" #entityImgFile style="display: none" [formControl]="imgFormControl">
                         <div class="img-cont">
                             <mat-icon fontSet="fa" fontIcon="fa-camera" (click)="entityImgFile.click()"></mat-icon>
                             <img [src]="croppedImage" *ngIf="croppedImage" onerror="this.onerror=null;this.src='/assets/images/image-not-found.png';">

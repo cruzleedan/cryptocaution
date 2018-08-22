@@ -4,7 +4,7 @@
     <mat-card>
         <mat-card-content>
             <div fxLayout="row" fxLayoutGap="10px" fxLayout.lt-md="column">
-                <input type="file" (change)="fileChangeEvent($event)" #entityImgFile style="display: none">
+                <input type="file" accept="image/*" (change)="fileChangeEvent($event)" #entityImgFile style="display: none">
                 <div class="img-cont">
                     <mat-icon fontSet="fa" fontIcon="fa-camera" (click)="entityImgFile.click()"></mat-icon>
                     <img [src]="croppedImage" *ngIf="croppedImage">

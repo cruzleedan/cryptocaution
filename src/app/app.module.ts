@@ -9,7 +9,6 @@ import { AppRoutingModule } from './app-routing-module';
 
 import { HttpService } from './core/errors/services/http/http.service';
 import { NotificationService } from './core/errors/services/notification/notification.service';
-import { PageResolver } from './core/errors/resolvers/page.resolver';
 import { ErrorsModule } from './core/errors/errors';
 
 import {
@@ -29,18 +28,18 @@ import { CanDeactivateGuard } from './core/guards/can-deactivate/can-deactivate.
     imports: [
         BrowserModule,
         CoreModule,
-        ErrorsModule,
         BrowserAnimationsModule,
         SharedModule,
         AuthModule,
-        AppRoutingModule
+        AppRoutingModule,
+        ErrorsModule,
     ],
     exports: [BrowserAnimationsModule],
     providers: [
         CookieService,
         HttpService,
+        CanDeactivateGuard,
         NotificationService,
-        CanDeactivateGuard
     ],
     bootstrap: [AppComponent]
 })

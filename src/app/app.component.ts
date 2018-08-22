@@ -16,7 +16,7 @@ export class AppComponent implements OnInit {
     constructor(
         private userService: UserService,
         private route: ActivatedRoute,
-        // private notificationService: NotificationService
+        private notificationService: NotificationService
     ) { }
 
     ngOnInit() {
@@ -25,11 +25,11 @@ export class AppComponent implements OnInit {
         console.log('URL', url);
 
         this.userService.populate();
-        // this.notificationService
-        //   .notification$
-        //   .subscribe(message => {
-        //     this.notification = message;
-        //     this.showNotification = true;
-        //   });
+        this.notificationService
+          .notification$
+          .subscribe(message => {
+            this.notification = message;
+            this.showNotification = true;
+          });
     }
 }

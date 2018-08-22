@@ -2,12 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { HoverRatingChangeEvent } from 'angular-star-rating';
 import { FormGroup, FormControl, FormBuilder, Validators } from '@angular/forms';
-import { UserService } from '../../../../core';
+import { UserService, EntityService } from '../../../../core';
 import { MatDialog, ShowOnDirtyErrorStateMatcher } from '@angular/material';
 import { MsgDialogComponent } from '../../../../shared/dialog/msg-dialog.component';
 import { ReviewService } from '../../../../core/services/review.service';
 import { Review } from '../../../../core/models/review.model';
 import { finalize, map } from 'rxjs/operators';
+import { Entity } from '../../../../core/models/entity.model';
 @Component({
     selector: 'app-new-review',
     templateUrl: './new-review.component.html',
@@ -26,6 +27,7 @@ export class NewReviewComponent implements OnInit {
     termsError: string;
     matcher;
     review: Review;
+    entity: Entity;
     private _labels = [
         '1 star: Bad – unacceptable experience, unreasonable and rude conduct.',
         '2 stars: Poor – an inadequate experience with a lot of friction.',
@@ -39,11 +41,19 @@ export class NewReviewComponent implements OnInit {
         private fb: FormBuilder,
         private userService: UserService,
         private reviewService: ReviewService,
-        private dialog: MatDialog
+        private entityService: EntityService,
+        private dialog: MatDialog,
     ) {
         this.isEdit = this.router.url.split('/').pop() === 'edit' ? true : false;
         this.entityId = this.route.snapshot.params['id'];
         this.review = this.route.snapshot.data.review || {};
+
+        this.entityService.findEntityById(this.entityId)
+            .subscribe(data => {
+                if (data) {
+                    this.entity = data;
+                }
+            });
 
         this.matcher = new ShowOnDirtyErrorStateMatcher;
         this.reviewForm = this.fb.group({
@@ -68,7 +78,7 @@ export class NewReviewComponent implements OnInit {
         this.reviewForm.patchValue(this.review);
         this.reviewForm.markAsPristine();
         this.entityName = this.review.hasOwnProperty('Entity')
-                && this.review['Entity'].hasOwnProperty('name') ? this.review['Entity']['name'] : '';
+            && this.review['Entity'].hasOwnProperty('name') ? this.review['Entity']['name'] : '';
         this.route.params.subscribe(params => {
             this.entityId = params['id'];
         });
@@ -107,12 +117,12 @@ export class NewReviewComponent implements OnInit {
             const addReview = () => {
                 this.loading = true;
                 this.reviewService
-                .addReview(this.entityId, this.reviewForm.value)
-                .subscribe((resp) => {
-                    this.loading = false;
-                    console.log('New Review', resp);
-                    this.router.navigate([`/entity/${this.entityId}`]);
-                });
+                    .addReview(this.entityId, this.reviewForm.value)
+                    .subscribe((resp) => {
+                        this.loading = false;
+                        console.log('New Review', resp);
+                        this.router.navigate([`/entity/${this.entityId}`]);
+                    });
             };
 
             if (!this.hasUserAcceptedTerms && this.acceptedTerms) {
@@ -152,17 +162,17 @@ export class NewReviewComponent implements OnInit {
     }
     getUserReview() {
         this.loading = true;
-            this.reviewService.hasUserReviewedEntity(this.entityId)
-                .pipe(
-                    finalize(() => {
-                        this.loading = false;
-                    })
-                )
-                .subscribe(review => {
-                    if (review) {
-                        this.review = review;
-                    }
-                });
+        this.reviewService.hasUserReviewedEntity(this.entityId)
+            .pipe(
+                finalize(() => {
+                    this.loading = false;
+                })
+            )
+            .subscribe(review => {
+                if (review) {
+                    this.review = review;
+                }
+            });
     }
     logIn() {
         const dialogRef = this.dialog.open(MsgDialogComponent, {

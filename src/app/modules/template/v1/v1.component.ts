@@ -15,7 +15,7 @@ export class V1Component implements OnInit, OnChanges {
     matDrawerOpened = false;
     matDrawerShow = true;
     sideNavMode = 'side';
-    searchOpen = false;
+    searchOpen = true;
 
     isAdmin: boolean;
     menus: {

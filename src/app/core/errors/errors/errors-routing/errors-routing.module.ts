@@ -5,7 +5,7 @@ import { ErrorsComponent } from '../errors-component/errors.component';
 
 const routes: Routes = [
   { path: 'error', component: ErrorsComponent },
-  // { path: '**', component: ErrorsComponent, data: { error: 404 } },
+  { path: '**', component: ErrorsComponent, data: { error: 404 } },
 ];
 
 @NgModule({

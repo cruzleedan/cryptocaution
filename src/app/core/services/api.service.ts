@@ -19,19 +19,17 @@ export class ApiService {
     ) { }
 
     private formatErrors(error: any) {
-        // return throwError(error.error);
-        console.log('Error!', error);
-        this.alertifyService.error(error);
-        return of([]);
+        console.log('formatErrors', error);
+        return of(error);
     }
 
     get(path: string, params: HttpParams = new HttpParams(), includeError?: boolean): Observable<any> {
-        const req = this.http.get(`${environment.baseApiUrl}${path}`, { params })
-            .pipe(catchError(err => this.formatErrors(err)));
+        const req = this.http.get(`${environment.baseApiUrl}${path}`, { params });
         if (includeError) {
-            return req.pipe();
-        } else {
+            console.log('REQUEST WITH ERRORS');
             return req.pipe(catchError(this.formatErrors));
+        } else {
+            return req;
         }
     }
 
@@ -44,9 +42,9 @@ export class ApiService {
             header
         );
         if (includeError) {
-            return req.pipe();
-        } else {
             return req.pipe(catchError(this.formatErrors));
+        } else {
+            return req;
         }
     }
 
@@ -55,9 +53,9 @@ export class ApiService {
         header = header ? header : { headers: new HttpHeaders().set('Content-Type', 'application/json') };
         const req = this.http.post(`${environment.baseApiUrl}${path}`, body, header);
         if (includeError) {
-            return req.pipe();
-        } else {
             return req.pipe(catchError(this.formatErrors));
+        } else {
+            return req;
         }
     }
     putWithProg(path: string, body) {
@@ -105,9 +103,9 @@ export class ApiService {
         includeError = includeError ? true : false;
         const req = this.http.delete(`${environment.baseApiUrl}${path}`);
         if (includeError) {
-            return req.pipe();
-        } else {
             return req.pipe(catchError(this.formatErrors));
+        } else {
+            return req;
         }
     }
 }

@@ -1,9 +1,9 @@
 <div class="main-container">
     <div class="max-width-740">
-        <h1 class="evaluatepage-heading" *ngIf="!review && !isEdit">
+        <h2 class="evaluatepage-heading" *ngIf="entity">
             Voice your opinion! Review
-            <a [routerLink]="['/entity/'+entityId]">{{entityName}}</a> now.
-        </h1>
+            <a [routerLink]="['/entity/'+entityId]">{{entity.name}}</a> now.
+        </h2>
         <h3 *ngIf="review && review.id && !isEdit" class="warn">
             You already wrote a review for {{ entityName }}. Submiting this form would update it instead.
         </h3>

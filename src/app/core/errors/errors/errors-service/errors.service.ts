@@ -3,7 +3,8 @@ import { Location, LocationStrategy, PathLocationStrategy } from '@angular/commo
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router, Event, NavigationError } from '@angular/router';
 
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, of } from 'rxjs';
+import { AuthService } from '../../../services/auth.service';
 
 
 @Injectable()
@@ -12,16 +13,25 @@ export class ErrorsService {
     constructor(
         private injector: Injector,
         private router: Router,
+        private authService: AuthService
     ) {
         // Subscribe to the NavigationError
         this.router
             .events
             .subscribe((event: Event) => {
-                if (event instanceof NavigationError) {
+                if (event.hasOwnProperty('error') && event['error'] instanceof HttpErrorResponse) {
+
+                } else if (event instanceof NavigationError) {
                     // Redirect to the ErrorComponent
                     this.log(event.error)
                         .subscribe((errorWithContext) => {
-                            this.router.navigate(['/error'], { queryParams: errorWithContext });
+                            if (!errorWithContext.status || (errorWithContext.status && ![401].includes(errorWithContext.status))) {
+                                console.log('Navigation error will redirect to error page', errorWithContext);
+                                this.router.navigate(['/error'], { queryParams: errorWithContext });
+                            } else {
+                                console.log('will show popup login');
+                                this.authService.showAuthFormPopup();
+                            }
                         });
                 }
             });
@@ -59,6 +69,6 @@ class FakeHttpService {
         const errorObservable = new Subject<string>();
         console.log('Error sent to the server: ', error);
         errorObservable.next(error);
-        return errorObservable;
+        return of(error);
     }
 }

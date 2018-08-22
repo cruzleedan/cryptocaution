@@ -5,7 +5,6 @@ import { map, catchError } from 'rxjs/operators';
 import { Review } from '../models/review.model';
 import { AlertifyService } from './alertify.service';
 import { Util } from '../errors/helpers/util';
-import { UserService } from './user.service';
 
 @Injectable({
     providedIn: 'root'
@@ -14,22 +13,19 @@ export class ReviewService {
     constructor(
         private apiService: ApiService,
         private alertifyService: AlertifyService,
-        private userService: UserService,
         private errorUtil: Util
     ) { }
     hasUserReviewedEntity(entityId: string): Observable<Review> {
         return this.apiService.get(`/user/review/${ entityId }`)
             .pipe(
                 map(res => {
+                    console.log('HAS USER REVIED ENTITY', res);
+
                     if (!res['success']) {
                         // this.alertifyService.error(this.errorUtil.getError(res) || 'Failed to check if user reviewed Entity');
                         return of(null);
                     }
                     return res['data'];
-                }),
-                catchError(err => {
-                    // this.alertifyService.error(this.errorUtil.getError(err) || 'Failed to check if user reviewed Entity');
-                    return of(null);
                 })
             );
     }

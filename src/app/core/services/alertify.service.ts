@@ -1,4 +1,6 @@
 import { Injectable } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { MsgDialogComponent } from '../../shared/dialog/msg-dialog.component';
 declare const alertify: any;
 
 @Injectable({
@@ -6,7 +8,9 @@ declare const alertify: any;
 })
 export class AlertifyService {
 
-    constructor() { }
+    constructor(
+        private dialog: MatDialog,
+    ) { }
 
     confirm(message: string, okCallback: () => any) {
         alertify.confirm(message, (e) => {
@@ -22,8 +26,22 @@ export class AlertifyService {
         alertify.success(message);
     }
 
-    error(message: string) {
-        alertify.error(message);
+    error(error: any) {
+        let message;
+        if (typeof error === 'object') {
+            if (error.hasOwnProperty('status')) {
+                switch (error.status) {
+                    case 401:
+                        // show login form popup
+                        break;
+                }
+            } else if (error.hasOwnProperty('error') && typeof error.error === 'string') {
+                message = error.error;
+            }
+        }
+        if (message) {
+            alertify.error(message);
+        }
     }
 
     warning(message: string) {
