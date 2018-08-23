@@ -93,7 +93,7 @@ export class EntityService {
     }
 
     findEntities(
-        filter: object = {}, sortDirection = 'asc', sortField = 'entity_name',
+        filter: object = {}, sortDirection = 'asc', sortField = 'createdAt',
         pageNumber = 0, pageSize = 10
     ): Observable<Entity[]> {
         this.searchingSubject.next(true);
