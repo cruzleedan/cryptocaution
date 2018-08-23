@@ -1,8 +1,14 @@
+:host {
+    display: block;
+    height: 100vh;
+    width: 100vw;
+}
 mat-error {
     text-align: right;
 }
 .form-container {
-    font-family: "Roboto", 'Helvetica Neue, Helvetica, Arial', sans-serif;
+    // font-family: "Roboto", 'Helvetica Neue, Helvetica, Arial', sans-serif;
+    height: 100%;
 }
 
 .social-login-container {

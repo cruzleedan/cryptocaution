@@ -38,7 +38,10 @@ export class AlertifyService {
             } else if (error.hasOwnProperty('error') && typeof error.error === 'string') {
                 message = error.error;
             }
+        } else if (typeof error === 'string') {
+            message = error;
         }
+
         if (message) {
             alertify.error(message);
         }

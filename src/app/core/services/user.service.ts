@@ -119,24 +119,22 @@ export class UserService {
         return this.apiService.post('/users' + route, credentials, null, true)
             .pipe(
                 map(
-                    data => {
-                        if (!data.success) {
-                            this.alertifyService.error(this.errorUtil.getError(data) || 'Authentication Failed.');
-                            return of(null);
+                    resp => {
+                        if (!resp.success) {
+                            const error = this.errorUtil.getError(resp, { getValidationErrors: true });
+                            if (typeof error === 'object') { return of(error); }
+                            console.log('ERROR!', error);
+
+                            this.alertifyService.error(error || 'Authentication Failed.');
+                            return resp;
                         }
-                        if (data.success && data.token) {
-                            data.user.token = data.token;
-                            this.setAuth(data.user);
+                        if (resp.success && resp.token) {
+                            resp.user.token = resp.token;
+                            this.setAuth(resp.user);
                         }
-                        return data;
+                        return resp;
                     }
-                ),
-                catchError(err => {
-                    const error = this.errorUtil.getError(err, { getValidationErrors: true });
-                    if (typeof error === 'object') { return of(error); }
-                    this.alertifyService.error(error || 'Authentication Failed.');
-                    return of(err);
-                })
+                )
             );
     }
 

@@ -1,8 +1,10 @@
 <div class="form-container" fxLayout="row" fxLayoutAlign="center center">
     <div id="login" class="signin-card">
-        <div class="logo-image">
-            <img src="/assets/logos/dark-logo.png" alt="Logo" title="Logo" width="138">
-        </div>
+        <a [routerLink]="['']" matTooltip="Home">
+            <div class="logo-image">
+                <img src="/assets/logos/dark-logo.png" alt="Logo" width="50">
+            </div>
+        </a>
         <h1 class="display1">CryptoCaution</h1>
         <h2 class="form-title">{{ title }}</h2>
         <div *ngIf="isLogin">
