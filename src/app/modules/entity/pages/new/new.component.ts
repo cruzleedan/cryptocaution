@@ -14,6 +14,7 @@ import { ActivatedRoute, Params, Router } from '@angular/router';
 import { Entity } from '../../../../core/models/entity.model';
 import { environment } from '../../../../../environments/environment';
 import { HttpEventType } from '@angular/common/http';
+import { AuthService } from '../../../../core/services/auth.service';
 
 @Component({
     selector: 'app-new',
@@ -58,7 +59,8 @@ export class NewComponent implements OnInit, ComponentCanDeactivate {
         private categoryService: CategoryService,
         private route: ActivatedRoute,
         private router: Router,
-        private alertifyService: AlertifyService
+        private alertifyService: AlertifyService,
+        private authService: AuthService,
     ) {
 
         this.entityForm = this.fb.group({
@@ -228,27 +230,31 @@ export class NewComponent implements OnInit, ComponentCanDeactivate {
         if (req && req.progress) {
             this.uploadProgress = req.progress;
             this.uploadProgress.subscribe(end => {
+                console.log('uploadProgress', end);
                 this.uploadProgressCompleted = true;
                 this.uploading = false;
             });
         }
         if (req && req.data) {
             req.data.subscribe((n) => {
+                console.log('req data', n);
                 this.loading = false;
-
-                this.entityForm.patchValue(n.data);
-                this.entityForm.markAsPristine();
-                this.croppedImage = n.image ? `${this.baseUrl}/entity/${n.image}` : this.croppedImage;
-
+                if (n && n.data) {
+                    this.entityForm.patchValue(n.data);
+                    this.entityForm.markAsPristine();
+                    this.croppedImage = n.image ? `${this.baseUrl}/entity/${n.image}` : this.croppedImage;
+                    this.dialog.open(SuccessDialogComponent, {
+                        data: {
+                            id: n.hasOwnProperty('id') ? n['id'] : '',
+                            msg: this.isEdit ? 'Saved Successfully.' : 'New Entity has been created.'
+                        },
+                        hasBackdrop: true,
+                        width: '300px'
+                    });
+                } else if (n && n.error && n.error === 'blocked') {
+                    this.authService.showBlockErrPopup();
+                }
                 this.entityForm.enable();
-                this.dialog.open(SuccessDialogComponent, {
-                    data: {
-                        id: n.hasOwnProperty('id') ? n['id'] : '',
-                        msg: this.isEdit ? 'Saved Successfully.' : 'New Entity has been created.'
-                    },
-                    hasBackdrop: true,
-                    width: '300px'
-                });
             });
         }
     }

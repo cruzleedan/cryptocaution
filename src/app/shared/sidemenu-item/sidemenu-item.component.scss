@@ -1,5 +1,6 @@
 a.active mat-list-item {
-    background-color: #1988d2;
+    background-color: #0575bf;
+    box-shadow: inset 0px 0px 10px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 43px 49px 52px 0px rgba(0, 0, 0, 0.12);
 }
 @mixin mat-list-icon($size: 24px) {
     font-size: $size;
@@ -30,6 +31,9 @@ a.active mat-list-item {
         background:  mat-color($primary, 500); ;
         transition: max-height .4s cubic-bezier(.35, 0, .25, 1);
         padding-top: 0px;
+        .mat-list-item-content {
+            margin-left: .5rem;
+        }
     }
 
     .mat-nav-list .mat-list-item .mat-list-icon{

@@ -1,12 +1,14 @@
 import { Component, OnInit , ElementRef, ViewChild, AfterViewInit} from '@angular/core';
 
-import { tap} from 'rxjs/operators';
+import { tap, debounceTime, distinctUntilChanged} from 'rxjs/operators';
 import { MatPaginator, MatSort } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { UsersDataSource } from '../../../../../../core/datasources/users.datasource';
 import { UserService, CategoryService } from '../../../../../../core';
 import { environment } from '../../../../../../../environments/environment';
 import { CategoriesDataSource } from '../../../../../../core/datasources/categories.datasource';
+import { FormControl } from '@angular/forms';
+import { Params } from '@angular/router';
 
 
 @Component({
@@ -18,6 +20,7 @@ export class CategoriesTblComponent implements OnInit, AfterViewInit {
     baseUrl = environment.baseUrl;
     showNavListCode;
     categoriesCount: number;
+    searchFormControl = new FormControl();
     displayedColumns = ['select', 'icon', 'category', 'action'];
     selection = new SelectionModel<string>(true, []);
     dataSource: CategoriesDataSource;
@@ -36,6 +39,23 @@ export class CategoriesTblComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         this.dataSource = new CategoriesDataSource(this.categoryService);
         this.loadCategories();
+        this.sort.sortChange.subscribe(sort => {
+            this.loadCategories();
+        });
+        this.searchFormControl.valueChanges
+            .pipe(
+                debounceTime(250),
+                distinctUntilChanged(),
+                tap(() => {
+                    this.paginator.pageIndex = 0;
+                    this.loadCategories();
+                })
+            )
+            .subscribe(
+                (params: Params) => {
+                    console.log('datasource ', this.dataSource);
+                }
+            );
         // observableFromEvent(this.filter.nativeElement, 'keyup').pipe(
         //     debounceTime(150),
         //     distinctUntilChanged(), )
@@ -53,7 +73,7 @@ export class CategoriesTblComponent implements OnInit, AfterViewInit {
     }
     loadCategories() {
         let filter = this.filter.nativeElement.value || '';
-        filter = {'name': filter};
+        filter = {'category': filter};
         this.dataSource.loadCategories(
             filter,
             this.sort.direction,

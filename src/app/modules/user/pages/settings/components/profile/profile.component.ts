@@ -9,6 +9,7 @@ import { CustomBlob } from '../../../../../../shared/helpers/custom-blob';
 import { ImageCropperDialogComponent } from '../../../../../../shared/cropper/image-cropper-dialog.component';
 import { take, debounceTime, distinctUntilChanged, switchMap, tap } from 'rxjs/operators';
 import { ValidationMessage } from '../../../../../../core/validators/validation.message';
+import { environment } from '../../../../../../../environments/environment';
 
 @Component({
     selector: 'app-profile',
@@ -16,7 +17,7 @@ import { ValidationMessage } from '../../../../../../core/validators/validation.
     styleUrls: ['./profile.component.scss']
 })
 export class ProfileComponent implements OnInit {
-
+    baseUrl = environment.baseUrl;
     user: User;
     imageChangedEvent: any = '';
     croppedImage: any = '';
@@ -25,6 +26,7 @@ export class ProfileComponent implements OnInit {
     uploading = false;
     userForm: FormGroup;
     matcher;
+    userAvatarUrl: string;
     @ViewChild('autosize') autosize: CdkTextareaAutosize;
     @ViewChild('form')
     form: NgForm;
@@ -64,6 +66,9 @@ export class ProfileComponent implements OnInit {
             .subscribe(user => {
                 this.user = user;
                 this.userForm.patchValue(user);
+                if (this.user.id && this.user.avatar) {
+                    this.userAvatarUrl = `${this.baseUrl}/avatar/${ this.user.id }/${ this.user.avatar }`;
+                }
             });
 
     }
@@ -133,6 +138,9 @@ export class ProfileComponent implements OnInit {
         });
         this.croppedImage = '';
         this.userForm.patchValue(this.user);
+        if (this.user.id && this.user.avatar) {
+            this.croppedImage = `${this.baseUrl}/avatar/${ this.user.id }/${ this.user.avatar }`;
+        }
     }
     handleSubmit() {
         const formValues = this.userForm.value;

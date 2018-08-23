@@ -9,6 +9,7 @@ import { ValidationMessage } from '../../../../../../core/validators/validation.
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
 import { CustomBlob } from '../../../../../../shared/helpers/custom-blob';
 import { PasswordValidator } from '../../../../../../core/validators/password.validator';
+import { environment } from '../../../../../../../environments/environment';
 
 @Component({
     selector: 'app-user-form',
@@ -16,6 +17,7 @@ import { PasswordValidator } from '../../../../../../core/validators/password.va
     styleUrls: ['./user-form.component.scss']
 })
 export class UserFormComponent implements OnInit {
+    baseUrl = environment.baseUrl;
     @Input() operation: string;
     @Input() user: User;
     roles = ['admin'];
@@ -33,6 +35,8 @@ export class UserFormComponent implements OnInit {
     showNewPass: boolean;
     showConfPass: boolean;
     matchingPass: FormGroup;
+    editPass: boolean;
+    userAvatarUrl: string;
     @ViewChild('autosize') autosize: CdkTextareaAutosize;
     @ViewChild('form')
     form: NgForm;
@@ -71,7 +75,6 @@ export class UserFormComponent implements OnInit {
         this.userForm = this.fb.group({
             'username': new FormControl('', [Validators.required, Validators.minLength(3)]),
             'email': new FormControl('', [Validators.required, Validators.email]),
-            matchedPassword: this.matchingPass,
             'firstname': new FormControl(''),
             'lastname': new FormControl(''),
             'gender': new FormControl(''),
@@ -85,9 +88,14 @@ export class UserFormComponent implements OnInit {
         this.isEdit = !!(this.operation === 'edit');
         this.isNew = !!(this.operation === 'new');
 
+        console.log('operation is ', this.operation);
+
         if (this.user && this.isEdit) {
             console.log('patch user form', this.user);
             this.userForm.patchValue(this.user);
+            if (this.user.id && this.user.avatar) {
+                this.userAvatarUrl = `${this.baseUrl}/avatar/${ this.user.id }/${ this.user.avatar }`;
+            }
         }
         const usernameCtrl = this.userForm.controls['username'];
         usernameCtrl.valueChanges.pipe(
@@ -160,8 +168,19 @@ export class UserFormComponent implements OnInit {
         this.croppedImage = '';
         if (this.user && this.isEdit) {
             this.userForm.patchValue(this.user);
+            if (this.user.id && this.user.avatar) {
+                this.userAvatarUrl = `${this.baseUrl}/avatar/${ this.user.id }/${ this.user.avatar }`;
+            }
         }
         this.avatarImgFile.nativeElement.value = '';
+    }
+    toggleEditPass() {
+        this.editPass = !this.editPass;
+        if (this.editPass) {
+            this.userForm.addControl('matchedPassword', this.matchingPass);
+        } else {
+            this.userForm.removeControl('matchedPassword');
+        }
     }
     handleSubmit() {
         this.submitting = true;
@@ -200,8 +219,10 @@ export class UserFormComponent implements OnInit {
                 console.log('resp', resp);
                 if (resp.success) {
                     console.log('user updated info', resp['user']);
-                    this.resetForm();
                     this.userForm.patchValue(resp['user']);
+                    if (resp['user'] && resp['user'].avatar) {
+                        this.userAvatarUrl = `${this.baseUrl}/avatar/${ resp['user'].id }/${ resp['user'].avatar }`;
+                    }
                     this.alertifyService.success('Successfully saved!');
                 } else {
                     this.alertifyService.error('Something went wrong while creating new user.');

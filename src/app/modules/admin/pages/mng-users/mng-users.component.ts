@@ -17,23 +17,21 @@ export class MngUsersComponent implements OnInit {
     ) {
         console.log('route', route);
         this.route.params.subscribe(param => {
-            this.checkNew();
+            this.checkOperation();
             this.user = this.route.snapshot.data.user;
-            console.log('edit user', this.user);
-            this.isEdit = !!(param.id);
-            this.operation = 'edit';
+            this.operation = this.isEdit ? 'edit' : (this.isNew ? 'new' : '');
         });
     }
 
     ngOnInit() {
-        this.checkNew();
+        this.checkOperation();
     }
-    checkNew() {
+    checkOperation() {
         try {
             const url = this.route.snapshot['_routerState'].url,
             urlSegment = url.split('/').pop();
             this.isNew = !!(urlSegment === 'new');
-            this.operation = 'new';
+            this.isEdit = !!(urlSegment === 'edit');
         } catch (e) {
             console.log('Something went wrong while checking if isNew or not. ', e);
 

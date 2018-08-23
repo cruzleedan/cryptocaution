@@ -84,22 +84,30 @@ export class V1Component implements OnInit, OnChanges {
                 ]
             },
             {
-                'name': 'Manage Users',
-                'icon': 'people',
-                'link': '/admin/users',
+                'name': 'Manage',
+                'icon': 'work',
+                'link': false,
                 'open': false,
-            },
-            {
-                'name': 'Manage Entities',
-                'icon': 'list',
-                'link': '/category',
-                'open': false,
-            },
-            {
-                'name': 'Manage Categories',
-                'icon': 'apps',
-                'link': '/admin/categories',
-                'open': false,
+                'sub': [
+                    {
+                        'name': 'Manage Users',
+                        'icon': 'people',
+                        'link': '/admin/users',
+                        'open': false,
+                    },
+                    {
+                        'name': 'Manage Entities',
+                        'icon': 'list',
+                        'link': '/category',
+                        'open': false,
+                    },
+                    {
+                        'name': 'Manage Categories',
+                        'icon': 'view_modules',
+                        'link': '/admin/categories',
+                        'open': false,
+                    }
+                ]
             }
         ];
     }

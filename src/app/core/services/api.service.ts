@@ -4,9 +4,10 @@ import { JwtService } from './jwt.service';
 import { throwError, Observable, Subject, of } from 'rxjs';
 import { HttpParams } from '@angular/common/http';
 import { environment } from '../../../environments/environment';
-import { catchError, map, tap, last } from 'rxjs/operators';
+import { catchError, map, tap, last, finalize } from 'rxjs/operators';
 import { Entity } from '../models/entity.model';
 import { AlertifyService } from './alertify.service';
+import { AuthService } from './auth.service';
 
 @Injectable({
     providedIn: 'root'
@@ -58,40 +59,62 @@ export class ApiService {
             return req;
         }
     }
-    putWithProg(path: string, body) {
+    putWithProg(path: string, body, includeError?: boolean) {
         const progress = new Subject<number>();
         const data = new Subject<Object>();
         const req = new HttpRequest('PUT', `${environment.baseApiUrl}${path}`, body, {
             reportProgress: true
         });
+        const subscribeFn = (event) => {
+            console.log('subscribeFn start');
+            switch (event.type) {
+                case HttpEventType.Sent:
+                    console.log('Upload started');
+                    break;
 
-        this.http.request(req)
-            .subscribe(event => {
-                switch (event.type) {
-                    case HttpEventType.Sent:
-                        console.log('Upload started');
-                        break;
+                case HttpEventType.UploadProgress:
+                    // Compute and show the % done:
+                    const percentDone = Math.round(100 * event.loaded / event.total);
+                    progress.next(percentDone);
+                    break;
 
-                    case HttpEventType.UploadProgress:
-                        // Compute and show the % done:
-                        const percentDone = Math.round(100 * event.loaded / event.total);
-                        progress.next(percentDone);
-                        break;
-
-                    case HttpEventType.Response:
-                        // Close the progress-stream if we get an answer form the API
-                        // The upload is complete
+                case HttpEventType.Response:
+                    // Close the progress-stream if we get an answer form the API
+                    // The upload is complete
+                    progress.complete();
+                    const resp = event && event.ok && event.body ? event.body : {};
+                    data.next(resp);
+                    data.complete();
+                    break;
+                case HttpEventType.ResponseHeader:
+                    if (!event.ok && event.status === 423) { // blocked
                         progress.complete();
-                        const resp = event && event.ok && event.body ? event.body : {};
-                        data.next(resp);
+                        data.next({error: 'blocked'});
                         data.complete();
-                        break;
+                    }
+                    break;
+                default:
 
-                    default:
-
-                }
             }
-        );
+        };
+        if (includeError) {
+            console.log('Put with prog include error');
+            this.http.request(req)
+                .pipe(
+                    catchError(error => {
+                        console.log('Error', error);
+                        progress.complete();
+                        data.next({});
+                        data.complete();
+                        return of({});
+                    })
+                )
+                .subscribe(subscribeFn);
+        } else {
+            console.log('Put with prog no error');
+            this.http.request(req)
+                .subscribe(subscribeFn);
+        }
 
         return {
             data: data.asObservable(),

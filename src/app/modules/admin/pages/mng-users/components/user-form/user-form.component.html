@@ -12,7 +12,7 @@
                         <input type="file" (change)="fileChangeEvent($event)" #avatarImgFile style="display: none">
                         <div class="img-cont">
                             <mat-icon fontSet="fa" fontIcon="fa-camera" (click)="avatarImgFile.click()"></mat-icon>
-                            <img [src]="croppedImage" *ngIf="croppedImage">
+                            <img [src]="croppedImage || userAvatarUrl" *ngIf="croppedImage || userAvatarUrl">
                         </div>
                         <div fxFlex fxLayout="column" fxFlex.lt-md="0 1 auto">
                             <div fxLayout="row" fxLayoutGap="10px" fxLayout.lt-md="column">
@@ -31,32 +31,6 @@
                                     </ng-container>
                                 </mat-form-field>
                             </div>
-                            <ng-container formGroupName="matchedPassword">
-
-                                <mat-form-field>
-                                    <mat-label>Password</mat-label>
-                                    <input matInput [type]="showNewPass ? 'text' : 'password'" placeholder="Enter new password" required formControlName="new" autocomplete="off">
-                                    <mat-icon (click)="showNewPass = !showNewPass;" matSuffix>
-                                        {{ showNewPass ? 'visibility' : 'visibility_off'}}
-                                    </mat-icon>
-                                    <ng-container *ngFor="let validation of validationMessages.new">
-                                        <mat-error class="error-message" *ngIf="userForm.get('matchedPassword').get('new').hasError(validation.type) && (userForm.get('matchedPassword').get('new').dirty || userForm.get('matchedPassword').get('new').touched)">{{validation.message}}</mat-error>
-                                    </ng-container>
-                                    <mat-error *ngIf="userForm.get('matchedPassword').get('new').hasError('server')">
-                                        {{ userForm.get('matchedPassword').get('new').getError('server') }}
-                                    </mat-error>
-                                </mat-form-field>
-                                <mat-form-field>
-                                    <mat-label>Re enter Password</mat-label>
-                                    <input matInput [type]="showConfPass ? 'text' : 'password'" placeholder="Confirm Password" required formControlName="confirm" autocomplete="off">
-                                    <mat-icon (click)="showConfPass = !showConfPass;" matSuffix>
-                                        {{ showConfPass ? 'visibility' : 'visibility_off'}}
-                                    </mat-icon>
-                                </mat-form-field>
-                                <ng-container *ngFor="let validation of validationMessages.confirm">
-                                    <mat-error class="error-message" *ngIf="(userForm.get('matchedPassword').hasError(validation.type)|| userForm.get('matchedPassword').hasError(validation.type)) && (userForm.get('matchedPassword').get('confirm').dirty || userForm.get('matchedPassword').get('confirm').touched)">{{validation.message}}</mat-error>
-                                </ng-container>
-                            </ng-container>
                             <div fxLayout="row" fxLayoutGap="10px" fxLayout.lt-md="column">
                                 <mat-form-field fxFlex fxFlex.xs="0 1 auto">
                                     <mat-label>First Name</mat-label>
@@ -101,6 +75,50 @@
                     </div>
                 </mat-card-content>
             </mat-card>
+            <br>
+            <div fxLayout="row">
+                <button type="button" mat-raised-button (click)="toggleEditPass()">
+                    <mat-icon aria-label="Edit password" *ngIf="!editPass">mode_edit</mat-icon>
+                    <mat-icon aria-label="remove password" *ngIf="editPass">close</mat-icon>
+                    <ng-container *ngIf="!editPass">
+                        Edit password
+                    </ng-container>
+                    <ng-container *ngIf="editPass">
+                        Do not edit password
+                    </ng-container>
+                </button>
+            </div>
+            <mat-card *ngIf="editPass" formGroupName="matchedPassword">
+                <mat-card-content>
+                    <div fxLayout="column">
+                        <mat-form-field>
+                            <mat-label>Password</mat-label>
+                            <input matInput [type]="showNewPass ? 'text' : 'password'" placeholder="Enter new password" required formControlName="new"
+                                autocomplete="off">
+                            <mat-icon (click)="showNewPass = !showNewPass;" matSuffix>
+                                {{ showNewPass ? 'visibility' : 'visibility_off'}}
+                            </mat-icon>
+                            <ng-container *ngFor="let validation of validationMessages.new">
+                                <mat-error class="error-message" *ngIf="userForm.get('matchedPassword').get('new').hasError(validation.type) && (userForm.get('matchedPassword').get('new').dirty || userForm.get('matchedPassword').get('new').touched)">{{validation.message}}</mat-error>
+                            </ng-container>
+                            <mat-error *ngIf="userForm.get('matchedPassword').get('new').hasError('server')">
+                                {{ userForm.get('matchedPassword').get('new').getError('server') }}
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-form-field>
+                            <mat-label>Re enter Password</mat-label>
+                            <input matInput [type]="showConfPass ? 'text' : 'password'" placeholder="Confirm Password" required formControlName="confirm"
+                                autocomplete="off">
+                            <mat-icon (click)="showConfPass = !showConfPass;" matSuffix>
+                                {{ showConfPass ? 'visibility' : 'visibility_off'}}
+                            </mat-icon>
+                        </mat-form-field>
+                        <ng-container *ngFor="let validation of validationMessages.confirm">
+                            <mat-error class="error-message" *ngIf="(userForm.get('matchedPassword').hasError(validation.type)|| userForm.get('matchedPassword').hasError(validation.type)) && (userForm.get('matchedPassword').get('confirm').dirty || userForm.get('matchedPassword').get('confirm').touched)">{{validation.message}}</mat-error>
+                        </ng-container>
+                    </div>
+                </mat-card-content>
+            </mat-card>
         </div>
     </div>
     <div fxLayout="column" class="components-container-gt-xs" [ngClass.xs]="'components-container-xs'" fxLayoutGap="20px">
@@ -124,9 +142,8 @@
     <div fxLayout="column" class="components-container-gt-xs" [ngClass.xs]="'components-container-xs'" fxLayoutGap="20px">
         <mat-card>
             <mat-card-content fxLayoutAlign="end" fxLayoutGap="5px">
-                <button type='submit'
-                    mat-stroked-button color="accent"
-                    [disabled]='!userForm.valid || !this.form.dirty || submitting'>
+                <button type='submit' mat-stroked-button color="accent"
+                    [disabled]='!userForm.valid || (!!!(croppedImage) && !this.form.dirty) || submitting'>
                     <ng-container *ngIf="uploading">Saving...</ng-container>
                     <ng-container *ngIf="!uploading">Submit</ng-container>
                 </button>

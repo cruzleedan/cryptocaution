@@ -3,7 +3,8 @@
         (focus)="bigMenu = true" (focusout)="bigMenu = false"
         aria-label="Find" matInput [formControl]="searchFormControl"
         [matAutocomplete]="auto"
-        (keyup)="searchKeyword$.next($event.target.value)">
+        (keyup)="searchKeyword$.next($event.target.value)"
+        (keydown)="$event.key === 'Enter' ? findKeyword() : ''">
     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="search($event)" [displayWith]="searchDisplayFn">
         <ng-container *ngIf="(!filteredOptions || !filteredOptions.length) && (!searchFormControl.value || !searchFormControl.value.length)">
             <mat-option type="button" *ngFor="let category of categoryOptions" [routerLink]="['/category/'+category.id]">

@@ -2,11 +2,13 @@ import {fromEvent as observableFromEvent,  Observable } from 'rxjs';
 
 import {distinctUntilChanged, debounceTime, tap} from 'rxjs/operators';
 import { Component, OnInit , ElementRef, ViewChild, AfterViewInit} from '@angular/core';
-import { MatPaginator, MatSort } from '@angular/material';
+import { MatPaginator, MatSort, MatSlideToggle } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { UsersDataSource } from '../../../../../../core/datasources/users.datasource';
-import { UserService } from '../../../../../../core';
+import { UserService, AlertifyService } from '../../../../../../core';
 import { environment } from '../../../../../../../environments/environment';
+import { Params } from '@angular/router';
+import { FormControl } from '@angular/forms';
 
 @Component({
     selector: 'app-users-tbl',
@@ -19,10 +21,13 @@ export class UsersTblComponent implements OnInit, AfterViewInit {
     displayedColumns = ['select', 'avatar', 'username', 'firstname', 'lastname', 'email', 'blockFlag', 'action'];
     selection = new SelectionModel<string>(true, []);
     dataSource: UsersDataSource;
+    searchFormControl = new FormControl();
     // allfeatures = TABLE_HELPERS;
     constructor(
-        private userService: UserService
-    ) { }
+        private userService: UserService,
+        private alertifyService: AlertifyService
+    ) {
+    }
     @ViewChild(MatPaginator) paginator: MatPaginator;
     @ViewChild(MatSort) sort: MatSort;
     @ViewChild('filter') filter: ElementRef;
@@ -30,6 +35,23 @@ export class UsersTblComponent implements OnInit, AfterViewInit {
     ngOnInit() {
         this.dataSource = new UsersDataSource(this.userService);
         this.loadUsers();
+        this.sort.sortChange.subscribe(sort => {
+            this.loadUsers();
+        });
+        this.searchFormControl.valueChanges
+            .pipe(
+                debounceTime(250),
+                distinctUntilChanged(),
+                tap(() => {
+                    this.paginator.pageIndex = 0;
+                    this.loadUsers();
+                })
+            )
+            .subscribe(
+                (params: Params) => {
+                    console.log('datasource ', this.dataSource);
+                }
+            );
         // observableFromEvent(this.filter.nativeElement, 'keyup').pipe(
         //     debounceTime(150),
         //     distinctUntilChanged(), )
@@ -83,5 +105,16 @@ export class UsersTblComponent implements OnInit, AfterViewInit {
             console.log('selection', this.selection);
 
         }
+    }
+    onBlockToggle(slide: MatSlideToggle) {
+        console.log('toggle', slide);
+        this.userService.blockUserToggle(slide['source']['id'], slide.checked)
+        .subscribe(user => {
+            if (!user) {
+                this.alertifyService.error('Failed to block user');
+            } else if (user && user.blockFlag === slide.checked) {
+                this.alertifyService.success(`Successfully ${slide.checked ? 'blocked!' : 'unblocked!'}`);
+            }
+        });
     }
 }

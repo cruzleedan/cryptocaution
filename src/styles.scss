@@ -83,4 +83,14 @@ body {
     border-radius: 0;
     background-color: #ea5656;
     box-shadow: 0px 1px 0px 0px #ffffff;
+    text-shadow: none;
+}
+.alertify-notifier .ajs-message.ajs-success {
+    color: #fff;
+    background: rgb(35, 123, 74);
+    border-radius: 0;
+    border: none;
+    font-size: .8rem;
+    letter-spacing: 1px;
+    text-shadow: none;
 }

@@ -70,6 +70,7 @@ export class SearchBarComponent implements OnInit, AfterViewInit {
         return value && value.hasOwnProperty('entity_name') ? value['entity_name'] : '';
     }
     findKeyword() {
+        console.log('find keyword');
         this.router.navigate(['/category'], {
             queryParams: { 'find': this.searchFormControl.value }
         });

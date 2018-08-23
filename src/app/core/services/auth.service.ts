@@ -29,4 +29,18 @@ export class AuthService {
             }
         });
     }
+    showBlockErrPopup() {
+        const dialogRef = this.dialog.open(MsgDialogComponent, {
+            data: {
+                type: 'error',
+                msg: 'Sorry, your account has been blocked.'
+            },
+            width: '500px',
+            hasBackdrop: true,
+            panelClass: ''
+        });
+        dialogRef.afterClosed().subscribe(resp => {
+            // do something
+        });
+    }
 }

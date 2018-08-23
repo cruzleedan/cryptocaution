@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, of, ReplaySubject, Observable } from 'rxjs';
+import { BehaviorSubject, of, ReplaySubject, Observable, Subject } from 'rxjs';
 import { User } from '../models/user.model';
 import { distinctUntilChanged, map, catchError, reduce, debounceTime, switchMap } from 'rxjs/operators';
 import { ApiService } from './api.service';
@@ -21,10 +21,10 @@ export class UserService {
     private currentUserSubject = new BehaviorSubject<User>({} as User);
     public currentUser = this.currentUserSubject.asObservable().pipe(distinctUntilChanged());
 
-    private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
+    private isAuthenticatedSubject = new ReplaySubject<boolean>();
     public isAuthenticated = this.isAuthenticatedSubject.asObservable();
 
-    private isAdminSubject = new BehaviorSubject<boolean>(false);
+    private isAdminSubject = new ReplaySubject<boolean>();
     public isAdmin = this.isAdminSubject.asObservable();
 
     private loadingSubject = new BehaviorSubject<boolean>(false);
@@ -294,7 +294,7 @@ export class UserService {
         }
     }
     isAdminOrEntityOwner(id: string): Observable<boolean> {
-        if (this.isAdminSubject.value) {
+        if (this.isAdminSubject) {
             return of(true);
         }
         return this.apiService.get(`/user/entity/${id}/owner`)
@@ -382,6 +382,29 @@ export class UserService {
                 return of([]);
             })
         );
+    }
+    blockUserToggle(userId: string, block: boolean): Observable<User> {
+        return this.apiService.put(
+            `/user/${userId}/block`,
+            {
+                block
+            }
+        )
+            .pipe(
+                map((res) => {
+                    if (!res.success) {
+                        this.alertifyService.error(this.errorUtil.getError(res) || 'Something went wrong while blocking user');
+                        return of(null);
+                    }
+                    return res.user;
+                }),
+                catchError(err => {
+                    const error = this.errorUtil.getError(err, { getValidationErrors: true });
+                    if (typeof error === 'object') { return of(error); }
+                    this.alertifyService.error(error || 'Something went wrong while blocking user');
+                    return of(null);
+                })
+            );
     }
     findUserById(userId: string): Observable<User> {
         return this.apiService.get(`/users/${userId}`)

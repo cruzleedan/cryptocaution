@@ -1,7 +1,7 @@
 <ng-container *ngIf="!data.isAuth && data.type != 'confirm'">
     <mat-dialog-content>
         <p>{{ msg }}</p>
-        <ng-container *ngIf="details">
+        <ng-container *ngIf="details && details !== 'undefined'">
             <div class="more" (click)="expPanel.open()">Details</div>
             <mat-expansion-panel #expPanel>
                 <p>{{ details }}</p>

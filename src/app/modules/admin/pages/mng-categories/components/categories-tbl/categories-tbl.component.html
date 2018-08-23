@@ -7,7 +7,7 @@
         <div class="table-container">
             <div class="example-header" style="padding: 0 20px;">
                 <mat-form-field floatPlaceholder="never" style="color: black; width: 100%;">
-                    <input matInput #filter placeholder="Filter categories">
+                    <input matInput #filter placeholder="Filter categories" [formControl]="searchFormControl">
                 </mat-form-field>
             </div>
             <div fxLayout="row" class="example-header example-selection-header mat-headline center-align " *ngIf="!selection.isEmpty()">

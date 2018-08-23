@@ -11,7 +11,7 @@
         <div class="table-container">
             <div class="example-header" style="padding: 0 20px;">
                 <mat-form-field floatPlaceholder="never" style="color: black; width: 100%;">
-                    <input matInput #filter placeholder="Filter users">
+                    <input matInput #filter placeholder="Filter users" [formControl]="searchFormControl">
                 </mat-form-field>
             </div>
             <div fxLayout="row" class="example-header example-selection-header mat-headline center-align " *ngIf="!selection.isEmpty()">
@@ -77,7 +77,7 @@
                 <ng-container matColumnDef="blockFlag">
                     <mat-header-cell *matHeaderCellDef> Block </mat-header-cell>
                     <mat-cell *matCellDef="let row" (click)="$event.stopPropagation()">
-                        <mat-slide-toggle [checked]="row.blockFlag" color="warn"></mat-slide-toggle>
+                        <mat-slide-toggle [checked]="row.blockFlag" color="warn" (change)="onBlockToggle($event)" data-id="{{ row.id }}"></mat-slide-toggle>
                     </mat-cell>
                 </ng-container>
 
@@ -85,15 +85,15 @@
                 <ng-container matColumnDef="action">
                     <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
                     <mat-cell *matCellDef="let row" (click)="$event.stopPropagation()">
-                        <a mat-icon-button [routerLink]="[row.id+'/edit']" color="primary">
+                        <a mat-icon-button [routerLink]="[row.id+'/edit']" color="accent">
                             <mat-icon aria-label="Edit">mode_edit</mat-icon>
                         </a>
                         <button mat-icon-button color="warn">
                             <mat-icon aria-label="Delete">delete</mat-icon>
                         </button>
-                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                        <!-- <button mat-icon-button [matMenuTriggerFor]="menu">
                             <mat-icon>more_vert</mat-icon>
-                        </button>
+                        </button> -->
                     </mat-cell>
                 </ng-container>
 
@@ -109,7 +109,7 @@
                 No users found matching filter.
             </div>
 
-            <mat-paginator #paginator [length]="100" [pageIndex]="0" [pageSize]="25" [pageSizeOptions]="[5, 10, 25, 100]">
+            <mat-paginator #paginator [length]="dataSource.count" [pageIndex]="0" [pageSize]="25" [pageSizeOptions]="[5, 10, 25, 100]">
             </mat-paginator>
         </div>
     </div>

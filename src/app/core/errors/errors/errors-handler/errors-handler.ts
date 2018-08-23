@@ -43,7 +43,10 @@ export class ErrorsHandler implements ErrorHandler {
                         this.authService.showAuthFormPopup();
                     }
                 });
-        } else if (error.error instanceof HttpErrorResponse) {
+        } else if (error instanceof HttpErrorResponse || error['error'] instanceof HttpErrorResponse) {
+            if (error['error'] instanceof HttpErrorResponse) {
+                error = error['error'];
+            }
             // The backend returned an unsuccessful response code.
             // The response body may contain clues as to what went wrong,
 
@@ -56,9 +59,9 @@ export class ErrorsHandler implements ErrorHandler {
             // Send the error to the server
             errorsService.log(error).subscribe();
             // Show notification to the user
-            return notificationService.notify(`${error.status} - ${error.message}`);
+            notificationService.notify(`${error.status} - ${error.message}`);
         } else if (
-               error.hasOwnProperty('rejection')
+               error['rejection']
             && error['rejection'].hasOwnProperty('status')
             && error['rejection']['status'] === 401
         ) {
@@ -70,6 +73,7 @@ export class ErrorsHandler implements ErrorHandler {
         }
         // return an observable with a user-facing error message
         // return throwError('Something bad happened; please try again later.');
+        console.log('errors handler will return of(null) ');
         return of(null);
 
     }
