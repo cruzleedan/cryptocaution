@@ -42,7 +42,7 @@
                 <div fxLayout="row">
                     <mat-form-field class="mt-n-bm">
                         <mat-select [(value)]="sortField" placeholder="Sort by" (selectionChange)="sortEntities($event)">
-                            <mat-option>None</mat-option>
+                            <mat-option value="createdAt">Published Date</mat-option>
                             <mat-option value="rating">Rating</mat-option>
                             <mat-option value="name">Name</mat-option>
                             <mat-option value="reviewCount">Review</mat-option>

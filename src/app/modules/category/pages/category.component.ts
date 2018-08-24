@@ -32,7 +32,7 @@ export class CategoryComponent implements OnInit, AfterViewInit {
     searchFormControl = new FormControl();
     filterForm: FormGroup;
     isFiltered: Boolean = false;
-    sortField: string;
+    sortField = 'createdAt';
     animationState = [];
     categoryId: number;
     category: Category;

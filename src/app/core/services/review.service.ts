@@ -58,7 +58,7 @@ export class ReviewService {
                     if (!res['success']) {
                         const err = this.errorUtil.getError(res) || 'Something went wrong while saving your vote.';
                         this.alertifyService.error(err);
-                        return of({error: err});
+                        return {error: err};
                     }
                     return res['data'];
                 }),

@@ -1,16 +1,16 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
-import { UserService, Errors } from '../../../core';
+import { UserService, Errors } from '../../../../core';
 import { ShowOnDirtyErrorStateMatcher, MatDialog } from '@angular/material';
-import { MsgDialogComponent } from '../../../shared/dialog/msg-dialog.component';
+import { MsgDialogComponent } from '../../../../shared/dialog/msg-dialog.component';
 
 @Component({
-    selector: 'app-auth-page',
-    templateUrl: './auth.component.html',
-    styleUrls: ['./auth.component.scss']
+    selector: 'app-signin-signup-page',
+    templateUrl: './signup-signin.component.html',
+    styleUrls: ['./signup-signin.component.scss']
 })
-export class AuthComponent implements OnInit {
+export class SignupSigninComponent implements OnInit {
     authType: String = '';
     authError = '';
     isLogin: Boolean;
@@ -110,3 +110,4 @@ export class AuthComponent implements OnInit {
             });
     }
 }
+

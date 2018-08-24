@@ -9,7 +9,7 @@ import { environment } from '../../../../environments/environment';
 import { HoverRatingChangeEvent, RatingChangeEvent } from 'angular-star-rating';
 import { DomSanitizer } from '@angular/platform-browser';
 import { map, catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
+import { of, Observable } from 'rxjs';
 import { MsgDialogComponent } from '../../../shared/dialog/msg-dialog.component';
 
 @Component({

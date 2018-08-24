@@ -8,6 +8,11 @@
             margin-bottom: 0;
         }
     }
+    star-rating {
+        .label-value.medium, .rating.medium .label-value {
+            font-size: 14px;
+        }
+    }
 }
 
 :host {
@@ -94,12 +99,12 @@ section.body {
     }
     .reviewer-name {
         font-weight: bold;
-        font-size: 14px;
+        font-size: 13px;
     }
     .review {
-        font-size: 14px;
+        font-size: 12px;
         color: #000;
-        word-spacing: 3px;
-        letter-spacing: 0.2px;
+        // word-spacing: 3px;
+        // letter-spacing: 0.2px;
     }
 }

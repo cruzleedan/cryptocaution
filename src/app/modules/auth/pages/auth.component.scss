@@ -1,8 +1,3 @@
-:host {
-    display: block;
-    height: 100vh;
-    width: 100vw;
-}
 mat-error {
     text-align: right;
 }
@@ -53,7 +48,6 @@ form button[type='submit'] {
         }
     }
 }
-
 /*-- signin-card animation ---------------------------------------- */
 
 .signin-card {

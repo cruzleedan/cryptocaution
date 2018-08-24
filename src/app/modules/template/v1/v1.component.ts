@@ -90,19 +90,19 @@ export class V1Component implements OnInit, OnChanges {
                 'open': false,
                 'sub': [
                     {
-                        'name': 'Manage Users',
+                        'name': 'Users',
                         'icon': 'people',
                         'link': '/admin/users',
                         'open': false,
                     },
                     {
-                        'name': 'Manage Entities',
+                        'name': 'Entities',
                         'icon': 'list',
                         'link': '/category',
                         'open': false,
                     },
                     {
-                        'name': 'Manage Categories',
+                        'name': 'Categories',
                         'icon': 'view_modules',
                         'link': '/admin/categories',
                         'open': false,
