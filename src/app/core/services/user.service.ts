@@ -10,6 +10,7 @@ import { Review } from '../models/review.model';
 import { HttpParams } from '@angular/common/http';
 import { Util } from '../errors/helpers/util';
 import { Entity } from '../models/entity.model';
+import { async } from 'rxjs/internal/scheduler/async';
 
 declare const FB: any;
 
@@ -20,6 +21,9 @@ export class UserService {
 
     private currentUserSubject = new BehaviorSubject<User>({} as User);
     public currentUser = this.currentUserSubject.asObservable().pipe(distinctUntilChanged());
+
+    private isAuthenticatingSubject = new ReplaySubject<boolean>();
+    public isAuthenticating$ = this.isAuthenticatingSubject.asObservable();
 
     private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
     public isAuthenticated = this.isAuthenticatedSubject.asObservable();
@@ -32,6 +36,9 @@ export class UserService {
 
     private searchingSubject = new BehaviorSubject<boolean>(false);
     public searching$ = this.searchingSubject.asObservable();
+
+    private usersCountSubject = new BehaviorSubject<number>(0);
+    public usersCount$ = this.usersCountSubject.asObservable();
 
     constructor(
         private apiService: ApiService,
@@ -50,6 +57,7 @@ export class UserService {
     // This runs once on application startup.
     populate() {
         console.log('populate called');
+        this.isAuthenticatingSubject.next(true);
         // If JWT detected, attempt to get & store user's info
         if (this.jwtService.getToken()) {
             this.apiService.get('/user')
@@ -74,19 +82,76 @@ export class UserService {
                         }
                     },
                     err => {
+                        this.isAuthenticatingSubject.next(false);
                         console.log('Purge user data due to some error', err);
                         this.purgeAuth();
                     }
                 );
         } else {
             console.log('Purge user data since it does not have a token. token is: ', this.jwtService.getToken());
-
             // Remove any potential remnants of previous auth states
             this.purgeAuth();
         }
     }
-
+    isUserAuthenticated() {
+        if (this.isAuthenticatedSubject.getValue()) {
+            return true;
+        } else {
+            return (async () => {
+                return <boolean> await this.apiService.get('/user')
+                    .pipe(
+                        map(resp => {
+                            console.log('Resp', resp);
+                            const isAuthenticated = !!(resp.success && resp.user);
+                            this.isAuthenticatedSubject.next(isAuthenticated);
+                            return isAuthenticated;
+                        })
+                    )
+                    .toPromise();
+            })();
+        }
+    }
+    isUserAdmin() {
+        if (this.isAdminSubject.getValue()) {
+            return true;
+        } else {
+            return (async () => {
+                return <boolean> await this.apiService.get('/user')
+                    .pipe(
+                        map(resp => {
+                            try {
+                                console.log('Resp', resp);
+                                const roles = resp.user.roles instanceof Array ? resp.user.roles : [];
+                                this.isAdminSubject.next(roles.includes('admin'));
+                                return roles.includes('admin');
+                            } catch (e) {
+                                return false;
+                            }
+                        })
+                    )
+                    .toPromise();
+            })();
+        }
+    }
+    isUserNotAuthenticated() {
+        return (async () => {
+            return <boolean> await this.apiService.get('/user')
+                .pipe(
+                    map(resp => {
+                        console.log('Resp', resp);
+                        return !!!(resp.success && resp.user);
+                    }),
+                    catchError(err => {
+                        if (err.status && err.status === 401) {
+                            return of(true);
+                        }
+                    })
+                )
+                .toPromise();
+        })();
+    }
     setAuth(user: User) {
+        this.isAuthenticatingSubject.next(false);
         console.log('setAuth is called', user);
 
         // Save JWT sent from server in localstorage
@@ -103,6 +168,7 @@ export class UserService {
     }
 
     purgeAuth() {
+        this.isAuthenticatingSubject.next(false);
         console.log('purgeAuth initiated');
         // Remove JWT from localstorage
         this.jwtService.destroyToken();
@@ -116,12 +182,13 @@ export class UserService {
 
     attemptAuth(type, credentials): Observable<Object> {
         console.log('attemptAuth called', type);
-
+        this.isAuthenticatingSubject.next(true);
         const route = (type === 'login') ? '/login' : '';
         return this.apiService.post('/users' + route, credentials, null, true)
             .pipe(
                 map(
                     resp => {
+                        this.isAuthenticatingSubject.next(false);
                         if (!resp.success) {
                             const error = this.errorUtil.getError(resp, { getValidationErrors: true });
                             if (typeof error === 'object') { return of(error); }
@@ -487,7 +554,7 @@ export class UserService {
     }
 
     findUsers(
-        filter: string, filterFields: object, sortDirection = 'asc', sortField = 'username',
+        filter: string = '', filterFields: object = [], sortDirection = 'asc', sortField = 'username',
         pageNumber = 0, pageSize = 25
     ): Observable<User[]> {
         this.searchingSubject.next(true);
@@ -508,6 +575,7 @@ export class UserService {
                     return of([]);
                 }
                 res['data'].push(res['count']); // used to display filter count on the table
+                this.usersCountSubject.next(res['count']);
                 return res['data'];
             }),
             catchError(err => {

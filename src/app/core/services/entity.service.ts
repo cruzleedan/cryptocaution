@@ -14,6 +14,9 @@ export class EntityService {
     private searchingSubject = new BehaviorSubject<boolean>(false);
     public searching$ = this.searchingSubject.asObservable();
 
+    private entitiesCountSubject = new BehaviorSubject<number>(0);
+    public entitiesCount$ = this.entitiesCountSubject.asObservable();
+
     constructor(
         private apiService: ApiService,
         private alertifyService: AlertifyService,
@@ -113,6 +116,7 @@ export class EntityService {
                     return of([]);
                 }
                 res['data'].push(res['count']); // used to display filter count on the table
+                this.entitiesCountSubject.next(res['count']);
                 return res['data'];
             }),
             catchError(err => {

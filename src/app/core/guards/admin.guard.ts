@@ -17,17 +17,6 @@ export class AdminGuard implements CanActivate {
     canActivate(
         next: ActivatedRouteSnapshot,
         state: RouterStateSnapshot): Observable<boolean> | Promise<boolean> | boolean {
-        return this.userService.isAdmin
-            .pipe(
-                // take(1),
-                map(isAdmin => {
-                    if (!isAdmin) {
-                        console.log('Admin guard. User is not admin redirect to home');
-                        this.router.navigate(['/home']);
-                        return false;
-                    }
-                    return true;
-                })
-            );
+        return this.userService.isUserAdmin();
     }
 }

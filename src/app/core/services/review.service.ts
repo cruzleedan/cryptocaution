@@ -1,15 +1,19 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from './api.service';
-import { Observable, of } from 'rxjs';
+import { Observable, of, BehaviorSubject } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { Review } from '../models/review.model';
 import { AlertifyService } from './alertify.service';
 import { Util } from '../errors/helpers/util';
+import { HttpParams } from '@angular/common/http';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ReviewService {
+    private reviewsCountSubject = new BehaviorSubject<number>(0);
+    public reviewsCount$ = this.reviewsCountSubject.asObservable();
+
     constructor(
         private apiService: ApiService,
         private alertifyService: AlertifyService,
@@ -68,5 +72,33 @@ export class ReviewService {
                     return of({error: err});
                 })
             );
+    }
+    findReviews(
+        filter: string | object = '',
+        sortDirection = 'desc',
+        sortField = 'rating',
+        pageNumber: number = 1,
+        pageSize: number = 10
+    ): Observable<Object> {
+        return this.apiService.get(
+            `/reviews`,
+            new HttpParams()
+                .set('filter', typeof filter === 'string' ? filter : JSON.stringify(filter))
+                .set('sortDirection', sortDirection)
+                .set('sortField', sortField)
+                .set('pageNumber', pageNumber.toString())
+                .set('pageSize', pageSize.toString()),
+            true
+        ).pipe(
+            map((res) => {
+                if (!res.success) {
+                    this.alertifyService.error(this.errorUtil.getError(res) || 'Something went wrong while searching reviews');
+                    return of(null);
+                }
+                res['data'].push(res['count']);
+                this.reviewsCountSubject.next(res['count']);
+                return res['data'];
+            })
+        );
     }
 }

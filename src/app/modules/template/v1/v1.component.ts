@@ -50,7 +50,8 @@ export class V1Component implements OnInit, AfterViewInit, OnChanges {
                 this.setAdminMenus();
             }
         });
-        this.categoryService.getCategories().subscribe(categories => {
+
+        this.categoryService.categories$.subscribe(categories => {
             categories = categories.map(category => {
                 category['tooltip'] = category['name'];
                 return category;
@@ -61,6 +62,14 @@ export class V1Component implements OnInit, AfterViewInit, OnChanges {
     ngOnInit() {
         this.media.subscribe((mediaChange: MediaChange) => {
             this.toggleView();
+        });
+
+        this.categoryService.getCategories().subscribe(categories => {
+            categories = categories.map(category => {
+                category['tooltip'] = category['name'];
+                return category;
+            });
+            this.addCategoriesToMenu(categories);
         });
     }
     ngAfterViewInit() {

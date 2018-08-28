@@ -10,7 +10,7 @@
             <mat-card *ngFor="let review of userReviews">
                 <mat-card-subtitle>
                     <div fxFlex fxFlex.xs="0 1 auto">
-                        Review of {{ review.Entity?.name }}
+                        Review of <a *ngIf="review.Entity.id" [routerLink]="['/entity/'+review.Entity.id]">{{ review.Entity?.name }}</a>
                     </div>
                     <div fxLayoutAlign="end">
                         <a mat-icon-button color="accent" [routerLink]="['/entity/'+review.entityId+'/review/edit']">

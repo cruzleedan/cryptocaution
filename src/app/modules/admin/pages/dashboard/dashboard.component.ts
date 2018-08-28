@@ -1,4 +1,7 @@
 import { Component, OnInit } from '@angular/core';
+import { UserService, EntityService, CategoryService, ReviewService } from '../../../../core';
+import { finalize } from 'rxjs/operators';
+import { User } from '../../../../../app/core/models/user.model';
 
 @Component({
     selector: 'app-dashboard',
@@ -6,11 +9,15 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
+    private userCard = { colorDark: '#42A5F5', colorLight: '#64B5F6', number: 0, title: 'USERS', icon: 'person' };
+    private entityCard = { colorDark: '#5C6BC0', colorLight: '#7986CB', number: 0, title: 'ENTITIES', icon: 'assignments' };
+    private reviewCard = { colorDark: '#26A69A', colorLight: '#4DB6AC', number: 0, title: 'REVIEWS', icon: 'star' };
+    private categoryCard = { colorDark: '#66BB6A', colorLight: '#81C784', number: 0, title: 'CATEGORIES', icon: 'new_releases' };
     dashCard = [
-        { colorDark: '#42A5F5', colorLight: '#64B5F6', number: 1221, title: 'USERS', icon: 'person' },
-        { colorDark: '#5C6BC0', colorLight: '#7986CB', number: 1221, title: 'ENTITIES', icon: 'assignments' },
-        { colorDark: '#26A69A', colorLight: '#4DB6AC', number: 1221, title: 'REVIEWS', icon: 'star' },
-        { colorDark: '#66BB6A', colorLight: '#81C784', number: 1221, title: 'CATEGORIES', icon: 'new_releases' }
+        this.userCard,
+        this.entityCard,
+        this.reviewCard,
+        this.categoryCard
     ];
 
     tableData = [
@@ -22,7 +29,32 @@ export class DashboardComponent implements OnInit {
         { country: 'Brazil', sales: 100, percentage: '2.50%' },
     ];
 
-    constructor() { }
+    constructor(
+        private userService: UserService,
+        private entityService: EntityService,
+        private categoryService: CategoryService,
+        private reviewService: ReviewService
+    ) {
+        userService.findUsers().subscribe();
+        userService.usersCount$.subscribe(count => {
+            this.userCard.number = count;
+        });
+
+        entityService.findEntities().subscribe();
+        entityService.entitiesCount$.subscribe(count => {
+            this.entityCard.number = count;
+        });
+
+        categoryService.findCategories().subscribe();
+        categoryService.categoriesCount$.subscribe(count => {
+            this.categoryCard.number = count;
+        });
+
+        reviewService.findReviews().subscribe();
+        reviewService.reviewsCount$.subscribe(count => {
+            this.reviewCard.number = count;
+        });
+    }
 
     ngOnInit() {
     }
