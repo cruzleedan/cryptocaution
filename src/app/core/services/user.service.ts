@@ -140,7 +140,7 @@ export class UserService {
                         }),
                         catchError(err => {
                             if (err.status && err.status === 401) {
-                                this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.state.url }});
+                                this.router.navigate(['/auth/login']);
                             }
                             return of(false);
                         })
