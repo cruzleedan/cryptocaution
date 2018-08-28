@@ -11,6 +11,7 @@ import { HttpParams } from '@angular/common/http';
 import { Util } from '../errors/helpers/util';
 import { Entity } from '../models/entity.model';
 import { async } from 'rxjs/internal/scheduler/async';
+import { Router, RouterStateSnapshot, ActivatedRouteSnapshot } from '@angular/router';
 
 declare const FB: any;
 
@@ -44,7 +45,8 @@ export class UserService {
         private apiService: ApiService,
         private jwtService: JwtService,
         private alertifyService: AlertifyService,
-        private errorUtil: Util
+        private errorUtil: Util,
+        private router: Router
     ) {
         try {
             FB.init(environment.fbConfig);
@@ -93,7 +95,7 @@ export class UserService {
             this.purgeAuth();
         }
     }
-    isUserAuthenticated() {
+    isUserAuthenticated(route?, state?) {
         if (this.isAuthenticatedSubject.getValue()) {
             return true;
         } else {
@@ -105,6 +107,14 @@ export class UserService {
                             const isAuthenticated = !!(resp.success && resp.user);
                             this.isAuthenticatedSubject.next(isAuthenticated);
                             return isAuthenticated;
+                        }),
+                        catchError(err => {
+                            let returnUrl = '';
+                            if (state) {
+                                returnUrl = state.url;
+                            }
+                            this.router.navigate(['/auth/login'], { queryParams: { returnUrl }});
+                            return of(false);
                         })
                     )
                     .toPromise();
@@ -127,6 +137,12 @@ export class UserService {
                             } catch (e) {
                                 return false;
                             }
+                        }),
+                        catchError(err => {
+                            if (err.status && err.status === 401) {
+                                this.router.navigate(['/auth/login'], { queryParams: { returnUrl: this.state.url }});
+                            }
+                            return of(false);
                         })
                     )
                     .toPromise();
