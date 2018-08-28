@@ -4,14 +4,14 @@ import { NoAuthGuard } from './core/guards/no-auth.guard';
 
 const routes: Routes = [
     {
-        path: 'auth',
-        loadChildren: './modules/auth/auth.module#AuthModule',
-        canActivate: [NoAuthGuard]
-    },
-    {
         path: '',
         loadChildren: './modules/template/template.module#TemplateModule'
     },
+    {
+        path: 'auth',
+        loadChildren: './modules/auth/auth.module#AuthModule',
+        canActivate: [NoAuthGuard]
+    }
 ];
 
 @NgModule({

@@ -18,13 +18,13 @@
         <i class="material-icons">add_box </i>
     </a>
 
-    <a mat-icon-button matTooltip="Add a Review" [routerLink]="['/category']">
-        <i class="material-icons">star </i>
+    <a mat-icon-button matTooltip="Categories" [routerLink]="['/category']">
+        <i class="material-icons">apps</i>
     </a>
 
     <app-fullscreen matTooltip="Fullscreen"></app-fullscreen>
 
-    <app-toolbar-notification *ngIf="isAuthenticated" [notifications]="toolbarHelpers?.notifications"></app-toolbar-notification>
+    <!-- <app-toolbar-notification *ngIf="isAuthenticated" [notifications]="toolbarHelpers?.notifications"></app-toolbar-notification> -->
 
     <!-- <a mat-icon-button matTooltip="Categories" [routerLink]="['/category']">
         <i class="material-icons">view_module </i>
@@ -32,9 +32,9 @@
 
     <app-user-menu *ngIf="isAuthenticated" [currentUser]="toolbarHelpers?.currentUser"></app-user-menu>
 
-    <button *ngIf="isAuthenticated" mat-icon-button (click)="sidebar.toggle();">
+    <!-- <button *ngIf="isAuthenticated" mat-icon-button (click)="sidebar.toggle();">
         <i class="material-icons app-toolbar-menu">menu </i>
-    </button>
+    </button> -->
 
     <a [routerLink]="['/auth/login']" *ngIf="!isAuthenticated" mat-button>LOGIN</a>
     <a [routerLink]="['/auth/register']" *ngIf="!isAuthenticated" mat-button>SIGN UP</a>

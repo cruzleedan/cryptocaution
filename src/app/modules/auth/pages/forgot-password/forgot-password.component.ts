@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener, ViewChild } from '@angular/core';
+import { Component, OnInit, HostListener, ViewChild, Output } from '@angular/core';
 import { NgForm, FormGroup, FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { AlertifyService, UserService } from '../../../../core';
@@ -13,7 +13,6 @@ import { ActivatedRoute } from '@angular/router';
     styleUrls: ['./forgot-password.component.scss']
 })
 export class ForgotPasswordComponent implements OnInit {
-    loading = false;
     showCurrPass: boolean;
     showNewPass: boolean;
     showConfPass: boolean;
@@ -43,33 +42,17 @@ export class ForgotPasswordComponent implements OnInit {
             this.token = params.token;
         });
         this.matcher = new ShowOnDirtyErrorStateMatcher;
-        this.matchingPass = new FormGroup({
-            new: new FormControl('',
-                Validators.compose([
-                    Validators.minLength(5),
-                    Validators.required,
-                    // this is for the letters (both uppercase and lowercase) and numbers validation
-                    Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])[a-zA-Z0-9]+$')
-                ])
-            ),
-            confirm: new FormControl('', [Validators.required])
-        }, {validators: PasswordValidator.areEqual});
-        this.pwdForm = this.fb.group({
-            matchedPassword: this.matchingPass
-        });
+        this.pwdForm = new FormGroup({name: new FormControl()});
     }
 
     ngOnInit() {
     }
     handleSubmit() {
-        this.loading = true;
         const formVal = this.pwdForm.value;
         this.userService.forgotPasswordReset(formVal.matchedPassword.new, this.token)
         .subscribe(
             resp => {
                 console.log('resp', resp);
-
-                this.loading = false;
                 if (resp['success']) {
                     this.alertifyService.success('Successfully updated');
                     this.pwdForm.reset({});
@@ -78,7 +61,6 @@ export class ForgotPasswordComponent implements OnInit {
                 }
             },
             err => {
-                this.loading = false;
                 console.log('err', err);
                 if (typeof err.error === 'object') {
                     err.error = err.error.hasOwnProperty('error') && typeof err.error.error === 'object' ? err.error.error : err.error;

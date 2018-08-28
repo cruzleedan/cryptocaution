@@ -133,22 +133,20 @@
                         <mat-icon>star</mat-icon>
                     </button>
                 </mat-menu>
-
                 <mat-form-field>
                     <mat-select [(value)]="sortField" placeholder="Sort by" (selectionChange)="sortReviews($event)">
-                        <mat-option>None</mat-option>
-                        <mat-option value="upvoteTally">Relevance</mat-option>
                         <mat-option value="createdAt">Date</mat-option>
+                        <mat-option value="upvoteTally">Relevance</mat-option>
                         <mat-option value="rating">Rating</mat-option>
                     </mat-select>
                 </mat-form-field>
                 <button type="button" mat-icon-button aria-label="Sort Direction" (click)="sortDirection()">
                     <ng-container *ngIf="sortDirect == 'asc'; then sortAsc else sortDesc"></ng-container>
                     <ng-template #sortAsc>
-                        <mat-icon fontSet="fa" fontIcon="fa-sort-alpha-asc"></mat-icon>
+                        <mat-icon fontSet="fa" fontIcon="fa-sort-amount-asc"></mat-icon>
                     </ng-template>
                     <ng-template #sortDesc>
-                        <mat-icon fontSet="fa" fontIcon="fa-sort-alpha-desc"></mat-icon>
+                        <mat-icon fontSet="fa" fontIcon="fa-sort-amount-desc"></mat-icon>
                     </ng-template>
                 </button>
             </div>

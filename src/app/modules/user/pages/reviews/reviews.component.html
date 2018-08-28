@@ -3,10 +3,10 @@
     <app-loading-spinner fxLayout="row" fxLayoutAlign="center center" *ngIf="loading"></app-loading-spinner>
     <h1 class="txt-center" *ngIf="!loading && (!userReviews || !userReviews.length)">You don't have any reviews</h1>
     <ng-container *ngIf="userReviews && userReviews.length">
-        <section>
-            <mat-form-field>
+        <section class="reviews-sect">
+            <!-- <mat-form-field>
                 <input type="text" matInput [formControl]="searchControl">
-            </mat-form-field>
+            </mat-form-field> -->
             <mat-card *ngFor="let review of userReviews">
                 <mat-card-subtitle>
                     <div fxFlex fxFlex.xs="0 1 auto">
@@ -54,7 +54,7 @@
                 </mat-card-content>
             </mat-card>
         </section>
-        <mat-paginator [length]="user.reviewsCount" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageChange($event)">
-        </mat-paginator>
+        <!-- <mat-paginator [length]="user.reviewsCount" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageChange($event)">
+        </mat-paginator> -->
     </ng-container>
 </div>

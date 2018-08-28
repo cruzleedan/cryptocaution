@@ -48,9 +48,9 @@ import {
     MatProgressBarModule,
     MatTabsModule,
     MatSlideToggleModule,
-    MatTooltipModule
+    MatTooltipModule,
 } from '@angular/material';
-
+import {ScrollDispatchModule} from '@angular/cdk/scrolling';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { StarRatingModule } from 'angular-star-rating';
 import { QuillModule } from 'ngx-quill';
@@ -127,6 +127,7 @@ import { DefaultComponent } from './layout/template/default/default.component';
         MatTabsModule,
         MatSlideToggleModule,
         MatTooltipModule,
+        ScrollDispatchModule,
         // End material components
         PerfectScrollbarModule,
         Ng2OdometerModule,
@@ -211,6 +212,7 @@ import { DefaultComponent } from './layout/template/default/default.component';
         MatTabsModule,
         MatSlideToggleModule,
         MatTooltipModule,
+        ScrollDispatchModule,
         // End material components
         // Start Pipes
         StrToJSONPipe,

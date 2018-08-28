@@ -7,6 +7,8 @@ import { of, throwError } from 'rxjs';
 import { ErrorsService } from '../errors-service/errors.service';
 import { NotificationService } from '../../services/notification/notification.service';
 import { AuthService } from '../../../services/auth.service';
+import { LocationStrategy, PathLocationStrategy } from '@angular/common';
+import * as StackTrace from 'stacktrace-js';
 
 @Injectable()
 export class ErrorsHandler implements ErrorHandler {
@@ -21,6 +23,10 @@ export class ErrorsHandler implements ErrorHandler {
         const errorsService = this.injector.get(ErrorsService);
         const router = this.injector.get(Router);
 
+        const location = this.injector.get(LocationStrategy);
+        const message = error.message ? error.message : error.toString();
+        const url = location instanceof PathLocationStrategy
+            ? location.path() : '';
         if (error instanceof ErrorEvent) {
             // A client-side or network error occurred. Handle it accordingly.
             console.error('An error occurred:', error);
@@ -50,7 +56,7 @@ export class ErrorsHandler implements ErrorHandler {
             // The backend returned an unsuccessful response code.
             // The response body may contain clues as to what went wrong,
 
-            console.log('Server error happened');
+            console.log('Server error happened ', error);
             if (!navigator.onLine) {
                 // No Internet connection
                 return notificationService.notify('No Internet Connection');
@@ -59,9 +65,10 @@ export class ErrorsHandler implements ErrorHandler {
             // Send the error to the server
             errorsService.log(error).subscribe();
             // Show notification to the user
-            notificationService.notify(`${error.status} - ${error.message}`);
+            const title = error.error && error.error.error && typeof error.error.error === 'string' ? error.error.error : '';
+            notificationService.notify(`${error.status} - ${error.message}`, title);
         } else if (
-               error['rejection']
+            error['rejection']
             && error['rejection'].hasOwnProperty('status')
             && error['rejection']['status'] === 401
         ) {
@@ -72,9 +79,7 @@ export class ErrorsHandler implements ErrorHandler {
             console.log('prop desc ', Object.getOwnPropertyDescriptors(error));
         }
         // return an observable with a user-facing error message
-        // return throwError('Something bad happened; please try again later.');
-        console.log('errors handler will return of(null) ');
-        return of(null);
+        return of(error);
 
     }
 }

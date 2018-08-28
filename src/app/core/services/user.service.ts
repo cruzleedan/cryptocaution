@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, of, ReplaySubject, Observable, Subject } from 'rxjs';
 import { User } from '../models/user.model';
-import { distinctUntilChanged, map, catchError, reduce, debounceTime, switchMap } from 'rxjs/operators';
+import { distinctUntilChanged, map, catchError, reduce, debounceTime, switchMap, mergeMap } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { JwtService } from './jwt.service';
 import { environment } from '../../../environments/environment';
@@ -21,10 +21,10 @@ export class UserService {
     private currentUserSubject = new BehaviorSubject<User>({} as User);
     public currentUser = this.currentUserSubject.asObservable().pipe(distinctUntilChanged());
 
-    private isAuthenticatedSubject = new ReplaySubject<boolean>();
+    private isAuthenticatedSubject = new BehaviorSubject<boolean>(false);
     public isAuthenticated = this.isAuthenticatedSubject.asObservable();
 
-    private isAdminSubject = new ReplaySubject<boolean>();
+    private isAdminSubject = new BehaviorSubject<boolean>(false);
     public isAdmin = this.isAdminSubject.asObservable();
 
     private loadingSubject = new BehaviorSubject<boolean>(false);
@@ -97,6 +97,8 @@ export class UserService {
         this.isAuthenticatedSubject.next(true);
         // check if user has admin role
         const roles = user.roles instanceof Array ? user.roles : [];
+        console.log('setAuth check user if admin', roles);
+
         this.isAdminSubject.next(roles.includes('admin'));
     }
 
@@ -263,14 +265,6 @@ export class UserService {
                 data.user.token = data.token;
                 this.setAuth(data.user);
                 return data;
-            }),
-            catchError(err => {
-                const error = this.errorUtil.getError(err, { getValidationErrors: true });
-                if (typeof error === 'object') {
-                    return of(error);
-                }
-                this.alertifyService.error(error || 'Login failed.');
-                return of(null);
             })
         );
     }
@@ -432,6 +426,10 @@ export class UserService {
                     }
                     return resp;
                 }),
+                mergeMap(resp => {
+                    this.populate();
+                    return of(resp);
+                }),
                 catchError(err => {
                     const error = this.errorUtil.getError(err, { getValidationErrors: true });
                     if (typeof error === 'object') { return of(error); }
@@ -449,6 +447,10 @@ export class UserService {
                         return of(null);
                     }
                     return resp;
+                }),
+                mergeMap(resp => {
+                    this.populate();
+                    return of(resp);
                 }),
                 catchError(err => {
                     const error = this.errorUtil.getError(err, { getValidationErrors: true });

@@ -1,3 +1,17 @@
+:host {
+    display: block;
+}
+mat-dialog-content {
+    overflow: hidden;
+    mat-expansion-panel {
+        word-wrap: break-word;
+    }
+}
+.title {
+    width: 100%;
+    text-align: center;
+    font-size: 1.3rem;
+}
 .more {
     text-decoration: underline;
     font-size:12px;

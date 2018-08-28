@@ -64,10 +64,33 @@ app-read-more {
 
 .banner-container .desc {
     color: #ffffff;
-    font-weight: 100;
     padding: 13px;
-    font-size: -webkit-xxx-large; // background-color: rgb(0, 99, 127);
+    text-align: center;
+    .desc-title {
+        font-weight: bold;
+        color: #074265;
+        font-size: -webkit-xxx-large; // background-color: rgb(0, 99, 127);
+    }
+    .desc-details {
+        font-weight: bold;
+        font-size: 25px;
+        letter-spacing: 1px;
+        word-spacing: 5px;
+    }
 }
+.banner-container .post-desc {
+    padding: 20px;
+    background-color: rgba(0, 142, 216, 0.6);
+    box-shadow: 0px 0px 18px 7px rgba(0, 142, 216, 0.5);
+    width: 75%;
+    text-align: center;
+    color: #ffffff;
+    word-spacing: 2px;
+    letter-spacing: 1px;
+    font-weight: 100;
+    font-size: 1.2rem;
+}
+
 
 .search-bar-container {
     padding: 4em 0;

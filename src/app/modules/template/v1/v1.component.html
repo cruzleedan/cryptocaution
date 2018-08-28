@@ -29,12 +29,14 @@
 
                 <app-toolbar [searchOpen]="searchOpen" [sidenav]="sidenav" [drawer]="drawer" [sidebar]="sidenav2" [matDrawerShow]="matDrawerShow" style="z-index: 500"></app-toolbar>
 
-                <perfect-scrollbar>
-                    <div fxLayout="row" fxLayout="row wrap" *appShowAdmin="true">
-                        <app-breadcrumbs></app-breadcrumbs>
+                <!-- <perfect-scrollbar> -->
+                    <div class="custom-scroll-bar" cdkScrollable>
+                        <div fxLayout="row" fxLayout="row wrap" *appShowAdmin="true">
+                            <app-breadcrumbs></app-breadcrumbs>
+                        </div>
+                        <router-outlet></router-outlet>
                     </div>
-                    <router-outlet></router-outlet>
-                </perfect-scrollbar>
+                <!-- </perfect-scrollbar> -->
 
 
             </mat-drawer-content>

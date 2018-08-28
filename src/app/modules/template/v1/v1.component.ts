@@ -1,13 +1,18 @@
-import { Component, OnInit, Input, OnChanges, APP_INITIALIZER } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, AfterViewInit } from '@angular/core';
 import { MediaChange, ObservableMedia } from '@angular/flex-layout';
 import { CategoryService, UserService } from '../../../core';
+import {
+    PerfectScrollbarConfigInterface,
+    PerfectScrollbarComponent,
+    PerfectScrollbarDirective
+} from 'ngx-perfect-scrollbar';
 
 @Component({
     selector: 'app-v1-template',
     templateUrl: './v1.component.html',
     styleUrls: ['./v1.component.scss']
 })
-export class V1Component implements OnInit, OnChanges {
+export class V1Component implements OnInit, AfterViewInit, OnChanges {
     @Input() isVisible = true;
     visibility = 'shown';
 
@@ -25,18 +30,19 @@ export class V1Component implements OnInit, OnChanges {
         'open': string | boolean,
         'sub'?: any,
         'chip'?: any,
+        'tooltip'?: any
     }[] = [
-        {
-            'name': 'Home',
-            'icon': 'home',
-            'link': '/',
-            'open': false
-        }
-    ];
+            {
+                'name': 'Home',
+                'icon': 'home',
+                'link': '/',
+                'open': false
+            }
+        ];
     constructor(
         private media: ObservableMedia,
         private categoryService: CategoryService,
-        private userService: UserService
+        private userService: UserService,
     ) {
         this.userService.isAdmin.subscribe(isAdmin => {
             this.isAdmin = isAdmin;
@@ -44,19 +50,23 @@ export class V1Component implements OnInit, OnChanges {
                 this.setAdminMenus();
             }
         });
-        this.categoryService.getCategories().subscribe(category => {
-            this.addCategoriesToMenu(category);
+        this.categoryService.getCategories().subscribe(categories => {
+            categories = categories.map(category => {
+                category['tooltip'] = category['name'];
+                return category;
+            });
+            this.addCategoriesToMenu(categories);
         });
     }
-    ngOnChanges() {
-        this.visibility = this.isVisible ? 'shown' : 'hidden';
-    }
-
-
     ngOnInit() {
         this.media.subscribe((mediaChange: MediaChange) => {
             this.toggleView();
         });
+    }
+    ngAfterViewInit() {
+    }
+    ngOnChanges() {
+        this.visibility = this.isVisible ? 'shown' : 'hidden';
     }
     setAdminMenus() {
         this.menus = [
@@ -65,6 +75,7 @@ export class V1Component implements OnInit, OnChanges {
                 'icon': 'dashboard',
                 'link': false,
                 'open': false,
+                'tooltip': 'Dashboards',
                 'chip': { 'value': 2, 'color': 'accent' },
                 'sub': [
                     {
@@ -72,12 +83,14 @@ export class V1Component implements OnInit, OnChanges {
                         'link': '/admin',
                         'icon': 'dashboard',
                         'chip': false,
+                        'tooltip': 'Admin Dashboard',
                         'open': true,
                     },
                     {
                         'name': 'User',
                         'link': '/',
                         'icon': 'dashboard',
+                        'tooltip': 'User Dashboard',
                         'chip': false,
                         'open': true,
                     },
@@ -86,24 +99,28 @@ export class V1Component implements OnInit, OnChanges {
             {
                 'name': 'Manage',
                 'icon': 'work',
+                'tooltip': 'Manage',
                 'link': false,
                 'open': false,
                 'sub': [
                     {
                         'name': 'Users',
                         'icon': 'people',
+                        'tooltip': 'Manage Users',
                         'link': '/admin/users',
                         'open': false,
                     },
                     {
                         'name': 'Entities',
                         'icon': 'list',
+                        'tooltip': 'Manage Entities',
                         'link': '/category',
                         'open': false,
                     },
                     {
                         'name': 'Categories',
                         'icon': 'view_modules',
+                        'tooltip': 'Manage Categories',
                         'link': '/admin/categories',
                         'open': false,
                     }
@@ -124,6 +141,7 @@ export class V1Component implements OnInit, OnChanges {
             this.menus.push({
                 'name': 'Categories',
                 'icon': 'apps',
+                'tooltip': 'Categories',
                 'link': false,
                 'open': true,
                 'sub': category
@@ -135,6 +153,7 @@ export class V1Component implements OnInit, OnChanges {
                 {
                     'name': 'All',
                     'icon': 'view_module',
+                    'tooltip': 'All Categories',
                     'link': '/category',
                     'open': true,
                 },

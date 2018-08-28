@@ -22,10 +22,12 @@ export class MsgDialogComponent implements OnInit {
     ) { }
     ngOnInit() {
         if (this.data.type && this.data.type === 'error') {
+            const charCount = 100;
             this.msg = this.data.msg || 'Something went wrong!';
-            this.msg = this.msg.substr(0, 50);
-            const msgCont: string = this.data.msg.substr(50) || '';
-            this.details =  this.details !== this.msg ? msgCont + this.details : msgCont;
+            this.msg = this.msg.substr(0, charCount);
+            this.title = this.data.title;
+            const msgCont: string = this.data.msg.substr(charCount) || '';
+            this.details = this.data.details !== this.msg ? msgCont + this.data.details : msgCont;
         }
     }
     close() {
@@ -39,6 +41,6 @@ export class MsgDialogComponent implements OnInit {
         });
     }
     onConfirm() {
-        this.dialogRef.close({proceed: true});
+        this.dialogRef.close({ proceed: true });
     }
 }

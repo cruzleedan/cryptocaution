@@ -7,8 +7,9 @@ import { MatDialog, ShowOnDirtyErrorStateMatcher } from '@angular/material';
 import { MsgDialogComponent } from '../../../../shared/dialog/msg-dialog.component';
 import { ReviewService } from '../../../../core/services/review.service';
 import { Review } from '../../../../core/models/review.model';
-import { finalize, map } from 'rxjs/operators';
+import { finalize, map, mergeMap } from 'rxjs/operators';
 import { Entity } from '../../../../core/models/entity.model';
+import { of } from 'rxjs';
 @Component({
     selector: 'app-new-review',
     templateUrl: './new-review.component.html',
@@ -118,6 +119,12 @@ export class NewReviewComponent implements OnInit {
                 this.loading = true;
                 this.reviewService
                     .addReview(this.entityId, this.reviewForm.value)
+                    .pipe(
+                        mergeMap(resp => {
+                            this.userService.populate();
+                            return of(resp);
+                        })
+                    )
                     .subscribe((resp) => {
                         this.loading = false;
                         console.log('New Review', resp);

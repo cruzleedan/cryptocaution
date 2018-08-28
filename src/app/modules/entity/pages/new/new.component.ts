@@ -2,9 +2,9 @@ import { Component, OnInit, ViewChild, NgZone, HostListener } from '@angular/cor
 import { FormBuilder, Validators, FormGroup, FormControl, FormControlName, FormArray, NgForm } from '@angular/forms';
 import { MatDialog, ShowOnDirtyErrorStateMatcher, MatAutocompleteSelectedEvent } from '@angular/material';
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
-import { take, debounceTime } from 'rxjs/operators';
-import { Observable, Subject } from 'rxjs';
-import { EntityService, Category, CategoryService, AlertifyService } from '../../../../core';
+import { take, debounceTime, mergeMap } from 'rxjs/operators';
+import { Observable, Subject, of } from 'rxjs';
+import { EntityService, Category, CategoryService, AlertifyService, CategoryMenu, UserService } from '../../../../core';
 import { CustomBlob } from '../../../../shared/helpers/custom-blob';
 import { MsgDialogComponent } from '../../../../shared/dialog/msg-dialog.component';
 import { SuccessDialogComponent } from './components/success-dialog.component';
@@ -31,10 +31,11 @@ export class NewComponent implements OnInit, ComponentCanDeactivate {
     uploading = false;
     entityForm: FormGroup;
     matcher;
+    categories: CategoryMenu[];
     searchFormControl = new FormControl();
     searchKeyword: String = '';
     searchKeyword$ = new Subject<string>();
-    filteredOptions: Category[];
+    // filteredOptions: Category[];
     @ViewChild('autosize') autosize: CdkTextareaAutosize;
     @ViewChild('form')
     form: NgForm;
@@ -61,6 +62,7 @@ export class NewComponent implements OnInit, ComponentCanDeactivate {
         private router: Router,
         private alertifyService: AlertifyService,
         private authService: AuthService,
+        private userService: UserService
     ) {
 
         this.entityForm = this.fb.group({
@@ -91,21 +93,26 @@ export class NewComponent implements OnInit, ComponentCanDeactivate {
                 }
             );
         this.matcher = new ShowOnDirtyErrorStateMatcher;
-        this.categoryService.search({
-            keyword: this.searchKeyword$,
-            sortField: 'category',
-            sortDirection: 'desc',
-            pageNum: 0,
-            pageSize: 5
-        })
-            .subscribe(res => {
-                this.filteredOptions = res;
-            });
+        this.categoryService.categories$
+            .subscribe(categories => {
+            this.categories = categories;
+        });
+        // this.categoryService.search({
+        //     keyword: this.searchKeyword$,
+        //     sortField: 'category',
+        //     sortDirection: 'desc',
+        //     pageNum: 0,
+        //     pageSize: 5
+        // })
+        //     .subscribe(res => {
+        //         this.filteredOptions = res;
+        //     });
     }
     ngOnInit() {
-
-
-
+        this.categoryService.getCategories()
+            .subscribe(categories => {
+            this.categories = categories;
+        });
     }
     getControls(frmGrp: FormGroup, key: string) {
         return (<FormArray>frmGrp.get(key)).controls;
@@ -236,25 +243,32 @@ export class NewComponent implements OnInit, ComponentCanDeactivate {
             });
         }
         if (req && req.data) {
-            req.data.subscribe((n) => {
-                console.log('req data', n);
-                this.loading = false;
-                if (n && n.data) {
-                    this.entityForm.patchValue(n.data);
-                    this.entityForm.markAsPristine();
-                    this.croppedImage = n.image ? `${this.baseUrl}/entity/${n.image}` : this.croppedImage;
-                    this.dialog.open(SuccessDialogComponent, {
-                        data: {
-                            id: n.hasOwnProperty('id') ? n['id'] : '',
-                            msg: this.isEdit ? 'Saved Successfully.' : 'New Entity has been created.'
-                        },
-                        hasBackdrop: true,
-                        width: '300px'
-                    });
-                } else if (n && n.error && n.error === 'blocked') {
-                    this.authService.showBlockErrPopup();
-                }
-                this.entityForm.enable();
+            req.data
+                .pipe(
+                    mergeMap(resp => {
+                        this.userService.populate();
+                        return of(resp);
+                    })
+                )
+                .subscribe((n) => {
+                    console.log('req data', n);
+                    this.loading = false;
+                    if (n && n.data) {
+                        this.entityForm.patchValue(n.data);
+                        this.entityForm.markAsPristine();
+                        this.croppedImage = n.image ? `${this.baseUrl}/entity/${n.image}` : this.croppedImage;
+                        this.dialog.open(SuccessDialogComponent, {
+                            data: {
+                                id: n.data.id || '',
+                                msg: this.isEdit ? 'Saved Successfully.' : 'New Entity has been created.'
+                            },
+                            hasBackdrop: true,
+                            width: '300px'
+                        });
+                    } else if (n && n.error && n.error === 'blocked') {
+                        this.authService.showBlockErrPopup();
+                    }
+                    this.entityForm.enable();
             });
         }
     }

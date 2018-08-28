@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { UserService } from '..';
@@ -10,7 +10,8 @@ import { map, take, last } from 'rxjs/operators';
 export class NoAuthGuard implements CanActivate {
     constructor(
         private userService: UserService,
-        private router: Router
+        private router: Router,
+        private zone: NgZone,
     ) { }
 
     canActivate(
@@ -20,10 +21,14 @@ export class NoAuthGuard implements CanActivate {
 
         return this.userService.isAuthenticated.pipe(
             map(isAuthenticated => {
-                const currentUser = this.userService.getCurrentUser();
                 console.log('isAuthenticated', isAuthenticated);
-                console.log('currentUser', currentUser);
-                return !isAuthenticated && !currentUser.username;
+                if (isAuthenticated) {
+                    console.log('Will redirect to home');
+
+                    this.router.navigate(['/home']);
+                    return false;
+                }
+                return !isAuthenticated;
             })
         );
         // const currentUser = this.userService.getCurrentUser();

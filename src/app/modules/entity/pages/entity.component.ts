@@ -11,6 +11,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 import { map, catchError } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
 import { MsgDialogComponent } from '../../../shared/dialog/msg-dialog.component';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
     selector: 'app-entity',
@@ -30,7 +31,7 @@ export class EntityComponent implements OnInit {
     entityRating: string;
     entityDesc: any;
     currentUser: User;
-    sortField: string;
+    sortField = 'createdAt';
     sortDirect = 'desc';
     filter: string | object = '';
     // reviewsDataSource: ReviewsDataSource;
@@ -47,8 +48,8 @@ export class EntityComponent implements OnInit {
         private router: Router,
         private domSanitizer: DomSanitizer,
         private dialog: MatDialog,
-        private alertifyService: AlertifyService,
         private userService: UserService,
+        private authService: AuthService,
         private route: ActivatedRoute) {
             this.userService.currentUser.subscribe(userData => {
                 this.currentUser = userData;
@@ -115,18 +116,11 @@ export class EntityComponent implements OnInit {
         });
     }
     voteReview(reviewId, type) {
+
         this.reviewService.voteReview(reviewId, type)
             .subscribe(data => {
                 if (data.error === 'Unauthorized') {
-                    const dialogRef = this.dialog.open(MsgDialogComponent, {
-                        data: {
-                            isAuth: true
-                        },
-                        width: '500px',
-                        hasBackdrop: true,
-                        panelClass: ''
-                    });
-                    dialogRef.afterClosed().subscribe(resp => {
+                    this.authService.showAuthFormPopup((resp) => {
                         if (resp && resp.data && resp.data.success) {
                             console.log('User has been authenticated');
                             this.voteReview(reviewId, type);

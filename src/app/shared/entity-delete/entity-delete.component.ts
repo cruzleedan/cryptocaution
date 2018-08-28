@@ -3,6 +3,8 @@ import { MatDialog } from '../../../../node_modules/@angular/material';
 import { UserService, AlertifyService } from '../../core';
 import { Entity } from '../../core/models/entity.model';
 import { MsgDialogComponent } from '../dialog/msg-dialog.component';
+import { mergeMap } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
     selector: 'app-entity-delete',

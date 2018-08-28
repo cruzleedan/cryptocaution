@@ -48,8 +48,8 @@ export class ErrorsService {
     addContextInfo(error) {
         // You can include context details here (usually coming from other services: UserService...)
         const name = error.name || null;
-        const appId = 'shthppnsApp';
-        const user = 'ShthppnsUser';
+        const appId = 'Cryptocaution';
+        const user = 'User';
         const time = new Date().getTime();
         const id = `${appId}-${user}-${time}`;
         const location = this.injector.get(LocationStrategy);

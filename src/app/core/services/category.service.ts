@@ -39,10 +39,10 @@ export class CategoryService {
                     this.categoriesSubject.next(res['data']);
                     return res['data'];
                 }),
-                catchError(err => {
-                    this.alertifyService.error(this.errorUtil.getError(err) || 'Something went wrong while loading Categories');
-                    return of([]);
-                })
+                // catchError(err => {
+                //     this.alertifyService.error(this.errorUtil.getError(err) || 'Something went wrong while loading Categories');
+                //     return of([]);
+                // })
             );
     }
     findCategoryById(categoryId: string): Observable<Category> {

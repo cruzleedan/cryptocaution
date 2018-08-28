@@ -51,10 +51,10 @@
                     <button type="button" mat-icon-button aria-label="Sort Direction" (click)="sortDirection()">
                         <ng-container *ngIf="sort.direction == 'asc'; then sortAsc else sortDesc"></ng-container>
                         <ng-template #sortAsc>
-                            <mat-icon *ngIf="sort.direction == 'asc'" fontSet="fa" fontIcon="fa-sort-alpha-asc"></mat-icon>
+                            <mat-icon *ngIf="sort.direction == 'asc'" fontSet="fa" fontIcon="fa-sort-amount-asc"></mat-icon>
                         </ng-template>
                         <ng-template #sortDesc>
-                            <mat-icon *ngIf="sort.direction == 'desc'" fontSet="fa" fontIcon="fa-sort-alpha-desc"></mat-icon>
+                            <mat-icon *ngIf="sort.direction == 'desc'" fontSet="fa" fontIcon="fa-sort-amount-desc"></mat-icon>
                         </ng-template>
                     </button>
                 </div>

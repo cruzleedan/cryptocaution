@@ -12,7 +12,7 @@ export class AuthService {
         private dialog: MatDialog,
         private alertifyService: AlertifyService
     ) { }
-    showAuthFormPopup() {
+    showAuthFormPopup(callback?) {
         console.log('showAuthFormPopup');
 
         const dialogRef = this.dialog.open(MsgDialogComponent, {
@@ -21,10 +21,12 @@ export class AuthService {
             },
             width: '500px',
             hasBackdrop: true,
-            panelClass: ''
+            panelClass: 'auth-popup-form'
         });
         dialogRef.afterClosed().subscribe(resp => {
-            if (resp && resp.data && resp.data.success) {
+            if (callback && typeof callback === 'function') {
+                callback(resp);
+            } else if (resp && resp.data && resp.data.success) {
                 this.alertifyService.success('Successfully logged in');
             }
         });
