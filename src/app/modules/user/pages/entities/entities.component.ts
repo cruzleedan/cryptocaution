@@ -6,6 +6,9 @@ import { Review } from '../../../../core/models/review.model';
 import { FormControl } from '@angular/forms';
 import { MsgDialogComponent } from '../../../../shared/dialog/msg-dialog.component';
 import { Entity } from '../../../../core/models/entity.model';
+import { ActivatedRoute, Params } from '@angular/router';
+import { mergeMap, map } from 'rxjs/operators';
+import { of, BehaviorSubject } from 'rxjs';
 
 @Component({
     selector: 'app-entities',
@@ -13,9 +16,13 @@ import { Entity } from '../../../../core/models/entity.model';
     styleUrls: ['./entities.component.scss']
 })
 export class EntitiesComponent implements OnInit {
+    private userSubject = new BehaviorSubject<any>({});
+    public user$ = this.userSubject.asObservable();
+
     loading = false;
     userEntities: Entity[];
     user: User;
+    userId: string;
     searchControl: FormControl;
     baseUrl = environment.baseUrl;
     @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -25,21 +32,53 @@ export class EntitiesComponent implements OnInit {
     }) myInput: ElementRef;
     constructor(
         private userService: UserService,
-        private entityService: EntityService
+        private entityService: EntityService,
+        private route: ActivatedRoute
     ) {
         this.searchControl = new FormControl('');
-        this.loadUserEntities();
-        this.userService.loading$.subscribe(isLoading => {
-            this.loading = isLoading;
-        });
-        this.userService.currentUser
-            .subscribe(user => {
-                this.user = user;
-            });
+        const userSnapshot = this.route.snapshot.data['user'];
+        if (userSnapshot) {
+            console.log('snapshot', userSnapshot);
+            this.user = userSnapshot;
+            userSnapshot['userId'] = userSnapshot.id;
+            this.userSubject.next(userSnapshot);
+            this.userId = userSnapshot.id;
+            this.loadUserEntities();
+        }
     }
 
     ngOnInit() {
-
+        if (!this.route.snapshot.data['user']) {
+            this.route.params
+                .pipe(
+                    map(params => {
+                        this.userId = params['userId'];
+                        this.getUser(params['userId']);
+                        return params['userId'];
+                    })
+                )
+                .subscribe((userId: string) => {
+                });
+        }
+    }
+    getUser(userId?: string) {
+        userId = !userId && this.route.snapshot.data['user'] ? this.route.snapshot.data['user'].id : '';
+        console.log('getUser', userId);
+        if (userId) {
+            this.userService.findUserById(userId)
+                .subscribe(user => {
+                    this.user = user;
+                    user['userId'] = this.userId;
+                    this.userSubject.next(user);
+                });
+        } else {
+            this.userService.currentUser
+                .subscribe(user => {
+                    this.user = user;
+                    this.userSubject.next(user);
+                });
+        }
+        this.loadUserEntities();
     }
     pageChange(event?: PageEvent) {
         console.log('event', event);
@@ -54,7 +93,8 @@ export class EntitiesComponent implements OnInit {
             sort, // sortDirection = 'desc',
             sortField, // sortField = 'rating',
             this.paginator && this.paginator.pageIndex ? this.paginator.pageIndex : 0, // pageNumber: number = 1,
-            this.paginator && this.paginator.pageSize ? this.paginator.pageSize : 10  // pageSize: number = 10
+            this.paginator && this.paginator.pageSize ? this.paginator.pageSize : 10,  // pageSize: number = 10
+            this.userId
         )
             .subscribe(entities => {
                 this.userEntities = entities;

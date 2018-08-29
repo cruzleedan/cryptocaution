@@ -1,4 +1,4 @@
-<app-banner></app-banner>
+<app-banner [user$]="user$"></app-banner>
 <div class="max-width-740">
     <app-loading-spinner fxLayout="row" fxLayoutAlign="center center" *ngIf="loading"></app-loading-spinner>
     <h1 class="txt-center" *ngIf="!loading && (!userReviews || !userReviews.length)">You don't have any reviews</h1>
@@ -12,7 +12,7 @@
                     <div fxFlex fxFlex.xs="0 1 auto">
                         Review of <a *ngIf="review.Entity.id" [routerLink]="['/entity/'+review.Entity.id]">{{ review.Entity?.name }}</a>
                     </div>
-                    <div fxLayoutAlign="end">
+                    <div fxLayoutAlign="end" *ngIf="!userId">
                         <a mat-icon-button color="accent" [routerLink]="['/entity/'+review.entityId+'/review/edit']">
                             <mat-icon aria-label="Edit">edit</mat-icon>
                         </a>

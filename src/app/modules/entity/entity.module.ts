@@ -8,6 +8,7 @@ import { EntityResolver } from './entity-resolver.service';
 import { SuccessDialogComponent } from './pages/new/components/success-dialog.component';
 import { ReviewComponent } from './pages/review/review.component';
 import { NewReviewComponent } from './pages/new-review/new-review.component';
+import { EntityReviewResolver } from './entity-review-resolver.service';
 
 @NgModule({
     imports: [
@@ -21,7 +22,7 @@ import { NewReviewComponent } from './pages/new-review/new-review.component';
         ReviewComponent,
         NewReviewComponent
     ],
-    providers: [EntityResolver],
+    providers: [EntityResolver, EntityReviewResolver],
     exports: [
         SuccessDialogComponent
     ],

@@ -29,10 +29,15 @@
         font-size: 25px;
         font-weight: 300;
     }
-    .published-by {
+    .published-by, .published-by a {
         font-size: 13px;
-        margin-bottom: 5px;
         color: #149cf6;
+    }
+    .published-by a {
+        margin: 0px 5px 0px 5px;
+    }
+    .published-by {
+        margin-bottom: 5px;
         mat-icon {
             color: #bfced8;
             margin-left: 5px;

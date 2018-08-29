@@ -7,7 +7,7 @@
         <div fxFlex fxFlex.xs="0 1 auto" fxLayout="column" fxLayoutAlign.xs="stretch center">
             <div class="name">{{ entity.name }}</div>
             <div class="published-by" fxLayoutAlign="start center" *ngIf="entity.User.username">
-                By {{ entity.User.username }} |
+                By <a [routerLink]="['/user/entities/'+entity.User.id]">{{ entity.User.username }}</a> |
                 <mat-icon fontSet="fa" fontIcon="fa-calendar"></mat-icon>{{ entity.createdAt | date: 'fullDate' }}
             </div>
 
@@ -107,7 +107,8 @@
             <!-- comments starts here -->
 
             <br>
-            <app-search-bar #input [inputRef]="myInput" style="display:none;"></app-search-bar>
+            <app-review-card [entityId$]="entityId$" [entityTotalReviews]="entityTotalReviews"></app-review-card>
+            <!-- <app-search-bar #input [inputRef]="myInput" style="display:none;"></app-search-bar>
             <div fxLayout="row" fxLayoutAlign="end" fxLayoutGap="5px">
                 <button mat-icon-button *ngIf="filter" (click)="clearFilters()" matTooltip="Clear Filters">
                     <mat-icon>clear</mat-icon>
@@ -149,10 +150,10 @@
                         <mat-icon fontSet="fa" fontIcon="fa-sort-amount-desc"></mat-icon>
                     </ng-template>
                 </button>
-            </div>
+            </div> -->
 
             <!-- TRY NOT TO USE MAT-TABLE -->
-            <section class="cont-relative">
+            <!-- <section class="cont-relative">
                 <div fxLayoutAlign="center center" class="cont-spinner" *ngIf="loading">
                     <mat-spinner ></mat-spinner>
                 </div>
@@ -199,7 +200,7 @@
                 </mat-card>
             </section>
             <mat-paginator [length]="entityTotalReviews" [pageSize]="10" [pageSizeOptions]="[5, 10, 25, 100]" (page)="pageChange($event)">
-            </mat-paginator>
+            </mat-paginator> -->
             <!-- TRY NOT TO USE MAT-TABLE -->
         </section>
         <!-- comments section END-->

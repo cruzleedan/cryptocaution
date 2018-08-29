@@ -91,6 +91,7 @@ import { RatingLabelPipe } from './pipes/rating-label.pipe';
 import { EntityDeleteComponent } from './entity-delete/entity-delete.component';
 import { ReviewDeleteComponent } from './review-delete/review-delete.component';
 import { DefaultComponent } from './layout/template/default/default.component';
+import { ReviewCardComponent } from './review-card/review-card.component';
 @NgModule({
     imports: [
         CommonModule,
@@ -175,6 +176,7 @@ import { DefaultComponent } from './layout/template/default/default.component';
         EntityDeleteComponent,
         ReviewDeleteComponent,
         DefaultComponent,
+        ReviewCardComponent,
 
     ],
     exports: [
@@ -257,6 +259,7 @@ import { DefaultComponent } from './layout/template/default/default.component';
         BreadcrumbsComponent,
         EntityDeleteComponent,
         ReviewDeleteComponent,
+        ReviewCardComponent,
     ],
     providers: [
         { provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher },

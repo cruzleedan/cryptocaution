@@ -14,11 +14,11 @@
             <div class="user-summary-stats" fxLayout="row" fxLayoutAlign="center center" fxLayout="row">
                 <div class="user-reviews">
                     <span class="total-reviews">{{ user.reviewsCount || 0 }}</span>
-                    <a href="#" [routerLink]="['/user/reviews']">Review{{user.reviewsCount > 1 ? 's' : ''}}</a>
+                    <a href="#" [routerLink]="[reviewUrl]">Review{{user.reviewsCount > 1 ? 's' : ''}}</a>
                 </div>
                 <div class="user-entities">
                     <span class="total-entities">{{ user.entitiesCount || 0 }}</span>
-                    <a href="#" [routerLink]="['/user/entities']">{{user.entitiesCount > 1 ? 'Entities' : 'Entity'}}</a>
+                    <a href="#" [routerLink]="[entityUrl]">{{user.entitiesCount > 1 ? 'Entities' : 'Entity'}}</a>
                 </div>
                 <div class="user-score">
                     <span class="total-score">{{ user.score || 0 }}</span>

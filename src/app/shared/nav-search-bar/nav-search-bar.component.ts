@@ -55,6 +55,7 @@ export class NavSearchBarComponent implements OnInit {
     search(event: MatAutocompleteSelectedEvent) {
         const entityId: number = event.option.value ? event.option.value['entity_id'] : '';
         if (entityId) {
+            console.log('navigate to ', entityId);
             this.router.navigateByUrl('/entity/' + entityId);
         }
     }

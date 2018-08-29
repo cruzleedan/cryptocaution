@@ -9,7 +9,7 @@ import { environment } from '../../../../environments/environment';
 import { HoverRatingChangeEvent, RatingChangeEvent } from 'angular-star-rating';
 import { DomSanitizer } from '@angular/platform-browser';
 import { map, catchError } from 'rxjs/operators';
-import { of, Observable } from 'rxjs';
+import { of, Observable, BehaviorSubject } from 'rxjs';
 import { MsgDialogComponent } from '../../../shared/dialog/msg-dialog.component';
 import { AuthService } from '../../../core/services/auth.service';
 
@@ -19,6 +19,9 @@ import { AuthService } from '../../../core/services/auth.service';
     styleUrls: ['./entity.component.scss']
 })
 export class EntityComponent implements OnInit {
+    private entityIdSubject = new BehaviorSubject<string>('');
+    public entityId$ = this.entityIdSubject.asObservable();
+
     baseUrl = environment.baseUrl;
     isAdmin: boolean;
     loading: boolean;
@@ -51,29 +54,42 @@ export class EntityComponent implements OnInit {
         private userService: UserService,
         private authService: AuthService,
         private route: ActivatedRoute) {
-            this.userService.currentUser.subscribe(userData => {
-                this.currentUser = userData;
-            });
-        }
+        console.log('constructor starts');
+        this.userService.currentUser.subscribe(userData => {
+            this.currentUser = userData;
+        });
+        this.entity = this.route.snapshot.data['entity'];
+        this.formatFields();
+        this.entityIdSubject.next(this.entity.id);
+        console.log('constructor ends');
+    }
 
     ngOnInit() {
-        this.formatFields();
-        this.route.params
-            .subscribe(
-                (params: Params) => {
-                    this.formatFields();
-                    this.entity['id'] = params['id'];
-                    this.loadReviews();
-                }
-            );
+        console.log('ngOnInit starts');
+        this.route.data
+            .subscribe(data => {
+                console.log('data', data);
+                this.entity = data.entity;
+                this.formatFields();
+                this.entityIdSubject.next(this.entity.id);
+            });
+
+
         this.userService.isAdmin.subscribe(isAdmin => {
             this.isAdmin = isAdmin;
         });
+        console.log('ngOnInit ends');
+    }
+    getEntity(id: string) {
+        this.entityService.findEntityById(id)
+            .subscribe(entity => {
+                this.entity = entity;
+            });
     }
     formatFields() {
-        this.entity = this.route.snapshot.data['entity'];
         this.entityDesc = this.domSanitizer.bypassSecurityTrustHtml(this.entity.desc);
         this.entity.links = this.entity.links instanceof Array ? this.entity.links : [];
+        this.entityTotalReviews = this.entity.reviewCount || 0;
         if (this.entity.rating === null || isNaN(this.entity.rating) || this.entity.rating <= 0) {
             this.entityRating = '';
             this.rated = false;
@@ -83,30 +99,30 @@ export class EntityComponent implements OnInit {
             this.rated = true;
         }
     }
-    pageChange(event?: PageEvent) {
-        console.log('event', event);
-        this.loadReviews();
-    }
-    loadReviews(
-        sort: string = 'desc',
-        sortField: string = 'createdAt',
-        filter?: string | object
-    ) {
-        this.loading = true;
-        this.entityService.findReviews(
-            this.entity['id'], // entityId: number,
-            filter || this.myInput.nativeElement.querySelector('input').value, // filter = '',
-            sort, // sortDirection = 'desc',
-            sortField, // sortField = 'rating',
-            this.paginator.pageIndex, // pageNumber: number = 1,
-            this.paginator.pageSize // pageSize: number = 10
-        )
-            .subscribe(resp => {
-                this.loading = false;
-                this.entityReviews = resp['data'];
-                this.entityTotalReviews = resp['count'];
-            });
-    }
+    // pageChange(event?: PageEvent) {
+    //     console.log('event', event);
+    //     this.loadReviews();
+    // }
+    // loadReviews(
+    //     sort: string = 'desc',
+    //     sortField: string = 'createdAt',
+    //     filter?: string | object
+    // ) {
+    //     this.loading = true;
+    //     this.entityService.findReviews(
+    //         this.entity['id'], // entityId: number,
+    //         filter || this.myInput.nativeElement.querySelector('input').value, // filter = '',
+    //         sort, // sortDirection = 'desc',
+    //         sortField, // sortField = 'rating',
+    //         this.paginator.pageIndex, // pageNumber: number = 1,
+    //         this.paginator.pageSize // pageSize: number = 10
+    //     )
+    //         .subscribe(resp => {
+    //             this.loading = false;
+    //             this.entityReviews = resp['data'];
+    //             this.entityTotalReviews = resp['count'];
+    //         });
+    // }
     onHoverRatingChange(event: HoverRatingChangeEvent) {
         // console.log('onHoverRatingChange', event);
     }
@@ -115,44 +131,44 @@ export class EntityComponent implements OnInit {
             queryParams: { rating: event.rating }
         });
     }
-    voteReview(reviewId, type) {
+    // voteReview(reviewId, type) {
 
-        this.reviewService.voteReview(reviewId, type)
-            .subscribe(data => {
-                if (data.error === 'Unauthorized') {
-                    this.authService.showAuthFormPopup((resp) => {
-                        if (resp && resp.data && resp.data.success) {
-                            console.log('User has been authenticated');
-                            this.voteReview(reviewId, type);
-                        }
-                    });
-                } else {
-                    const foundIndex = this.entityReviews.findIndex(rev => rev.id === data.id);
-                    if (foundIndex > -1) {
-                        this.entityReviews[foundIndex] = Object.assign(this.entityReviews[foundIndex], data);
-                    }
-                }
-            });
-    }
-    clearFilters() {
-        this.filter = '';
-        this.loadReviews('desc', 'createdAt', '');
-    }
-    filterStars(star: number) {
-        this.filter = {rating: star};
-        this.loadReviews('desc', 'createdAt', this.filter);
-    }
-    sortReviews(event: MatSelectChange) {
-        const field = event.value;
-        console.log('Sort Reviews', field);
+    //     this.reviewService.voteReview(reviewId, type)
+    //         .subscribe(data => {
+    //             if (data.error === 'Unauthorized') {
+    //                 this.authService.showAuthFormPopup((resp) => {
+    //                     if (resp && resp.data && resp.data.success) {
+    //                         console.log('User has been authenticated');
+    //                         this.voteReview(reviewId, type);
+    //                     }
+    //                 });
+    //             } else {
+    //                 const foundIndex = this.entityReviews.findIndex(rev => rev.id === data.id);
+    //                 if (foundIndex > -1) {
+    //                     this.entityReviews[foundIndex] = Object.assign(this.entityReviews[foundIndex], data);
+    //                 }
+    //             }
+    //         });
+    // }
+    // clearFilters() {
+    //     this.filter = '';
+    //     this.loadReviews('desc', 'createdAt', '');
+    // }
+    // filterStars(star: number) {
+    //     this.filter = {rating: star};
+    //     this.loadReviews('desc', 'createdAt', this.filter);
+    // }
+    // sortReviews(event: MatSelectChange) {
+    //     const field = event.value;
+    //     console.log('Sort Reviews', field);
 
-        this.sortField = field;
-        this.loadReviews('desc', field, this.filter);
-    }
-    sortDirection() {
-        this.sortDirect = this.sortDirect === 'desc' ? 'asc' : 'desc';
-        this.loadReviews(this.sortDirect, this.sortField, this.filter);
-    }
+    //     this.sortField = field;
+    //     this.loadReviews('desc', field, this.filter);
+    // }
+    // sortDirection() {
+    //     this.sortDirect = this.sortDirect === 'desc' ? 'asc' : 'desc';
+    //     this.loadReviews(this.sortDirect, this.sortField, this.filter);
+    // }
     afterEntityDelete(del) {
         if (del.success) {
             this.router.navigate(['/categories']);

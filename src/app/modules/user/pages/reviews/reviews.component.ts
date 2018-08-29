@@ -5,6 +5,9 @@ import { UserService, AlertifyService, User } from '../../../../core';
 import { Review } from '../../../../core/models/review.model';
 import { FormControl } from '@angular/forms';
 import { MsgDialogComponent } from '../../../../shared/dialog/msg-dialog.component';
+import { ActivatedRoute, Params } from '@angular/router';
+import { mergeMap, map } from 'rxjs/operators';
+import { of, BehaviorSubject } from 'rxjs';
 
 @Component({
     selector: 'app-reviews',
@@ -12,9 +15,13 @@ import { MsgDialogComponent } from '../../../../shared/dialog/msg-dialog.compone
     styleUrls: ['./reviews.component.scss']
 })
 export class ReviewsComponent implements OnInit {
+    private userSubject = new BehaviorSubject<any>({});
+    public user$ = this.userSubject.asObservable();
+
     loading = false;
     userReviews: Review[];
     user: User;
+    userId: string;
     searchControl: FormControl;
     baseUrl = environment.baseUrl;
     @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -25,21 +32,56 @@ export class ReviewsComponent implements OnInit {
     constructor(
         private userService: UserService,
         private alertifyService: AlertifyService,
-        private dialog: MatDialog
+        private dialog: MatDialog,
+        private route: ActivatedRoute
     ) {
         this.searchControl = new FormControl('');
-        this.loadUserReviews();
         this.userService.loading$.subscribe(isLoading => {
             this.loading = isLoading;
         });
-        this.userService.currentUser
-            .subscribe(user => {
-                this.user = user;
-            });
+        const userSnapshot = this.route.snapshot.data['user'];
+        if (userSnapshot) {
+            console.log('snapshot', userSnapshot);
+            this.user = userSnapshot;
+            userSnapshot['userId'] = userSnapshot.id;
+            this.userSubject.next(userSnapshot);
+            this.userId = userSnapshot.id;
+            this.loadUserReviews();
+        }
     }
 
     ngOnInit() {
-
+        if (!this.route.snapshot.data['user']) {
+            this.route.params
+                .pipe(
+                    map(params => {
+                        this.userId = params['userId'];
+                        this.getUser(params['userId']);
+                        return params['userId'];
+                    })
+                )
+                .subscribe((userId: string) => {
+                });
+        }
+    }
+    getUser(userId?: string) {
+        userId = !userId && this.route.snapshot.data['user'] ? this.route.snapshot.data['user'].id : '';
+        console.log('getUser', userId);
+        if (userId) {
+            this.userService.findUserById(userId)
+                .subscribe(user => {
+                    this.user = user;
+                    user['userId'] = this.userId;
+                    this.userSubject.next(user);
+                });
+        } else {
+            this.userService.currentUser
+                .subscribe(user => {
+                    this.user = user;
+                    this.userSubject.next(user);
+                });
+        }
+        this.loadUserReviews();
     }
     pageChange(event?: PageEvent) {
         console.log('event', event);
@@ -54,7 +96,8 @@ export class ReviewsComponent implements OnInit {
             sort, // sortDirection = 'desc',
             sortField, // sortField = 'rating',
             this.paginator && this.paginator.pageIndex ? this.paginator.pageIndex : 0, // pageNumber: number = 1,
-            this.paginator && this.paginator.pageSize ? this.paginator.pageSize : 10  // pageSize: number = 10
+            this.paginator && this.paginator.pageSize ? this.paginator.pageSize : 10,  // pageSize: number = 10,
+            this.userId
         )
             .subscribe(reviews => {
                 this.userReviews = reviews;

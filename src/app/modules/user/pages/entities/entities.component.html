@@ -1,4 +1,4 @@
-<app-banner></app-banner>
+<app-banner [user$]="user$"></app-banner>
 <div class="max-width-740">
     <app-loading-spinner fxLayout="row" fxLayoutAlign="center center" *ngIf="loading"></app-loading-spinner>
     <h1 class="txt-center" *ngIf="!loading && (!userEntities || !userEntities.length)">You don't have any reviews</h1>
@@ -9,7 +9,7 @@
             </mat-form-field> -->
             <mat-card *ngFor="let entity of userEntities">
                 <mat-card-subtitle>
-                    <div fxLayoutAlign="end">
+                    <div fxLayoutAlign="end" *ngIf="!userId">
                         <a mat-icon-button color="accent" [routerLink]="['/entity/'+entity.id+'/edit']">
                             <mat-icon aria-label="Edit">edit</mat-icon>
                         </a>

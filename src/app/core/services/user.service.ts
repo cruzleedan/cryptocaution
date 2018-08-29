@@ -395,8 +395,10 @@ export class UserService {
         sortDirection = 'desc',
         sortField = 'rating',
         pageNumber: number = 1,
-        pageSize: number = 10
+        pageSize: number = 10,
+        userId?: string
     ): Observable<Entity[]> {
+        userId = userId || '';
         this.loadingSubject.next(true);
         return this.apiService.get(
             `/user/entities`,
@@ -406,6 +408,7 @@ export class UserService {
                 .set('sortField', sortField)
                 .set('pageNumber', pageNumber.toString())
                 .set('pageSize', pageSize.toString())
+                .set('userId', userId)
         ).pipe(
             map((res) => {
                 if (!res.success) {
@@ -429,8 +432,10 @@ export class UserService {
         sortDirection = 'desc',
         sortField = 'rating',
         pageNumber: number = 1,
-        pageSize: number = 10
+        pageSize: number = 10,
+        userId?: string
     ): Observable<Review[]> {
+        userId = userId || '';
         this.loadingSubject.next(true);
         return this.apiService.get(
             `/user/reviews`,
@@ -440,6 +445,7 @@ export class UserService {
                 .set('sortField', sortField)
                 .set('pageNumber', pageNumber.toString())
                 .set('pageSize', pageSize.toString())
+                .set('userId', userId)
         ).pipe(
             map((res) => {
                 if (!res.success) {
@@ -490,12 +496,6 @@ export class UserService {
                         return of(null);
                     }
                     return res.data;
-                }),
-                catchError(err => {
-                    const error = this.errorUtil.getError(err, { getValidationErrors: true });
-                    if (typeof error === 'object') { return of(error); }
-                    this.alertifyService.error(error || 'Something went wrong while retrieving user info');
-                    return of(null);
                 })
             );
     }

@@ -61,11 +61,7 @@ export class EntityService {
                         this.alertifyService.error(this.errorUtil.getError(res) || 'Something went wrong while searching entity');
                         return of(null);
                     }
-                    return res.data ? res.data : false;
-                }),
-                catchError(err => {
-                    this.alertifyService.error(this.errorUtil.getError(err) || 'Something went wrong while searching entity');
-                    return of(null);
+                    return res.data ? res.data : of(false);
                 })
             );
     }

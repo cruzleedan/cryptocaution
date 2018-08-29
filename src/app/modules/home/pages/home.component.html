@@ -38,9 +38,11 @@
                 <div *ngIf="entity.Reviews && entity.Reviews.length">
                     <div *ngFor="let review of entity.Reviews" fxLayout="column" class="review-cont">
                         <div fxLayout="row">
-                            <div mat-card-avatar>
-                                <img [src]="baseUrl+'/avatar/'+review.User.id+'/'+review.User.avatar" alt="Avatar" onerror="this.onerror=null;this.src='/assets/images/avatars/avatar.png'" width="100%" height="100%">
-                            </div>
+                            <a [routerLink]="['/user/reviews/'+review.User.id]">
+                                <div mat-card-avatar>
+                                    <img [src]="baseUrl+'/avatar/'+review.User.id+'/'+review.User.avatar" alt="Avatar" onerror="this.onerror=null;this.src='/assets/images/avatars/avatar.png'" width="100%" height="100%">
+                                </div>
+                            </a>
                             <div>
                                 <div class="star-cont">
                                     <star-rating size="small" [starType]="'svg'" [rating]="review.rating"></star-rating>
@@ -77,9 +79,11 @@
                 <div *ngIf="entity.Reviews && entity.Reviews.length">
                     <div *ngFor="let review of entity.Reviews" fxLayout="column" class="review-cont">
                         <div fxLayout="row">
-                            <div mat-card-avatar>
-                                <img [src]="baseUrl+'/avatar/'+review.User.id+'/'+review.User.avatar" alt="Avatar" onerror="this.onerror=null;this.src='/assets/images/avatars/avatar.png'" width="100%" height="100%">
-                            </div>
+                            <a [routerLink]="['/user/reviews/'+review.User.id]">
+                                <div mat-card-avatar>
+                                    <img [src]="baseUrl+'/avatar/'+review.User.id+'/'+review.User.avatar" alt="Avatar" onerror="this.onerror=null;this.src='/assets/images/avatars/avatar.png'" width="100%" height="100%">
+                                </div>
+                            </a>
                             <div>
                                 <div class="star-cont">
                                     <star-rating size="small" [starType]="'svg'" [rating]="review.rating"></star-rating>
@@ -116,9 +120,11 @@
                 <div *ngIf="entity.Reviews && entity.Reviews.length">
                     <div *ngFor="let review of entity.Reviews" fxLayout="column" class="review-cont">
                         <div fxLayout="row">
-                            <div mat-card-avatar>
-                                <img [src]="baseUrl+'/avatar/'+review.User.id+'/'+review.User.avatar" alt="Avatar" onerror="this.onerror=null;this.src='/assets/images/avatars/avatar.png'" width="100%" height="100%">
-                            </div>
+                            <a [routerLink]="['/user/reviews/'+review.User.id]">
+                                <div mat-card-avatar>
+                                    <img [src]="baseUrl+'/avatar/'+review.User.id+'/'+review.User.avatar" alt="Avatar" onerror="this.onerror=null;this.src='/assets/images/avatars/avatar.png'" width="100%" height="100%">
+                                </div>
+                            </a>
                             <div>
                                 <div class="star-cont">
                                     <star-rating size="small" [starType]="'svg'" [rating]="review.rating"></star-rating>

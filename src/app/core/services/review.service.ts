@@ -19,6 +19,18 @@ export class ReviewService {
         private alertifyService: AlertifyService,
         private errorUtil: Util
     ) { }
+    findReviewById(reviewId: string): Observable<Review> {
+        return this.apiService.get(`/reviews/${reviewId}`)
+            .pipe(
+                map((res) => {
+                    if (!res.success) {
+                        this.alertifyService.error(this.errorUtil.getError(res) || 'Something went wrong while searching review');
+                        return of(null);
+                    }
+                    return res.data ? res.data : of(null);
+                })
+            );
+    }
     hasUserReviewedEntity(entityId: string): Observable<Review> {
         return this.apiService.get(`/user/review/${ entityId }`)
             .pipe(
@@ -65,11 +77,6 @@ export class ReviewService {
                         return {error: err};
                     }
                     return res['data'];
-                }),
-                catchError(err => {
-                    err = this.errorUtil.getError(err) || 'Something went wrong while saving your vote.';
-                    this.alertifyService.error(err);
-                    return of({error: err});
                 })
             );
     }

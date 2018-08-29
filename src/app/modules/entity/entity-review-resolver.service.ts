@@ -17,17 +17,7 @@ export class EntityReviewResolver implements Resolve<Review> {
     }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Review> {
-        return this.reviewService.hasUserReviewedEntity(route.params['id'])
-            .pipe(
-                map(data => {
-                    console.log('resolver log ', data);
-                    return data;
-                }),
-                catchError(error => {
-                    console.log('resolver error', error);
-                    return of(null);
-                })
-            );
+        return this.reviewService.findReviewById(route.params['reviewId']);
     }
 
 }

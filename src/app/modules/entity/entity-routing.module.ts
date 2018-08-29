@@ -9,6 +9,7 @@ import { NewReviewComponent } from './pages/new-review/new-review.component';
 import { EntityReviewResolver } from './entity-review-resolver.service';
 import { AdminGuard } from '../../core/guards/admin.guard';
 import { AdminOrEntityOwnerGuard } from '../../core/guards/admin-or-entity-owner.guard';
+import { ReviewComponent } from './pages/review/review.component';
 
 const routes: Routes = [
     {
@@ -16,6 +17,13 @@ const routes: Routes = [
         redirectTo: '/category',
         pathMatch: 'full',
         canActivate: [AdminGuard]
+    },
+    {
+        path: ':entityId/review/:reviewId',
+        component: ReviewComponent,
+        resolve: {
+            review: EntityReviewResolver
+        }
     },
     {
         path: 'new',

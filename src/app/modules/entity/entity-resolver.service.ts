@@ -14,6 +14,7 @@ export class EntityResolver implements Resolve<Entity> {
     }
 
     resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Entity> {
+        console.log('Entity resolver', route.params['id']);
         return this.entityService.findEntityById(route.params['id']);
     }
 

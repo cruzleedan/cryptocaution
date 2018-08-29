@@ -5,7 +5,7 @@
             <a [routerLink]="['/entity/'+entityId]">{{entity.name}}</a> now.
         </h2>
         <h3 *ngIf="review && review.id && !isEdit" class="warn">
-            You already wrote a review for {{ entityName }}. Submiting this form would update it instead.
+            You already wrote a review for {{ entityName }}. Submitting this form would update it instead.
         </h3>
         <h3 *ngIf="isEdit">
             Update your Review

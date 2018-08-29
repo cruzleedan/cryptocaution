@@ -1,42 +1,47 @@
-<div class="main-container light">
-    <div class="max-width-740">
-        <div fxLayout="column">
-            <div fxLayout="row" fxLayoutGap="10px">
-                <div class="avatar-container">
-                    <img [src]="'/assets/images/avatars/'+review.avatar" onerror="this.onerror=null;this.src='/assets/images/avatars/avatar.png'"
-                        alt="user">
-                </div>
-                <div>
-                    <div class="r-name">{{ user.username }}</div>
-                    <div class="r-reviews"> Reviews</div>
-                    <div> Published {{ review.createdAt | date: 'fullDate' }}</div>
-                </div>
+<div class="main-container max-width-740">
+    <mat-card>
+        <mat-card-content>
+            <div fxLayoutAlign="end" *ngIf="(currentUser && review.userId === currentUser.id) || isAdmin">
+                <a mat-icon-button color="accent" [routerLink]="['/entity/'+review.entityId+'/review/edit']">
+                    <mat-icon aria-label="Edit">edit</mat-icon>
+                </a>
+                <app-review-delete [review]="review" (afterDelete)="afterDeletion()"></app-review-delete>
             </div>
-            <a class="entity-container" [routerLink]="['/entity/'+entity.id]">
-                <div fxLayout="row">
-                    <app-read-more fxFlex [text]="entity.name" [maxLength]="200">
-                    </app-read-more>
-                    <div fxLayout="row">
-                        <star-rating fxFlexAlign="start" size="medium" [readOnly]="true" [rating]="entity.rating"></star-rating>
-                        <mat-icon [matBadge]="entity.reviewCount" matBadgePosition="above after">comment</mat-icon>
+            <div fxLayout="row" fxLayout.xs="column">
+                <aside class="reviewer-container" fxLayout="column" fxLayout.xs="row">
+                    <a [routerLink]="['/user/reviews/'+review.User.id]">
+                        <div class="avatar-container">
+                            <img [src]="baseUrl+'/avatar/'+review.avatar" onerror="this.onerror=null;this.src='/assets/images/avatars/avatar.png'"
+                                alt="user">
+                        </div>
+                    </a>
+                    <div>
+                        <div class="r-name">{{ review.User.username || review.User.email }}</div>
+                        <div class="r-reviews">{{ review.User.reviewCount }} Reviews</div>
                     </div>
-                </div>
-                <div>{{ entity.desc }}</div>
-            </a>
-            <div>
-                <div class="review-title">{{ review.title }}</div>
-                <div>review.review</div>
+                </aside>
+                <section fxFlex fxFlex.xs="0 1 auto" fxLayout="column">
+                    <div fxLayout="row" fxLayout.xs="column">
+                        <star-rating size="medium" fxFlexAlign.xs="start" [rating]="review.rating || 0" [step]="0.5"
+                            [readOnly]="true"></star-rating>
+                        <span fxFlex fxFlex.xs="0 1 auto"></span>
+                        <span fxFlexAlign="flex-end" fxFlexAlign.xs="start">Published {{ review.createdAt | date:
+                            'fullDate' }}</span>
+                    </div>
+                    <div class="review-title">{{ review.title }}</div>
+                    <div [innerText]="review.review"></div>
+                </section>
             </div>
-        </div>
-        <div fxLayoutAlign="end" fxLayoutGap="10px">
-            <button mat-icon-button>
-                <mat-icon [matBadge]="review.upvoteTally" matBadgePosition="above after" matBadgeOverlap="false" matBadgeColor="accent" [matBadgeHidden]="!review.upvoteTally"
-                    aria-label="Upvote" color="primary">thumb_up</mat-icon>
-            </button>
-            <button mat-icon-button>
-                <mat-icon [matBadge]="review.downvoteTally" matBadgePosition="above after" matBadgeOverlap="false" matBadgeColor="accent"
-                    [matBadgeHidden]="!review.downvoteTally" aria-label="Downvote" color="warn">thumb_down</mat-icon>
-            </button>
-        </div>
-    </div>
+            <div fxLayoutAlign="end" fxLayoutGap="10px">
+                <button mat-icon-button (click)="voteReview(review.id, true)">
+                    <mat-icon [matBadge]="review.upvoteTally" matBadgePosition="above after" matBadgeOverlap="false"
+                        matBadgeColor="accent" [matBadgeHidden]="!review.upvoteTally" aria-label="Upvote" color="primary">thumb_up</mat-icon>
+                </button>
+                <button mat-icon-button (click)="voteReview(review.id, false)">
+                    <mat-icon [matBadge]="review.downvoteTally" matBadgePosition="above after" matBadgeOverlap="false"
+                        matBadgeColor="accent" [matBadgeHidden]="!review.downvoteTally" aria-label="Downvote" color="warn">thumb_down</mat-icon>
+                </button>
+            </div>
+        </mat-card-content>
+    </mat-card>
 </div>
