@@ -543,6 +543,18 @@ export class UserService {
                 })
             );
     }
+    deleteUser(userId: string): Observable<boolean> {
+        return this.apiService.delete(`/user/${userId}`)
+            .pipe(
+                map(resp => {
+                    if (!resp.success) {
+                        this.alertifyService.error(this.errorUtil.getError(resp) || 'Failed to delete user.');
+                        return of(null);
+                    }
+                    return resp;
+                })
+            );
+    }
     search(Obj: Object) {
         const keywords: Observable<string> = Obj['keyword'],
             sortField = Obj['sortField'],

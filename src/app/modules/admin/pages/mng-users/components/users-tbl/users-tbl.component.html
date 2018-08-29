@@ -88,7 +88,7 @@
                         <a mat-icon-button [routerLink]="[row.id+'/edit']" color="accent">
                             <mat-icon aria-label="Edit">mode_edit</mat-icon>
                         </a>
-                        <button mat-icon-button color="warn">
+                        <button mat-icon-button color="warn" (click)="deleteUser(row.id)">
                             <mat-icon aria-label="Delete">delete</mat-icon>
                         </button>
                         <!-- <button mat-icon-button [matMenuTriggerFor]="menu">

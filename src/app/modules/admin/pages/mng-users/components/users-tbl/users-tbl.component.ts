@@ -2,13 +2,14 @@ import {fromEvent as observableFromEvent,  Observable } from 'rxjs';
 
 import {distinctUntilChanged, debounceTime, tap} from 'rxjs/operators';
 import { Component, OnInit , ElementRef, ViewChild, AfterViewInit} from '@angular/core';
-import { MatPaginator, MatSort, MatSlideToggle } from '@angular/material';
+import { MatPaginator, MatSort, MatSlideToggle, MatDialog } from '@angular/material';
 import { SelectionModel } from '@angular/cdk/collections';
 import { UsersDataSource } from '../../../../../../core/datasources/users.datasource';
 import { UserService, AlertifyService } from '../../../../../../core';
 import { environment } from '../../../../../../../environments/environment';
 import { Params } from '@angular/router';
 import { FormControl } from '@angular/forms';
+import { MsgDialogComponent } from '../../../../../../shared/dialog/msg-dialog.component';
 
 @Component({
     selector: 'app-users-tbl',
@@ -25,7 +26,8 @@ export class UsersTblComponent implements OnInit, AfterViewInit {
     // allfeatures = TABLE_HELPERS;
     constructor(
         private userService: UserService,
-        private alertifyService: AlertifyService
+        private alertifyService: AlertifyService,
+        private dialog: MatDialog,
     ) {
     }
     @ViewChild(MatPaginator) paginator: MatPaginator;
@@ -114,6 +116,27 @@ export class UsersTblComponent implements OnInit, AfterViewInit {
                 this.alertifyService.error('Failed to block user');
             } else if (user && user.blockFlag === slide.checked) {
                 this.alertifyService.success(`Successfully ${slide.checked ? 'blocked!' : 'unblocked!'}`);
+            }
+        });
+    }
+    deleteUser(id: string) {
+        const dialogRef = this.dialog.open(MsgDialogComponent, {
+            data: {
+                type: 'confirm',
+                msg: `Are you sure, you want to delete user?`
+            },
+            width: '500px',
+            hasBackdrop: true,
+            panelClass: ''
+        });
+        dialogRef.afterClosed().subscribe(resp => {
+            if (resp && resp.proceed) {
+                this.userService.deleteUser(id).subscribe(res => {
+                    if (res['success'] && res['data']) {
+                        this.loadUsers();
+                        this.alertifyService.success(`Successfully deleted`);
+                    }
+                });
             }
         });
     }
