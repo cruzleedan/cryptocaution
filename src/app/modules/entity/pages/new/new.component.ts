@@ -15,6 +15,7 @@ import { Entity } from '../../../../core/models/entity.model';
 import { environment } from '../../../../../environments/environment';
 import { HttpEventType } from '@angular/common/http';
 import { AuthService } from '../../../../core/services/auth.service';
+import { Globals } from '../../../../globals';
 
 @Component({
     selector: 'app-new',
@@ -22,8 +23,21 @@ import { AuthService } from '../../../../core/services/auth.service';
     styleUrls: ['./new.component.scss']
 })
 export class NewComponent implements OnInit, ComponentCanDeactivate {
+    tinyMceInit = {
+        plugins: 'link image',
+        images_upload_url: 'upload.php',
+        images_upload_handler: this.imgHandler,
+        setup: function (editor) {
+            editor.on('init', function (e) {
+                console.log('This', this);
+                console.log('Editor was initialized.', e);
+            });
+        }
+    };
     baseUrl = environment.baseUrl;
+    baseApiUrl = environment.baseApiUrl;
     loading: boolean;
+    entityImgUrl: string;
     imageChangedEvent: any = '';
     croppedImage: any = '';
     uploadProgress;
@@ -64,11 +78,11 @@ export class NewComponent implements OnInit, ComponentCanDeactivate {
         private authService: AuthService,
         private userService: UserService
     ) {
-
         this.entityForm = this.fb.group({
             'categoryId': new FormControl('', [Validators.required]),
             'name': new FormControl('', [Validators.required]),
             'desc': new FormControl('', [Validators.required]),
+            'descImages': new FormControl(''),
             'links': this.fb.array([this.createLink()]),
             'address': new FormControl(''),
             'phone': new FormControl(''),
@@ -85,7 +99,7 @@ export class NewComponent implements OnInit, ComponentCanDeactivate {
                             this.loading = false;
                             this.isEdit = true;
                             this.entity = entity;
-                            this.croppedImage = entity.image ? `${this.baseUrl}/entity/${entity.id}/${entity.image}` : this.croppedImage;
+                            this.entityImgUrl = entity.image ? `${this.baseUrl}/entity/${entity.id}/${entity.image}` : this.entityImgUrl;
                             this.entityForm.patchValue(entity);
                             this.entityForm.markAsPristine();
                         });
@@ -95,8 +109,8 @@ export class NewComponent implements OnInit, ComponentCanDeactivate {
         this.matcher = new ShowOnDirtyErrorStateMatcher;
         this.categoryService.categories$
             .subscribe(categories => {
-            this.categories = categories;
-        });
+                this.categories = categories;
+            });
         // this.categoryService.search({
         //     keyword: this.searchKeyword$,
         //     sortField: 'category',
@@ -111,8 +125,8 @@ export class NewComponent implements OnInit, ComponentCanDeactivate {
     ngOnInit() {
         this.categoryService.getCategories()
             .subscribe(categories => {
-            this.categories = categories;
-        });
+                this.categories = categories;
+            });
     }
     getControls(frmGrp: FormGroup, key: string) {
         return (<FormArray>frmGrp.get(key)).controls;
@@ -207,18 +221,42 @@ export class NewComponent implements OnInit, ComponentCanDeactivate {
             'links': '',
             'address': '',
             'phone': '',
-            'email': ''
+            'email': '',
+            'descImages': ''
         };
         this.entityForm.reset(this.isEdit ? this.entity : fieldsVal);
         this.searchFormControl.setValue('');
         this.imgFormControl.setValue('');
         this.croppedImage = '';
     }
+    setEntityDescImages() {
+        const str = this.entityForm.get('desc').value;
+        const regex = /<img.*?src=['"](.*?)['"]/g;
+        let arr;
+        const outp = [];
+        let filename;
+        while ((arr = regex.exec(str))) {
+            filename = arr[1];
+            filename = filename.split('/').pop();
+            if (filename) {
+                outp.push(filename);
+            }
+        }
+        this.entityForm.get('descImages').setValue(JSON.stringify(outp));
+    }
     handleSubmit() {
         this.entityForm.disable();
+        this.setEntityDescImages();
         const formValues = this.entityForm.value;
-        const blob = this.customBlob.dataURLToBlob(this.croppedImage);
-        const imageFile = this.customBlob.blobToFile(blob, `entity-${Date.now()}.png`);
+        console.log('formValues', formValues);
+        let imageFile;
+        if (this.croppedImage) {
+            console.log('cropped image is', this.croppedImage);
+
+            const blob = this.customBlob.dataURLToBlob(this.croppedImage);
+            imageFile = this.customBlob.blobToFile(blob, `entity-${Date.now()}.png`);
+        }
+
         this.loading = true;
         this.uploading = !!(this.croppedImage);
         let req;
@@ -269,8 +307,39 @@ export class NewComponent implements OnInit, ComponentCanDeactivate {
                         this.authService.showBlockErrPopup();
                     }
                     this.entityForm.enable();
-            });
+                });
         }
+    }
+
+    imgHandler(blobInfo, success, failure) {
+        let xhr, formData;
+
+        xhr = new XMLHttpRequest();
+        xhr.withCredentials = false;
+        xhr.open('POST', `${this.baseApiUrl}/entities/new/image`);
+
+        xhr.onload = function () {
+            let json;
+
+            if (xhr.status !== 200) {
+                failure('HTTP Error: ' + xhr.status);
+                return;
+            }
+
+            json = JSON.parse(xhr.responseText);
+            json.location = `${this.baseUrl}/tmp/${json.filename}`;
+
+            if (!json || typeof json.location !== 'string') {
+                failure('Invalid JSON: ' + xhr.responseText);
+                return;
+            }
+            success(json.location);
+        };
+
+        formData = new FormData();
+        formData.append('file', blobInfo.blob(), blobInfo.filename());
+
+        xhr.send(formData);
     }
 }
 

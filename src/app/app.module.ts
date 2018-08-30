@@ -19,6 +19,7 @@ import {
 import { AuthModule } from './modules/auth/auth.module';
 import { CoreModule } from './core';
 import { CanDeactivateGuard } from './core/guards/can-deactivate/can-deactivate.guard';
+import { Globals } from './globals';
 
 @NgModule({
     declarations: [
@@ -36,6 +37,7 @@ import { CanDeactivateGuard } from './core/guards/can-deactivate/can-deactivate.
     ],
     exports: [BrowserAnimationsModule],
     providers: [
+        Globals,
         CookieService,
         HttpService,
         CanDeactivateGuard,

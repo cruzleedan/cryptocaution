@@ -53,8 +53,9 @@ import {
 import {ScrollDispatchModule} from '@angular/cdk/scrolling';
 import { ImageCropperModule } from 'ngx-image-cropper';
 import { StarRatingModule } from 'angular-star-rating';
-import { QuillModule } from 'ngx-quill';
 import { Ng2OdometerModule } from 'ng2-odometer';
+import { QuillModule } from 'ngx-quill';
+import { EditorModule } from '@tinymce/tinymce-angular';
 
 import { ListErrorsComponent } from './list-errors.component';
 import { ShowAuthedDirective } from './directives/show-authed.directive';
@@ -134,6 +135,7 @@ import { ReviewCardComponent } from './review-card/review-card.component';
         Ng2OdometerModule,
         StarRatingModule.forRoot(),
         QuillModule,
+        EditorModule,
         FormsModule,
         ReactiveFormsModule,
         HttpClientModule,
@@ -225,6 +227,7 @@ import { ReviewCardComponent } from './review-card/review-card.component';
         // End Pipes
         StarRatingModule,
         QuillModule,
+        EditorModule,
         Ng2OdometerModule,
         FormsModule,
         RouterModule,

@@ -9,7 +9,7 @@
                         <input type="file" accept="image/*" (change)="fileChangeEvent($event)" #entityImgFile style="display: none" [formControl]="imgFormControl">
                         <div class="img-cont">
                             <mat-icon fontSet="fa" fontIcon="fa-camera" (click)="entityImgFile.click()"></mat-icon>
-                            <img [src]="croppedImage" *ngIf="croppedImage" onerror="this.onerror=null;this.src='/assets/images/image-not-found.png';">
+                            <img [src]="croppedImage || entityImgUrl" *ngIf="croppedImage || entityImgUrl" onerror="this.onerror=null;this.src='/assets/images/image-not-found.png';">
                             <mat-progress-bar *ngIf="uploading" mode="determinate" [value]="(uploadProgress | async)" color="warn"></mat-progress-bar>
                         </div>
                         <div fxFlex fxLayout="column" fxFlex.lt-md="0 1 auto">
@@ -103,7 +103,11 @@
                                 required formControlName="desc">
                             </textarea>
                         </mat-form-field> -->
-                        <quill-editor [style]="{height: '200px'}" formControlName="desc">
+                        <editor apiKey="p3c7sdbs7ut72lnvt86hupurdlo7mmk4pko0ec476qsvs5px"
+                            formControlName="desc"
+                            [init]="tinyMceInit">
+                        </editor>
+                        <!-- <quill-editor [style]="{height: '200px'}" >
                             <div quill-editor-toolbar>
                                 <span class="ql-formats">
                                     <button class="ql-bold" [title]="'Bold'"></button>
@@ -122,7 +126,7 @@
                                     <button class="ql-video" [title]="'Embed Video'"></button>
                                 </span>
                             </div>
-                        </quill-editor>
+                        </quill-editor> -->
                     </div>
                 </mat-card-content>
             </mat-card>
