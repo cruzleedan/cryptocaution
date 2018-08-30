@@ -4,7 +4,7 @@
   "scripts": {
     "ng": "ng",
     "preinstall": "cd ./server && npm install",
-    "start": "node ./bin/www.js",
+    "start": "node ./server/www.js",
     "dev": "./node_modules/.bin/ng serve -o --proxy-config ./proxy.json --ssl --ssl-key ./ssl/server.key --ssl-cert ./ssl/server.cert",
     "postinstall": "ng build --aot --prod",
     "server": "node local.js",
