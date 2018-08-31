@@ -1,12 +1,14 @@
-<div class="form-container" fxLayout="row" fxLayoutAlign="center center">
-    <mat-progress-bar *ngIf="loading" mode="indeterminate" color="warn"></mat-progress-bar>
+<div class="form-container" fxLayout="column" fxLayoutAlign="center center">
     <div id="login" class="signin-card">
-        <a [routerLink]="['']" matTooltip="Home">
-            <div class="logo-image">
-                <img src="/assets/logos/dark-logo.png" alt="Logo" width="50">
-            </div>
-        </a>
-        <h1 class="display1">CryptoCaution</h1>
-        <router-outlet></router-outlet>
+            <mat-progress-bar *ngIf="(authService.authenticating$ | async)" mode="indeterminate" color="warn"></mat-progress-bar>
+        <div class="signin-card-content">
+            <a [routerLink]="['']" matTooltip="Home">
+                <div class="logo-image">
+                    <img src="/assets/logos/dark-logo.png" alt="Logo" width="50">
+                </div>
+            </a>
+            <h1 class="display1">CryptoCaution</h1>
+            <router-outlet></router-outlet>
+        </div>
     </div>
 </div>

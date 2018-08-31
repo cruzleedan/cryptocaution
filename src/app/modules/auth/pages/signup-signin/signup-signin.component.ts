@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, NgZone } from '@angular/core';
+import { Component, OnInit, Output, NgZone, EventEmitter } from '@angular/core';
 import { FormBuilder, FormGroup, FormControl, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { UserService, Errors } from '../../../../core';
@@ -6,6 +6,7 @@ import { ShowOnDirtyErrorStateMatcher, MatDialog } from '@angular/material';
 import { MsgDialogComponent } from '../../../../shared/dialog/msg-dialog.component';
 import { ValidationMessage } from '../../../../core/validators/validation.message';
 import { PasswordValidator } from '../../../../core/validators/password.validator';
+import { AuthService } from '../services/auth.service';
 
 @Component({
     selector: 'app-signin-signup-page',
@@ -19,7 +20,6 @@ export class SignupSigninComponent implements OnInit {
     isRegister: Boolean;
     title: String = '';
     errors = {error: ''};
-    isSubmitting = false;
     authForm: FormGroup;
     matchingPass: FormGroup;
     returnUrl: string;
@@ -31,7 +31,8 @@ export class SignupSigninComponent implements OnInit {
         private userService: UserService,
         private fb: FormBuilder,
         private zone: NgZone,
-        private dialog: MatDialog
+        private dialog: MatDialog,
+        public authService: AuthService
     ) {
         this.matchingPass = new FormGroup({
             new: new FormControl('',
@@ -93,7 +94,7 @@ export class SignupSigninComponent implements OnInit {
         });
     }
     submitForm() {
-        this.isSubmitting = true;
+        this.authService.authenticatingSubject.next(true);
         this.errors = { error: '' };
 
         const credentials = this.authForm.value;
@@ -101,6 +102,7 @@ export class SignupSigninComponent implements OnInit {
             .attemptAuth(this.authType, credentials)
             .subscribe(
                 resp => {
+                    this.authService.authenticatingSubject.next(false);
                     console.log('resp', resp);
                     if (resp && resp['success']) {
                         console.log('Navigate to return Url', this.returnUrl);
@@ -118,8 +120,10 @@ export class SignupSigninComponent implements OnInit {
             );
     }
     fbLogin() {
+        this.authService.authenticatingSubject.next(true);
         this.userService.fbLogin()
             .then((cred) => {
+                this.authService.authenticatingSubject.next(false);
                 console.log('fblogin ', cred);
                 this.userService.fbAuth(cred).subscribe((resp) => {
                     if (resp.success) {
@@ -129,6 +133,7 @@ export class SignupSigninComponent implements OnInit {
                     }
                 });
             }).catch((err) => {
+                this.authService.authenticatingSubject.next(false);
                 const dialogRef = this.dialog.open(MsgDialogComponent, {
                     data: {
                         msg: 'Something went wrong while communicating to the server',

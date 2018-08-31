@@ -57,7 +57,8 @@
         <mat-error *ngIf="authError">
             {{ authError | capitalize }}
         </mat-error>
-        <button fxFlexAlign="center" mat-raised-button type="submit" color="accent" alt="submit" [disabled]="!authForm.valid">
+        <button fxFlexAlign="center" mat-raised-button type="submit" color="accent" alt="submit"
+            [disabled]="!authForm.valid || (authService.authenticating$ | async)">
             {{ title }}
         </button>
         <span class="link" fxFlexAlign="end" *ngIf="isLogin">

@@ -6,6 +6,7 @@ import { ShowOnDirtyErrorStateMatcher } from '@angular/material';
 import { ValidationMessage } from '../../../../core/validators/validation.message';
 import { PasswordValidator } from '../../../../core/validators/password.validator';
 import { ActivatedRoute } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
     selector: 'app-forgot-password',
@@ -35,7 +36,8 @@ export class ForgotPasswordComponent implements OnInit {
         private fb: FormBuilder,
         private alertifyService: AlertifyService,
         private userService: UserService,
-        private route: ActivatedRoute
+        private route: ActivatedRoute,
+        public authService: AuthService
     ) {
         this.route.queryParams.subscribe(params => {
             console.log('PARAMS', params);
@@ -48,10 +50,12 @@ export class ForgotPasswordComponent implements OnInit {
     ngOnInit() {
     }
     handleSubmit() {
+        this.authService.authenticatingSubject.next(true);
         const formVal = this.pwdForm.value;
         this.userService.forgotPasswordReset(formVal.matchedPassword.new, this.token)
         .subscribe(
             resp => {
+                this.authService.authenticatingSubject.next(false);
                 console.log('resp', resp);
                 if (resp['success']) {
                     this.alertifyService.success('Successfully updated');
@@ -61,6 +65,7 @@ export class ForgotPasswordComponent implements OnInit {
                 }
             },
             err => {
+                this.authService.authenticatingSubject.next(false);
                 console.log('err', err);
                 if (typeof err.error === 'object') {
                     err.error = err.error.hasOwnProperty('error') && typeof err.error.error === 'object' ? err.error.error : err.error;
