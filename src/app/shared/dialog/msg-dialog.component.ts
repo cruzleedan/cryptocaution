@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, Inject, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 import { UserService } from '../../core';
 
@@ -17,10 +17,10 @@ export class MsgDialogComponent implements OnInit {
     isAuth = false;
     constructor(
         private userService: UserService,
+        private ref: ChangeDetectorRef,
         public dialogRef: MatDialogRef<MsgDialogComponent>,
         @Inject(MAT_DIALOG_DATA) public data
-    ) { }
-    ngOnInit() {
+    ) {
         if (this.data.type && this.data.type === 'error') {
             const charCount = 100;
             this.msg = this.data.msg || 'Something went wrong!';
@@ -29,6 +29,11 @@ export class MsgDialogComponent implements OnInit {
             const msgCont: string = this.data.msg.substr(charCount) || '';
             this.details = this.data.details !== this.msg ? msgCont + this.data.details : msgCont;
         }
+
+    }
+    ngOnInit() {
+        console.log('DIALOG ONINIT');
+
     }
     close() {
         this.dialogRef.close();

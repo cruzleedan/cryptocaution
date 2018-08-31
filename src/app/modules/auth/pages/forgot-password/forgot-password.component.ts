@@ -14,10 +14,12 @@ import { AuthService } from '../services/auth.service';
     styleUrls: ['./forgot-password.component.scss']
 })
 export class ForgotPasswordComponent implements OnInit {
+    disableSubmit: boolean;
     showCurrPass: boolean;
     showNewPass: boolean;
     showConfPass: boolean;
     pwdForm: FormGroup;
+    requestForm: FormGroup;
     matchingPass: FormGroup;
     matcher;
     token;
@@ -45,17 +47,33 @@ export class ForgotPasswordComponent implements OnInit {
         });
         this.matcher = new ShowOnDirtyErrorStateMatcher;
         this.pwdForm = new FormGroup({name: new FormControl()});
+        this.requestForm = new FormGroup({
+            username: new FormControl('', Validators.required)
+        });
     }
 
     ngOnInit() {
+
     }
-    handleSubmit() {
-        this.authService.authenticatingSubject.next(true);
+    requestReset() {
+        const formVal = this.requestForm.value;
+        console.log('Request for reset ', formVal);
+        this.userService.requestPasswordReset(formVal.username)
+            .subscribe(resp => {
+                console.log('resp', resp);
+                if (resp['success']) {
+                    this.alertifyService.success('Please check your email to see furthur instructions on how to reset your password.');
+                    this.requestForm.reset({});
+                } else {
+                    this.alertifyService.error('Request failed, please try again.');
+                }
+            });
+    }
+    resetPassword() {
         const formVal = this.pwdForm.value;
         this.userService.forgotPasswordReset(formVal.matchedPassword.new, this.token)
         .subscribe(
             resp => {
-                this.authService.authenticatingSubject.next(false);
                 console.log('resp', resp);
                 if (resp['success']) {
                     this.alertifyService.success('Successfully updated');
@@ -65,7 +83,6 @@ export class ForgotPasswordComponent implements OnInit {
                 }
             },
             err => {
-                this.authService.authenticatingSubject.next(false);
                 console.log('err', err);
                 if (typeof err.error === 'object') {
                     err.error = err.error.hasOwnProperty('error') && typeof err.error.error === 'object' ? err.error.error : err.error;
@@ -79,10 +96,18 @@ export class ForgotPasswordComponent implements OnInit {
                         }
                     });
                 } else {
-
+                    console.log('Error!', err);
                 }
             }
         );
+    }
+    handleSubmit() {
+        if (this.token) {
+            console.log('token is ', this.token);
+            this.resetPassword();
+        } else {
+            this.requestReset();
+        }
     }
     resetForm() {
         this.pwdForm.reset({});

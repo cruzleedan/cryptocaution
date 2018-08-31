@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, of, ReplaySubject, Observable, Subject } from 'rxjs';
 import { User } from '../models/user.model';
-import { distinctUntilChanged, map, catchError, reduce, debounceTime, switchMap, mergeMap } from 'rxjs/operators';
+import { distinctUntilChanged, map, catchError, reduce, debounceTime, switchMap, mergeMap, finalize } from 'rxjs/operators';
 import { ApiService } from './api.service';
 import { JwtService } from './jwt.service';
 import { environment } from '../../../environments/environment';
@@ -19,7 +19,6 @@ declare const FB: any;
     providedIn: 'root'
 })
 export class UserService {
-
     private currentUserSubject = new BehaviorSubject<User>({} as User);
     public currentUser = this.currentUserSubject.asObservable().pipe(distinctUntilChanged());
 
@@ -41,6 +40,9 @@ export class UserService {
     private usersCountSubject = new BehaviorSubject<number>(0);
     public usersCount$ = this.usersCountSubject.asObservable();
 
+    private loadingRequestsSubject = new BehaviorSubject<Object>({});
+    public loadingRequests$ = this.loadingRequestsSubject.asObservable();
+
     constructor(
         private apiService: ApiService,
         private jwtService: JwtService,
@@ -54,7 +56,11 @@ export class UserService {
             this.alertifyService.error('Something went wrong while connecting to Facebook');
         }
     }
-
+    setLoadingRequests(name, status) {
+        const req = {};
+        req[name] = status;
+        this.loadingRequestsSubject.next(Object.assign(this.loadingRequestsSubject.getValue(), req));
+    }
     // Verify JWT in localstorage with server & load user's info.
     // This runs once on application startup.
     populate() {
@@ -197,6 +203,7 @@ export class UserService {
     }
 
     attemptAuth(type, credentials): Observable<Object> {
+        this.setLoadingRequests('attemptAuth', true);
         console.log('attemptAuth called', type);
         this.isAuthenticatingSubject.next(true);
         const route = (type === 'login') ? '/login' : '';
@@ -219,7 +226,10 @@ export class UserService {
                         }
                         return resp;
                     }
-                )
+                ),
+                finalize(() => {
+                    this.setLoadingRequests('attemptAuth', false);
+                })
             );
     }
 
@@ -227,11 +237,28 @@ export class UserService {
         console.log('getCurrentUser is called', this.currentUserSubject.value);
         return this.currentUserSubject.value;
     }
-
+    requestPasswordReset(username: string): Observable<{ success: boolean }> {
+        this.setLoadingRequests('requestPasswordReset', true);
+        return this.apiService
+            .post('/user/forgot-password', {username})
+            .pipe(
+                map(resp => {
+                    if (!resp.success) {
+                        this.alertifyService.error(this.errorUtil.getError(resp) || 'Failed to request password reset.');
+                        return of({success: false});
+                    }
+                    return resp;
+                }),
+                finalize(() => {
+                    this.setLoadingRequests('requestPasswordReset', false);
+                })
+            );
+    }
     forgotPasswordReset(
         newPassword: string,
         token: string
     ): Observable<{ success: true }> {
+        this.setLoadingRequests('forgotPasswordReset', true);
         return this.apiService
             .put('/user/forgot-password-reset', {
                 newPassword,
@@ -245,11 +272,8 @@ export class UserService {
                     }
                     return resp;
                 }),
-                catchError(err => {
-                    const error = this.errorUtil.getError(err, { getValidationErrors: true });
-                    if (typeof error === 'object') { return of(error); }
-                    this.alertifyService.error(error || 'Failed to reset password.');
-                    return of(null);
+                finalize(() => {
+                    this.setLoadingRequests('forgotPasswordReset', false);
                 })
             );
     }
@@ -352,10 +376,12 @@ export class UserService {
         );
     }
     async fbLogin() {
+        this.setLoadingRequests('fbLogin', true);
         try {
             return await (() => {
                 return new Promise((resolve, reject) => {
                     FB.login(result => {
+                        this.setLoadingRequests('fbLogin', false);
                         if (result.authResponse) {
                             resolve(result);
                         } else {
@@ -365,6 +391,7 @@ export class UserService {
                 });
             })();
         } catch (e) {
+            this.setLoadingRequests('fbLogin', false);
             return e;
         }
     }

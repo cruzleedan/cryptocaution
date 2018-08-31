@@ -9,7 +9,6 @@ declare const alertify: any;
 export class AlertifyService {
 
     constructor(
-        private dialog: MatDialog,
     ) { }
 
     confirm(message: string, okCallback: () => any) {

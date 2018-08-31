@@ -94,7 +94,6 @@ export class SignupSigninComponent implements OnInit {
         });
     }
     submitForm() {
-        this.authService.authenticatingSubject.next(true);
         this.errors = { error: '' };
 
         const credentials = this.authForm.value;
@@ -102,7 +101,6 @@ export class SignupSigninComponent implements OnInit {
             .attemptAuth(this.authType, credentials)
             .subscribe(
                 resp => {
-                    this.authService.authenticatingSubject.next(false);
                     console.log('resp', resp);
                     if (resp && resp['success']) {
                         console.log('Navigate to return Url', this.returnUrl);
@@ -120,10 +118,8 @@ export class SignupSigninComponent implements OnInit {
             );
     }
     fbLogin() {
-        this.authService.authenticatingSubject.next(true);
         this.userService.fbLogin()
             .then((cred) => {
-                this.authService.authenticatingSubject.next(false);
                 console.log('fblogin ', cred);
                 this.userService.fbAuth(cred).subscribe((resp) => {
                     if (resp.success) {
@@ -133,7 +129,6 @@ export class SignupSigninComponent implements OnInit {
                     }
                 });
             }).catch((err) => {
-                this.authService.authenticatingSubject.next(false);
                 const dialogRef = this.dialog.open(MsgDialogComponent, {
                     data: {
                         msg: 'Something went wrong while communicating to the server',

@@ -38,6 +38,11 @@ export class EntityComponent implements OnInit {
     sortDirect = 'desc';
     filter: string | object = '';
     currentUrl: string;
+    socialMedias = [
+                    'facebook', 'twitter', 'google', 'linkedin',
+                    // 'pinterest', 'reddit', 'tumblr', 'whatsapp', 'messenger',
+                    // 'telegram', 'vk', 'stumble', 'xing', 'sms', 'email', 'copy', 'print'
+                ];
     // reviewsDataSource: ReviewsDataSource;
     columnsToDisplay = ['review_id'];
     private _ratings = ['Bad', 'Poor', 'Average', 'Great', 'Excellent'];

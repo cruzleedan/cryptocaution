@@ -95,6 +95,7 @@ import { EntityDeleteComponent } from './entity-delete/entity-delete.component';
 import { ReviewDeleteComponent } from './review-delete/review-delete.component';
 import { DefaultComponent } from './layout/template/default/default.component';
 import { ReviewCardComponent } from './review-card/review-card.component';
+
 @NgModule({
     imports: [
         CommonModule,

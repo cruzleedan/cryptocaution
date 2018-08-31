@@ -28,6 +28,7 @@ import {
     faRedditAlien, faTumblr, faWhatsapp, faFacebookMessenger, faTelegramPlane,
     faVk, faStumbleupon, faXing
 } from '@fortawesome/free-brands-svg-icons';
+
 library.add(
     faFacebookF, faTwitter, faGooglePlusG, faLinkedinIn, faPinterestP,
     faRedditAlien, faTumblr, faWhatsapp, faFacebookMessenger, faTelegramPlane,
@@ -47,9 +48,11 @@ library.add(
         SharedModule,
         AuthModule,
         AppRoutingModule,
-        ErrorsModule,
+        ErrorsModule
     ],
-    exports: [BrowserAnimationsModule],
+    exports: [
+        BrowserAnimationsModule,
+    ],
     providers: [
         Globals,
         CookieService,

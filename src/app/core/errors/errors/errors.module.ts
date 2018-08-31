@@ -13,28 +13,29 @@ import { ServerErrorsInterceptor } from './server-errors-interceptor/server-erro
 import { ErrorRoutingModule } from './errors-routing/errors-routing.module';
 
 import { ErrorsComponent } from './errors-component/errors.component';
+import { MsgDialogComponent } from '../../../shared/dialog/msg-dialog.component';
 
 @NgModule({
-  imports: [
-    CommonModule,
-    RouterModule,
-    ErrorRoutingModule,
-    FlexLayoutModule
-  ],
-  declarations: [
-    ErrorsComponent
-  ],
-  providers: [
-    ErrorsService,
-    {
-      provide: ErrorHandler,
-      useClass: ErrorsHandler,
-    },
-    {
-      provide: HTTP_INTERCEPTORS,
-      useClass: ServerErrorsInterceptor,
-      multi: true
-    },
-  ]
+    imports: [
+        CommonModule,
+        RouterModule,
+        ErrorRoutingModule,
+        FlexLayoutModule
+    ],
+    declarations: [
+        ErrorsComponent
+    ],
+    providers: [
+        ErrorsService,
+        {
+            provide: ErrorHandler,
+            useClass: ErrorsHandler,
+        },
+        {
+            provide: HTTP_INTERCEPTORS,
+            useClass: ServerErrorsInterceptor,
+            multi: true
+        },
+    ],
 })
 export class ErrorsModule { }
