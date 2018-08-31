@@ -20,6 +20,20 @@ import { AuthModule } from './modules/auth/auth.module';
 import { CoreModule } from './core';
 import { CanDeactivateGuard } from './core/guards/can-deactivate/can-deactivate.guard';
 import { Globals } from './globals';
+import { library, icon } from '@fortawesome/fontawesome-svg-core';
+import { faEllipsisH, faCommentAlt, faEnvelope, faLink, faPrint, faMinus } from '@fortawesome/free-solid-svg-icons';
+library.add(faEllipsisH, faCommentAlt, faEnvelope, faLink, faPrint, faMinus);
+import {
+    faFacebookF, faTwitter, faGooglePlusG, faLinkedinIn, faPinterestP,
+    faRedditAlien, faTumblr, faWhatsapp, faFacebookMessenger, faTelegramPlane,
+    faVk, faStumbleupon, faXing
+} from '@fortawesome/free-brands-svg-icons';
+library.add(
+    faFacebookF, faTwitter, faGooglePlusG, faLinkedinIn, faPinterestP,
+    faRedditAlien, faTumblr, faWhatsapp, faFacebookMessenger, faTelegramPlane,
+    faVk, faStumbleupon, faXing
+);
+
 
 @NgModule({
     declarations: [

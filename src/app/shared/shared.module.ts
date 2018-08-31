@@ -11,6 +11,8 @@ import { PerfectScrollbarModule } from 'ngx-perfect-scrollbar';
 import { PERFECT_SCROLLBAR_CONFIG } from 'ngx-perfect-scrollbar';
 import { PerfectScrollbarConfigInterface } from 'ngx-perfect-scrollbar';
 
+import { ShareButtonsModule } from '@ngx-share/buttons';
+
 const DEFAULT_PERFECT_SCROLLBAR_CONFIG: PerfectScrollbarConfigInterface = {
     suppressScrollX: true
 };
@@ -139,6 +141,7 @@ import { ReviewCardComponent } from './review-card/review-card.component';
         FormsModule,
         ReactiveFormsModule,
         HttpClientModule,
+        ShareButtonsModule.forRoot(),
         RouterModule,
     ],
     declarations: [
@@ -233,6 +236,7 @@ import { ReviewCardComponent } from './review-card/review-card.component';
         RouterModule,
         ReactiveFormsModule,
         HttpClientModule,
+        ShareButtonsModule,
         ListErrorsComponent,
         ShowAuthedDirective,
         ShowAdminDirective,

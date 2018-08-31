@@ -37,6 +37,7 @@ export class EntityComponent implements OnInit {
     sortField = 'createdAt';
     sortDirect = 'desc';
     filter: string | object = '';
+    currentUrl: string;
     // reviewsDataSource: ReviewsDataSource;
     columnsToDisplay = ['review_id'];
     private _ratings = ['Bad', 'Poor', 'Average', 'Great', 'Excellent'];
@@ -55,6 +56,7 @@ export class EntityComponent implements OnInit {
         private authService: AuthService,
         private route: ActivatedRoute) {
         console.log('constructor starts');
+        this.currentUrl = location.href;
         this.userService.currentUser.subscribe(userData => {
             this.currentUser = userData;
         });

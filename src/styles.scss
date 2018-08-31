@@ -1,5 +1,12 @@
-@import '~css-star-rating/scss/star-rating';
 /* You can add global styles to this file, and also import other style files */
+
+@import '~css-star-rating/scss/star-rating';
+
+/** Import a theme */
+@import '~@ngx-share/button/styles/share-buttons';
+@import '~@ngx-share/button/styles/themes/default/default-theme';
+@import '~@ngx-share/button/styles/themes/modern/modern-dark-theme';
+
 html {
     overflow: auto;
 }

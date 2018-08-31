@@ -104,9 +104,16 @@
                     </div>
                 </mat-card-content>
             </mat-card>
-            <!-- comments starts here -->
-
             <br>
+            <div>
+                <share-buttons [theme]="'modern-dark'"
+                [include]="['facebook','twitter','google','linkedin','pinterest','reddit','tumblr','whatsapp','messenger','telegram','vk','stumble','xing','sms','email','copy','print']"
+                [show]="5"
+                [showCount]="true"
+                [url]="currentUrl"
+                ></share-buttons>
+            </div>
+            <!-- comments starts here -->
             <app-review-card [entityId$]="entityId$" [entityTotalReviews]="entityTotalReviews"></app-review-card>
             <!-- <app-search-bar #input [inputRef]="myInput" style="display:none;"></app-search-bar>
             <div fxLayout="row" fxLayoutAlign="end" fxLayoutGap="5px">
