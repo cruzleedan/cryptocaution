@@ -1,6 +1,6 @@
 import { Component, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
 import { COMMA, ENTER } from '@angular/cdk/keycodes';
-import { MatSelectChange, MatDialog } from '@angular/material';
+import { MatSelectChange, MatDialog, MatSlideToggleChange, MatCheckboxChange, MatButtonToggleChange } from '@angular/material';
 import { MatPaginator, MatSort, MatSidenav, MatExpansionPanel } from '@angular/material';
 import { ActivatedRoute, Params } from '@angular/router';
 import { merge, Observable} from 'rxjs';
@@ -26,6 +26,8 @@ export class CategoryComponent implements OnInit, AfterViewInit {
     ]).pipe(
         map(result => result.matches)
     );
+    showAll = true;
+    showPending = false;
     isAdmin: boolean;
     sideNavOpened = true;
     sideNavMode = 'push';
@@ -68,6 +70,7 @@ export class CategoryComponent implements OnInit, AfterViewInit {
     }
 
     ngOnInit() {
+        this.sort.direction = 'desc';
         this.filterForm = new FormGroup({
             rating: new FormControl(''),
             publishDate: new FormControl('')
@@ -112,8 +115,14 @@ export class CategoryComponent implements OnInit, AfterViewInit {
             .subscribe();
     }
     loadEntitiesPage(filters: Object = {}) {
-        console.log('loadEntitiesPage', this.sort.direction);
+        console.log('loadEntitiesPage', filters);
         const defaultFilter = {};
+
+        if (typeof this.showPending === 'boolean' && !this.showAll) {
+            filters['approved'] = !(this.showPending);
+        } else if (typeof this.showAll === 'boolean' && this.showAll) {
+            delete filter['approved'];
+        }
         filters = Object.assign(
             this.searchFormControl.value ? {name: this.searchFormControl.value} : {},
             this.categoryId ? {categoryId: this.categoryId} : {},
@@ -126,6 +135,45 @@ export class CategoryComponent implements OnInit, AfterViewInit {
             this.paginator.pageIndex,
             this.paginator.pageSize
         );
+    }
+    getEntities(event: MatButtonToggleChange) {
+        console.log('event', event);
+        switch (event.value) {
+            case 'all':
+                this.getAllEntities();
+                break;
+            case 'pending':
+                this.getPendingEntities();
+                break;
+            case 'approved':
+                this.getApprovedEntities();
+                break;
+        }
+    }
+    getApprovedEntities() {
+        this.showAll = false;
+        this.showPending = false;
+        this.loadEntitiesPage();
+    }
+    getAllEntities() {
+        this.showAll = true;
+        this.showPending = false;
+        this.loadEntitiesPage();
+    }
+    getPendingEntities() {
+        this.showPending = true;
+        this.showAll = false;
+        this.loadEntitiesPage();
+    }
+    approveEntity(id: string) {
+        this.entityService.approveEntity(id)
+            .subscribe(resp => {
+                console.log('approved response', resp);
+                const newData = this.dataSource['data'].filter(item => {
+                    return item['id'] !== resp['id'];
+                });
+                this.dataSource['data'] = newData;
+            });
     }
     toggleShowDiv(index: number) {
         if (index > -1) {

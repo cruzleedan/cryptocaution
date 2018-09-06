@@ -60,13 +60,16 @@ export class ErrorsHandler implements ErrorHandler {
             if (!navigator.onLine) {
                 // No Internet connection
                 return notificationService.notify('No Internet Connection');
+            } else if (error.status === 401) {
+                this.authService.showAuthFormPopup();
+            } else {
+                // Http Error
+                // Send the error to the server
+                errorsService.log(error).subscribe();
+                // Show notification to the user
+                const title = error.error && error.error.error && typeof error.error.error === 'string' ? error.error.error : '';
+                notificationService.notify(`${error.status} - ${error.message}`, title);
             }
-            // Http Error
-            // Send the error to the server
-            errorsService.log(error).subscribe();
-            // Show notification to the user
-            const title = error.error && error.error.error && typeof error.error.error === 'string' ? error.error.error : '';
-            notificationService.notify(`${error.status} - ${error.message}`, title);
         } else if (
             error['rejection']
             && error['rejection'].hasOwnProperty('status')

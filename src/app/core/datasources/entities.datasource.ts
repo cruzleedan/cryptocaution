@@ -10,6 +10,7 @@ export class EntitiesDataSource implements DataSource < Entity > {
 
     public loading$ = this.loadingSubject.asObservable();
     public count;
+    public pending;
 
     constructor(private entityService: EntityService) {}
 
@@ -45,9 +46,10 @@ export class EntitiesDataSource implements DataSource < Entity > {
                 catchError(() => of ([])),
                 finalize(() => this.loadingSubject.next(false))
             )
-            .subscribe(entities => {
-                this.count = entities.pop(); // remove last item since it's not an entity rather is just a workaround to get filter length
-                this.entitiesSubject.next(entities);
+            .subscribe((resp: {data: Entity[], count: number, pending: number}) => {
+                this.count = resp.count;
+                this.pending = resp.pending;
+                this.entitiesSubject.next(resp.data);
             });
     }
 }

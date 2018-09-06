@@ -9,3 +9,11 @@ section.entities-sect {
         margin-bottom: 5px;
     }
 }
+.status-label{
+    color: #c7c7c7;
+    font-weight: 500;
+    margin-right: 5px;
+}
+.status.pending{
+    color: red;
+}

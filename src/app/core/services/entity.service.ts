@@ -65,7 +65,18 @@ export class EntityService {
                 })
             );
     }
-
+    approveEntity(entityId: string): Observable<Entity> {
+        return this.apiService.post(`/entities/${entityId}/approved`, {})
+            .pipe(
+                map((res) => {
+                    if (!res.success) {
+                        this.alertifyService.error(this.errorUtil.getError(res) || 'Something went wrong while processing your request');
+                        return of(null);
+                    }
+                    return res.data ? res.data : of(false);
+                })
+            );
+    }
     search(Obj: Object) {
         const keywords: Observable<string> = Obj['keyword'],
             sortField = Obj['sortField'],
@@ -94,7 +105,7 @@ export class EntityService {
     findEntities(
         filter: object = {}, sortDirection = 'asc', sortField = 'createdAt',
         pageNumber = 0, pageSize = 10
-    ): Observable<Entity[]> {
+    ): Observable<{data: Entity[], count: number, pending: number}> {
         this.searchingSubject.next(true);
         return this.apiService.get(
             '/entities',
@@ -107,18 +118,14 @@ export class EntityService {
         ).pipe(
             map((res) => {
                 this.searchingSubject.next(false);
+                const data = <Entity[]> res['data'] || [];
+                const count = <number> res['count'] || 0;
+                const pending = <number> res['pending'] || 0;
                 if (!res.success) {
                     this.alertifyService.error(this.errorUtil.getError(res) || 'Something went wrong while searching entities');
-                    return of([]);
                 }
-                res['data'].push(res['count']); // used to display filter count on the table
-                this.entitiesCountSubject.next(res['count']);
-                return res['data'];
-            }),
-            catchError(err => {
-                this.searchingSubject.next(false);
-                this.alertifyService.error(this.errorUtil.getError(err) || 'Something went wrong while searching entities');
-                return of([]);
+                this.entitiesCountSubject.next(count);
+                return {data, count, pending};
             })
         );
     }

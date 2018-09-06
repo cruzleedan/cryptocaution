@@ -31,6 +31,7 @@
                 <div fxFlexAlign="center">
                     {{ dataSource.count }} Found
                 </div>
+
                 <div fxFlex fxFlexAlign="center">
                     <mat-chip-list #chipList>
                         <mat-chip *ngFor="let filter of filters" [selectable]="selectable" [removable]="removable" (removed)="remove(filter)">
@@ -39,6 +40,11 @@
                         </mat-chip>
                     </mat-chip-list>
                 </div>
+                <mat-button-toggle-group name="show" aria-label="Show" (change)="getEntities($event)" [value]="'all'">
+                    <mat-button-toggle value="all">All</mat-button-toggle>
+                    <mat-button-toggle value="pending">Pending</mat-button-toggle>
+                    <mat-button-toggle value="approved">Approved</mat-button-toggle>
+                </mat-button-toggle-group>
                 <div fxLayout="row">
                     <mat-form-field class="mt-n-bm">
                         <mat-select [(value)]="sortField" placeholder="Sort by" (selectionChange)="sortEntities($event)">
@@ -116,10 +122,13 @@
                             </a>
                             <div>
                                 <a mat-raised-button color="primary" [routerLink]="['/entity/'+entity.id+'/review/new']">Write a review</a>
-                                <a mat-icon-button color="primary" [routerLink]="['/entity/'+entity.id+'/edit']" *ngIf="isAdmin">
+                                <button mat-icon-button (click)="approveEntity(entity.id)" *ngIf="isAdmin" class="status" matTooltip="Approve Entity">
+                                    <mat-icon [ngClass]="{'approved': entity.approved, 'pending': !entity.approved}">check</mat-icon>
+                                </button>
+                                <a mat-icon-button color="primary" [routerLink]="['/entity/'+entity.id+'/edit']" *ngIf="isAdmin" matTooltip="Edit">
                                     <mat-icon>mode_edit</mat-icon>
                                 </a>
-                                <button mat-icon-button color="primary" (click)="onDelete(entity)" *ngIf="isAdmin">
+                                <button mat-icon-button color="primary" (click)="onDelete(entity)" *ngIf="isAdmin" matTooltip="Delete">
                                     <mat-icon>delete</mat-icon>
                                 </button>
                             </div>

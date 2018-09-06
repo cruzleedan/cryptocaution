@@ -14,6 +14,7 @@ export interface Entity {
   address: string;
   phone: string;
   email: string;
+  approved: boolean;
   excellentRating?: number;
   greatRating?: number;
   averageRating?: number;
